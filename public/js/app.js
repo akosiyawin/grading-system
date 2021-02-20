@@ -6476,6 +6476,16 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     forceTLS: true
 // });
 
+axios.interceptors.request.use(function (config) {
+  // Do something before request is sent
+  console.log('Start Ajax Call');
+  return config;
+}, function (error) {
+  // Do something with request error
+  console.log('Error');
+  return Promise.reject(error);
+});
+
 /***/ }),
 
 /***/ "./resources/js/tools/api.js":

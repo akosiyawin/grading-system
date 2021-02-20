@@ -400,7 +400,7 @@ trait RegistrarApi
             'last_name' => 'required|string',
         ]);
         $validated['role_id'] = Base::STUDENT_ROLE_ID;
-        $validated['password'] = \Hash::make(Base::STUDENT_DEFAULT_PASSWORD);
+        $validated['password'] = \Hash::make(Carbon::parse($validated['birthdate'])->format('Y-m-d'));
         $user = User::create($validated);
 
         $user->student()->create($validated);
