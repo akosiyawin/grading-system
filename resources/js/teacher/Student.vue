@@ -569,7 +569,7 @@ export default {
       }
     },
     async destroyStudentRecord() {
-      return await api.destroyStudentSubject(this.subjectSelected, {students: this.unselectedStudents})
+      return await api.destroyStudentSubject(this.selectedSubject, {students: this.unselectedStudents})
     },
     async addStudentRecord() {
       return await api.storeStudentSubject({students: this.selectedStudents, subject_id: this.selectedSubject})

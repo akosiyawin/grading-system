@@ -145,3 +145,8 @@ Route::get('/grades/{user_id}/{semester}/{year}', [\App\Http\Controllers\Student
 Route::get('/footer/total/{user_id}/{semester}/{year}', [\App\Http\Controllers\StudentController::class, 'Totalfooter']);
 Route::get('/print/{user_id}', [\App\Http\Controllers\StudentController::class, 'CopyOfGrades']);
 });
+
+
+/* Redirector */
+
+Route::redirect('/teacher', '/teacher-subject');

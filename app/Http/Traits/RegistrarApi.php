@@ -471,8 +471,9 @@ trait RegistrarApi
         ]);
     }
 
-    public function approveGrade(Request $request,Subject $subject)
+    public function approveGrade(Request $request,$subject)
     {
+        // dd($subject);
         /*
          * select student_subjects.id as student_subject_id, student_subjects.student_id,
          * student_subjects.grade, student_subjects.semester_id,
@@ -490,7 +491,8 @@ trait RegistrarApi
         StudentSubject::join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
         ->join('semesters','student_subjects.semester_id','semesters.id')
         ->where('semesters.status',1)
-        ->where('subject_teachers.teacher_id',$validated['teacher'])
+        ->where('subject_teachers.id',$subject)
+        // ->where('subject_teachers.teacher_id',$validated['teacher'])
         ->where('student_subjects.student_id',$validated['student_id'])
         ->update(['student_subjects.status' => DB::raw('!student_subjects.status')]);
         return response()->json([
@@ -525,8 +527,8 @@ trait RegistrarApi
             ->where('semesters.status', 1)
             ->select([
                 'subjects.code',
-                'subjects.title',
-                'subjects.id as subject_id'
+                DB::raw('CONCAT(subjects.title," - ",subject_teachers.remarks) as title'),
+                'subject_teachers.id as subject_id'
             ])
             ->get();
 
@@ -536,7 +538,7 @@ trait RegistrarApi
         ]);
     }
 
-    public function subjectStudentsGrade(Request $request, Subject $subject)
+    public function subjectStudentsGrade(Request $request, $subject)
     {
         $validated = $request->validate([
             'rowsPerPage' => 'numeric|required',
@@ -544,13 +546,13 @@ trait RegistrarApi
             'page' => 'required|numeric',
             'teacher' => 'required|numeric|exists:teachers,id'
         ]);
-        $subjectTeacher = SubjectTeacher::join('semesters','subject_teachers.semester_id','semesters.id')
-            ->where('subject_id',$subject->id)
+/*         $subjectTeacher = SubjectTeacher::join('semesters','subject_teachers.semester_id','semesters.id')
+            ->where('subject_teachers.id',$subject)
             ->where('semesters.status',1)
-            ->where('teacher_id',$validated['teacher'])
+            // ->where('teacher_id',$validated['teacher'])
 //            ->where('subject_id',$subject->id)
             ->select(['subject_teachers.id'])
-            ->first();
+            ->first(); */
 
         /*
          * SELECT student_subjects.id, student_subjects.student_id,
@@ -565,9 +567,9 @@ trait RegistrarApi
             ->join('users','students.user_id','users.id')
             ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
             ->join('semesters','student_subjects.semester_id','semesters.id')
-            ->where('subject_id',$subject->id)
+            ->where('subject_teachers.id',$subject)
             ->where('semesters.status',1)
-            ->where('teacher_id',$validated['teacher'])
+            // ->where('teacher_id',$validated['teacher'])
 //            ->where('subject_teachers.subject_id',$subject->id)
 //            ->where('subject_teachers.id',$subjectTeacher->id)
             ->select([
