@@ -85,6 +85,7 @@
 
 <!-- Scripts -->
 <script src="{{ asset('js/app.js') }}"></script>
+
 <script src="{{ asset('assets/adminlte/adminlte.min.js') }}"></script>
 @stack('scripts')
 </body>

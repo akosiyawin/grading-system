@@ -1,38 +1,69 @@
 <template>
-  <v-form
-      ref="form"
-      v-model="valid"
-      lazy-validation
-      @submit.prevent="submit"
-  >
-    <div class="row d-flex justify-content-center">
-      <div class="col-8">
-        <v-text-field
-            label="Username"
-            :error-messages="form.errors.get('username')"
-            :rules="rules.username"
-            v-model="form.username"
-        ></v-text-field>
-        <v-text-field
-            label="Password"
-            hide-details="auto"
-            :rules="rules.password"
-            class="my-2"
-            type="password"
-            :error-messages="form.errors.get('password')"
-            v-model="form.password"
-        ></v-text-field>
-        <v-btn
-            class="bg-success mt-2"
-            :loading="loading"
-            :disabled="loading"
-            type="submit"
-        >
-          Login
-        </v-btn>
+  <div class="container d-flex justify-content-center align-items-center" style="height: 100vh">
+    <div class="login-box">
+      <div class="login-logo">
+        <a href="#"><b>EPCST</b>Grade Book</a>
+      </div>
+      <div class="card">
+        <div class="card-body login-card-body">
+          <p class="login-box-msg">Sign in to view your grades</p>
+          <form @submit.prevent="submit">
+            <div class="input-group mb-3">
+              <input type="text"
+                     class="form-control"
+                     :class="{'is-invalid':form.errors.has('username')}"
+                     v-model="form.username"
+                     placeholder="Username">
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-user"></span>
+                </div>
+              </div>
+              <div class="invalid-feedback">
+                {{form.errors.get('username')}}
+              </div>
+            </div>
+            <div class="input-group mb-3">
+              <input type="password"
+                     v-model="form.password"
+                     :class="{'is-invalid':form.errors.has('password')}"
+                     class="form-control" placeholder="Password">
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-lock"></span>
+                </div>
+              </div>
+              <div class="invalid-feedback">
+                {{form.errors.get('password')}}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-8">
+                <div class="icheck-primary">
+                  <input type="checkbox" id="remember">
+                  <label for="remember">
+                    Remember Me
+                  </label>
+                </div>
+              </div>
+              <div class="col-4">
+                <button type="submit" class="btn bg-primary btn-block">Sign In</button>
+              </div>
+            </div>
+          </form>
+          <div class="social-auth-links text-center mb-3">
+            <p>- SOCIAL MEDIA -</p>
+            <a href="https://www.facebook.com/EPCST" class="btn btn-block btn-primary">
+              <i class="fab fa-facebook mr-2"></i> Visit Us On Facebook
+            </a>
+            <a href="https://www.youtube.com/channel/UCTrlBNO2fjww9zfoSgxXfdA" class="btn btn-block btn-danger">
+              <i class="fab fa-youtube mr-2"></i> Check Out Our YouTube Channel
+            </a>
+          </div>
+        </div>
       </div>
     </div>
-  </v-form>
+  </div>
 </template>
 
 <script>
@@ -44,14 +75,6 @@ export default {
   data: () => ({
     valid: true,
     loading: false,
-    rules: {
-      username: [
-        v => !!v || 'Username is required'
-      ],
-      password: [
-        v => !!v || 'Password is required'
-      ],
-    },
     form: new Form({
       username: '',
       password: ''
@@ -59,15 +82,13 @@ export default {
   }),
   methods: {
     submit() {
-      if (this.$refs.form.validate()) {
-        this.form.post(api.login)
-        .then(r => {
-          location.replace('/handler')
-        })
-        .catch(err => {
-          this.form.errors.set(err.errors)
-        })
-      }
+      this.form.post(api.login)
+      .then(r => {
+        location.replace('/handler')
+      })
+      .catch(err => {
+        this.form.errors.set(err.errors)
+      })
     }
   }
 }
