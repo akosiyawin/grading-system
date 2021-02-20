@@ -2,6 +2,13 @@
 
 @push('styles')
     <style>
+
+
+
+
+
+
+
         body {
             margin-top: 20px;
             background: #eee;
@@ -22,16 +29,23 @@
             padding: 20px;
         }
 
+        blockquote{
+            background: #f0f3f4;
+            padding: 40px;
+            margin: 0px;
+        }
+
         .invoice-date,
         .invoice-from,
         .invoice-to {
+            margin: 0px;
             display: table-cell;
             width: 1%
         }
 
         .invoice-from,
         .invoice-to {
-            padding-right: 10px
+            padding-top: 20px;
         }
 
         .invoice-date .date,
@@ -122,26 +136,31 @@
         }
 
         .product-image {
-
+            width: 120px;
+            min-height: 120px;
+            /*max-height: auto;*/
+            float: left;
+            margin: 3px;
+            padding: 3px;
         }
 
-        @media screen {
-            p.bodyText {
-                font-family: verdana, arial, sans-serif;
-            }
+        img {
+            max-width: 70%;
+            height: auto;
         }
 
         @media print {
-            p.bodyText {
-                font-family: georgia, times, serif;
+            .btn {
+                display: none;
             }
+
+
+
+
+
         }
 
-        @media screen, print {
-            p.bodyText {
-                font-size: 10pt
-            }
-        }
+
     </style>
 
 @endpush
@@ -156,76 +175,68 @@
             <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i
                         class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
             </span>
+                <br>
+                <br>
                 <div>
                     <div class="product-row row">
-                        <div class="product-image col-md-1">
+                        <div class="product-image col-md-3">
                             <img src="{{asset('assets/images/logo.png')}}">
                         </div>
                         <div class="product-text col-md">
                             <h4 class="text-success">Eastwoods Professional College of Science and Technology</h4>
                             <hr>
-                            <p>We Educate, Develop and Inspire.</p>
+                            <p class><small>We Educate, Develop and Inspire</small>.</p>
                             {{--                            <div class="product-buttons">--}}
                             {{--                                <a href="http://bit.ly/2hqwtm2" target="_blank" id="Instant-Film" class="gift-guide-2017 shop btn">Shop Now</a>--}}
                             {{--                            </div>--}}
                         </div>
                     </div>
                 </div>
-                <div class="text-center ">CERTIFICATION OF GRADES</div>
+                <div class="text-center text-bold">CERTIFICATION OF GRADES</div>
             </div>
             <!-- end invoice-company -->
             <!-- begin invoice-header -->
             <div class="invoice-header">
-                <div class="invoice-from">
-                    {{--                    <small>from</small>--}}
-                    <address class="m-t-5 m-b-5">
-                        {{--                        <strong class="text-inverse">Twitter, Inc.</strong><br>--}}
-                        {{--                        Street Address:  <br>--}}
-                        {{--                        City, Zip Code<br>--}}
-                        {{--                        Phone: (123) 456-7890<br>--}}
-                        {{--                        Fax: (123) 456-7890--}}
-                        <div class="row">
-                            <div class="col-md-3 text-bold">
-                                <div>Name:</div>
-                                <div>Student No.:</div>
-                                <div>Course:</div>
-                            </div>
-                            <div class="col-md">
-                               <div class="name"></div>
-                                <div class="id_number"></div>
-                                <div class="course"></div>
-                            </div>
-                        </div>
+                <div class="row container">
+                    <div class="col-md-5">
+                        <div class="invoice-from">
+                            <address class="m-t-5 m-b-5">
+                                <div class="row">
+                                    <div class="col-md-4 text-bold">
+                                        <div>Name:</div>
+                                        <div>Student No.:</div>
+                                        <div>Course:</div>
+                                        <div>Birthday:</div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="name"></div>
+                                        <div class="id_number"></div>
+                                        <div class="course"></div>
+                                        <div class="birthdate"></div>
+                                    </div>
+                                </div>
 
-                    </address>
-                </div>
-                <div class="invoice-to">
-                    <!--                    <small>to</small>-->
-                    {{--                    <address class="m-t-5 m-b-5">--}}
-                    {{--                        <strong class="text-inverse">Company Name</strong><br>--}}
-                    {{--                        Street Address<br>--}}
-                    {{--                        City, Zip Code<br>--}}
-                    {{--                        Phone: (123) 456-7890<br>--}}
-                    {{--                        Fax: (123) 456-7890--}}
-                    {{--                        --}}
-                    {{--                    </address>--}}
-                    <div class="row">
-                        <div class="col-md-3 text-bold">
-                            <div>Name:</div>
-                            <div>Student No.:</div>
-                            <div>Course:</div>
+                            </address>
                         </div>
-                        <div class="col-md">
-                            <div>asdasd</div>
-                            <div>asdasd</div>
-                            <div>asdasd</div>
+                    </div>
+                    <div class="col-md">
+                        <div class="invoice-to">
+                            <div class="row">
+                                <blockquote class="quote-dark p-10 semester_information">
+                                    <v-card-title class="title_information"></v-card-title>
+                                    <v-card-subtitle class="semester">
+                                    </v-card-subtitle>
+                                </blockquote>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+
             </div>
             <div class="invoice-content">
                 <!-- begin table-responsive -->
-                <div class="semester_info text-right semester">
+                <div class="semester_info text-left">
 
                 </div>
                 <br>
@@ -233,11 +244,11 @@
                     <table class="table table-invoice ">
                         <thead>
                         <tr>
-                            <th>Code</th>
-                            <th class="text-center" width="10%">Subject</th>
-                            <th class="text-center" width="20%">Unit</th>
+                            <th width="15%">Code</th>
+                            <th class="text-left" width="40%">Subject</th>
+                            <th class="text-center" width="10%">Unit</th>
                             <th class="text-center" width="10%">Grade</th>
-                            <th class="text-center" width="20%">Remarks</th>
+                            <th class="text-center" width="10%">Remarks</th>
                         </tr>
                         </thead>
                         <tbody class="data">
@@ -258,7 +269,7 @@
                             <td class="text-center"></td>
                             <td class="text-center"></td>
                             <td class="text-center units text-bold"></td>
-                            <td class="text-center average text-bold">$2,500.00</td>
+                            <td class="text-center average text-bold"></td>
                         </tr>
                         </tfoot>
                     </table>
@@ -333,8 +344,12 @@
                 // console.log(r)
                 // user_id = r.data.id;
 
+                let user_id = localStorage.getItem("user_id");
+                let semester_id = localStorage.getItem("semester_id");
+                let year = localStorage.getItem("year");
+
                 $.ajax({
-                    url: '/api/print/' + r.data.id,
+                    url: '/api/print/' + user_id +"/"+ semester_id +"/"+ year,
                     TYPE: 'POST',
                     success: function (r) {
                         let $tr = $('.data');
@@ -343,7 +358,7 @@
                         $(r[0]).each(function (r, v) {
                             html += '<tr class="text-center">'
                             html += '<td class="text-left">' + v.code + '</td>'
-                            html += '<td>' + v.title + '</td>'
+                            html += '<td class="text-left">' + v.title + '</td>'
                             html += '<td>' + v.units + '</td>'
                             if (v.grade >= 98) {
                                 html += '<td>1.0</td>'
@@ -391,20 +406,34 @@
                 })
 
                 $.ajax({
-                    url: '/api/print/' + r.data.id,
+                    url: '/api/print/' + user_id +"/"+ semester_id +"/"+ year,
                     TYPE: 'POST',
-                    success:function(r){
+                    success: function (r) {
                         $('.units').html(r.units);
+                        // console.log(r.semester_year);
+                            console.log(r);
+                        // student information
+                        $('.name').html(r.student_information[0].last_name + ", " + r.student_information[0].first_name + " " + r.student_information[0].middle_name + ".");
+                        $('.id_number').html(r.student_information[0].username)
+                        $('.course').html(r.student_information[0].title)
+                        $('.birthdate').html(r.student_information[0].birthdate);
 
-                        $('.semester').html(r.activated_semester[0].title);
+
+                        if (r.activated_semester[0].id == 1) {
+                            $('.semester').html('<b>1st Semester</b>'+ " , AY " + r.semester_year);
+                        } else if (r.activated_semester[0].id == 2) {
+                            $('.semester').html('2nd Semester');
+                        }
+
                         $('.average').html(r.average);
-                        if (r.average)
-                        //         html += '<td class="text-left">' + r.units + '</td>'
-                        //
-                        // $('.data').html(html);
-                        // $tr.html(html);
+
+                        if (!r.average < 75) {
+
+                        } else {
+                            // red
+                        }
                     }
-                })
+                });
             })
         }
 

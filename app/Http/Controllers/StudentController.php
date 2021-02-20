@@ -9,9 +9,14 @@ use Illuminate\Support\Facades\DB;
 class StudentController extends Controller
 {
 
-    public function __construct()
+//    public function __construct()
+//    {
+//        $this->middleware(['auth','student']);
+//    }
+
+    public function print()
     {
-        $this->middleware(['auth','student']);
+        return view('student.print');
     }
 
     public function index()
@@ -26,12 +31,11 @@ class StudentController extends Controller
     }
 
     public function Student_information(request $request, $user_id = "")
-
     {
 
         $student_information = DB::table('users')
             ->join('students', 'users.id', '=', 'students.user_id')
-            ->join('courses', 'students.id', '=', 'courses.id')
+            ->join('courses', 'students.course_id', '=', 'courses.id')
             ->select(
                 'username',
                 'users.first_name',
@@ -39,9 +43,12 @@ class StudentController extends Controller
                 'users.last_name',
                 'courses.title',
             )
-            ->where('users.role_id', '=', Base::STUDENT_ROLE_ID)
+//            ->where('users.role_id', '=', Base::STUDENT_ROLE_ID)
             ->where('users.id', $user_id)
+//            ->select()
             ->get();
+
+//        dd($student_information);
 
         $first_name = $student_information->pluck('first_name');
         $first_name = str_replace('["', "", "$first_name");
@@ -67,31 +74,32 @@ class StudentController extends Controller
 
     public function Grades(request $request, $user_id = "", $semester = "", $year = "")
     {
-
-//        dd($request);
         $grades = DB::table('students')
             ->join('student_subjects', 'students.id', '=', 'student_subjects.student_id')
-            ->join('subjects', 'student_subjects.subject_id', '=', 'subjects.id')
-            ->join('subject_teachers', 'subjects.id', '=', 'subject_teachers.subject_id')
+            ->join('subject_teachers', 'student_subjects.subject_teacher_id', '=', 'subject_teachers.id')
+            ->join('subjects', 'subject_teachers.subject_id', '=', 'subjects.id')
             ->join('users', 'subject_teachers.teacher_id', '=', 'users.id')
-            ->join('semesters', 'subjects.semester_id', '=', 'semesters.id')
+            ->join('semesters', 'subject_teachers.semester_id', '=', 'semesters.id')
             ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
             ->select(
                 'subjects.code',
                 'subjects.title',
+                'student_subjects.grade',
                 'subjects.units',
-//                DB::raw('CONCAT(users.last_name,", ",users.first_name," ",users.middle_name) as name'),
+//               'semesters.id',
+                DB::raw('CONCAT(users.last_name,", ",users.first_name," ",users.middle_name) as name'),
                 'users.last_name',
                 'users.first_name',
                 'users.middle_name',
                 'student_subjects.grade',
                 'student_subjects.status',
+                'semesters.title as semesterTitle',
+                'school_years.year'
             )
-//            ->select()
-            ->where('semesters.id', '=', $semester)
             ->where('school_years.year', '=', $year)
-            ->where('user_id', '=', $user_id)
-            ->where('student_subjects.status', '<>', 0)
+            ->where('semesters.id', '=', $semester)
+//            ->select()
+            ->where('students.user_id', '=', $user_id)
             ->get();
 
 
@@ -102,79 +110,121 @@ class StudentController extends Controller
         }
     }
 
-    public function Totalfooter(request $request, $user_id = "", $semester = "", $year = "")
+    public function activated_semester()
     {
-        $validate = DB::table('students')
-            ->join('student_subjects', 'students.id', '=', 'student_subjects.student_id')
-            ->join('subjects', 'student_subjects.subject_id', '=', 'subjects.id')
-            ->join('subject_teachers', 'subjects.id', '=', 'subject_teachers.subject_id')
-            ->join('users', 'subject_teachers.teacher_id', '=', 'users.id')
-            ->join('semesters', 'subjects.semester_id', '=', 'semesters.id')
+        $activated_semester = DB::table('semesters')
             ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
-            ->select()
-            ->where('semesters.id', '=', $semester)
-            ->where('school_years.year', '=', $year)
-            ->where('user_id', '=', $user_id)
-            ->where('student_subjects.status', '<>', 0)
+            ->select(
+                'semesters.id'
+            )
+            ->where('semesters.status', '=', 1)
             ->get();
 
-        if (count($validate)) {
-            $grade = DB::table('students')
-                ->join('student_subjects', 'students.id', '=', 'student_subjects.student_id')
-                ->join('subjects', 'student_subjects.subject_id', '=', 'subjects.id')
-                ->join('subject_teachers', 'subjects.id', '=', 'subject_teachers.subject_id')
-                ->join('users', 'subject_teachers.teacher_id', '=', 'users.id')
-                ->join('semesters', 'subjects.semester_id', '=', 'semesters.id')
+        $semester_year = DB::table('semesters')
+            ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
+            ->Where('status', '=', 1)
+            ->pluck('year');
+
+
+        foreach ($semester_year as $key => $value) {
+            $year_start = $value;
+            $year_end = $value;
+        }
+
+        $year_end = $year_end += 1;
+
+        $semester_year = $year_start ." - " . $year_start ;
+
+        if (count($activated_semester)) {
+            return response(["activated_semester"=>$activated_semester,"school_year"=>$semester_year], 200);
+        } else {
+            return reponse(['Message'=>'invalid request'],200);
+        }
+
+    }
+
+    public function Totalfooter(request $request, $user_id = "", $semester = "", $year = "")
+    {
+        $student_information = DB::table('users')
+            ->join('students', 'users.id', '=', 'students.user_id')
+            ->join('courses', 'students.course_id', '=', 'courses.id')
+            ->select(
+                'users.first_name',
+                'users.middle_name',
+                'users.last_name',
+                'users.username',
+                'students.birthdate',
+                'courses.title',
+            )
+            ->where('users.id', '=', $user_id)
+            ->where('users.role_id', '=', Base::STUDENT_ROLE_ID)
+//            ->select()
+            ->get();
+
+        if (count($student_information)) {
+            $average = DB::table('student_subjects')
+                ->join('students', 'student_subjects.student_id', '=', 'students.id')
+                ->join('semesters', 'student_subjects.semester_id', '=', 'semesters.id')
+                ->join('subject_teachers', 'student_subjects.subject_teacher_id', '=', 'subject_teachers.id')
+                ->join('subjects', 'subject_teachers.subject_id', '=', 'subjects.id')
                 ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
                 ->select(
-                    DB::raw('SUM(grade) / count(subjects.id) as average'),
-                    'units'
-                )->where('semesters.id', '=', $semester)
+                    DB::raw('SUM(grade) / count(subjects.id) as average')
+                )
                 ->where('school_years.year', '=', $year)
-                ->where('user_id', '=', $user_id)
-                ->where('student_subjects.status', '<>', 0)
+                ->where('semesters.id', '=', $semester)
+                ->where('students.user_id', '=', $user_id)
+//                 ->select()
                 ->get();
 
+//            print_r($average);
+            $average = $average->pluck('average');
 
-            $grade = $grade->pluck('average');
-
-            foreach ($grade as $key => $value) {
-                $grade = $value;
+            foreach ($average as $key => $value) {
+                $average = $value;
             }
 
-            if ($grade >= 98) {
+            if ($average >= 98) {
                 $average = "1.0";
-            } elseif ($grade >= 95) {
+            } elseif ($average >= 95) {
                 $average = "1.25";
-            } elseif ($grade >= 92) {
+            } elseif ($average >= 92) {
                 $average = "1.50";
-            } elseif ($grade >= 89) {
+            } elseif ($average >= 89) {
                 $average = "1.75";
-            } elseif ($grade >= 86) {
+            } elseif ($average >= 86) {
                 $average = "2.0";
-            } elseif ($grade >= 83) {
+            } elseif ($average >= 83) {
                 $average = "2.25";
-            } elseif ($grade >= 80) {
+            } elseif ($average >= 80) {
                 $average = "2.50";
-            } elseif ($grade >= 77) {
+            } elseif ($average >= 77) {
                 $average = "2.75";
-            } elseif ($grade >= 75) {
+            } elseif ($average >= 75) {
                 $average = "3.0";
             } else {
                 $average = "5.0";
             }
 
-            $units = DB::table('students')
-                ->join('student_subjects', 'students.id', '=', 'student_subjects.student_id')
-                ->join('subjects', 'student_subjects.subject_id', '=', 'subjects.id')
+            $units = DB::table('student_subjects')
+                ->join('students', 'student_subjects.student_id', '=', 'students.id')
+                ->join('semesters', 'student_subjects.semester_id', '=', 'semesters.id')
+                ->join('subject_teachers', 'student_subjects.subject_teacher_id', '=', 'subject_teachers.id')
+                ->join('subjects', 'subject_teachers.subject_id', '=', 'subjects.id')
+                ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
                 ->select(
                     'units'
                 )
+                ->where('school_years.year', '=', $year)
+                ->where('semesters.id', '=', $semester)
+                ->where('students.user_id', '=', $user_id)
+//                ->select()
                 ->get();
 
             $units = $units->pluck('units');
             $total_lecture = 0;
             $total_lab = 0;
+
             foreach ($units as $key => $value) {
                 $units = $value;
                 $units = explode('(', $units);
@@ -195,9 +245,10 @@ class StudentController extends Controller
             return response(['Message' => 'No records found'], 404);
         }
 
+
     }
 
-    public function CopyOfGrades(request $request, $user_id = "", $semester = "", $year = "")
+    public function CopyOfGrades(request $request, $user_id = "", $semester_id = "", $year = "")
     {
         $student_information = DB::table('users')
             ->join('students', 'users.id', '=', 'students.user_id')
@@ -215,52 +266,72 @@ class StudentController extends Controller
             ->get();
 
 
-
-
         if (count($student_information)) {
             $activated_semester = DB::table('semesters')
                 ->Where('status', '=', 1)
                 ->pluck('id');
 
             $semester = DB::table('semesters')
-                ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
+//                ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
                 ->select()
                 ->Where('status', '=', 1)
                 ->get();
+
+            $semester_year = DB::table('semesters')
+                ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
+                ->Where('status', '=', 1)
+                ->pluck('year');
+
+
+            foreach ($semester_year as $key => $value) {
+                $year_start = $value;
+                $year_end = $value;
+            }
+
+            $year_end = $year_end += 1;
+
+            $semester_year = $year_start . " - " . $year_end;
+
 
             $grades = DB::table('students')
                 ->join('student_subjects', 'students.id', '=', 'student_subjects.student_id')
                 ->join('subject_teachers', 'student_subjects.subject_teacher_id', '=', 'subject_teachers.id')
                 ->join('subjects', 'subject_teachers.subject_id', '=', 'subjects.id')
-                ->join('semesters', 'subjects.semester_id', '=', 'semesters.id')
+                ->join('semesters', 'subject_teachers.semester_id', '=', 'semesters.id')
                 ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
                 ->select(
                     'subjects.code',
                     'subjects.title',
                     'student_subjects.grade',
                     'subjects.units',
-                    'semesters.id',
+//                    'semesters.id',
                 )
-                ->where('subjects.semester_id','=' , $activated_semester)
+                ->where('school_years.year', '=', $year)
                 ->where('students.user_id', '=', $user_id)
+                ->where('semesters.id', '=', $semester_id)
 //            ->select()
                 ->get();
 
-            $units = DB::table('students')
-               ->join('student_subjects', 'students.id', '=', 'student_subjects.student_id')
-                ->join('subject_teachers', 'student_subjects.subject_teacher_id', '=', 'subject_teachers.subject_id')
+            $units = DB::table('student_subjects')
+                ->join('students', 'student_subjects.student_id', '=', 'students.id')
+                ->join('semesters', 'student_subjects.semester_id', '=', 'semesters.id')
+                ->join('subject_teachers', 'student_subjects.subject_teacher_id', '=', 'subject_teachers.id')
                 ->join('subjects', 'subject_teachers.subject_id', '=', 'subjects.id')
-                ->join('semesters', 'subjects.semester_id', '=', 'semesters.id')
-                ->select(
-                    'units'
-                )
-                ->where('subjects.semester_id','=' , $activated_semester)
+                ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
+//                ->select(
+//                    'units'
+//                )
+//                ->where('student_subjects.semester_id', '=', )
+//                ->where('students.user_id', '=', $user_id)
+                ->where('school_years.year', '=', $year)
                 ->where('students.user_id', '=', $user_id)
+                ->where('semesters.id', '=', $semester_id)
+                ->select()
                 ->get();
 
-                $units = $units->pluck('units');
-                $total_lecture = 0;
-                $total_lab = 0;
+            $units = $units->pluck('units');
+            $total_lecture = 0;
+            $total_lab = 0;
 
             foreach ($units as $key => $value) {
                 $units = $value;
@@ -277,17 +348,20 @@ class StudentController extends Controller
 
             $units = $total_lecture . "(" . $total_lab . ")";
 
-             $average = DB::table('students')
-                ->join('student_subjects', 'students.id', '=', 'student_subjects.student_id')
-                 ->join('subject_teachers','student_subjects.subject_teacher_id','=','subject_teachers.id')
-                 ->join('subjects','subject_teachers.subject_id','=','subjects.id')
-                 ->join('semesters','subjects.semester_id','=','semesters.id')
-                 ->select(
-                     DB::raw('SUM(grade) / count(subjects.id) as average')
-                 )
-                 ->where('semesters.status','=', 1)
-                 ->where('subjects.semester_id','=' , $activated_semester)
-                 ->where('students.user_id', '=', $user_id)
+            $average = DB::table('student_subjects')
+                ->join('students', 'student_subjects.student_id', '=', 'students.id')
+                ->join('semesters', 'student_subjects.semester_id', '=', 'semesters.id')
+                ->join('subject_teachers', 'student_subjects.subject_teacher_id', '=', 'subject_teachers.id')
+                ->join('subjects', 'subject_teachers.subject_id', '=', 'subjects.id')
+                ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
+                ->select(
+                    DB::raw('SUM(grade) / count(subjects.id) as average')
+                )
+                ->where('student_subjects.semester_id', '=', $activated_semester)
+                ->where('school_years.year', '=', $year)
+                ->where('students.user_id', '=', $user_id)
+                ->where('semesters.id', '=', $semester_id)
+//                 ->select()
                 ->get();
 
             $average = $average->pluck('average');
@@ -324,14 +398,14 @@ class StudentController extends Controller
                 'activated_semester' =>
                     $semester,
                 $grades,
-                'units'=>$units,
-                'average'=> $average
+                'units' => $units,
+                'average' => $average,
+                'semester_year' => $semester_year
             ], 200);
 //            return response($grades,200);
         } else {
             return response(['Message' => 'No records found'], 404);
         }
     }
-
 
 }

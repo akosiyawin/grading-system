@@ -5014,60 +5014,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
@@ -5094,7 +5040,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       year: null,
       id: null,
       right: null,
-      drawer: true
+      drawer: true,
+      isprint: false
     };
   },
   methods: {
@@ -5108,22 +5055,23 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     viewGrade: function viewGrade() {
       this.grade();
+      var user_id = this.id;
+      var semester_id = this.select_semester;
+      var year = this.year;
+      localStorage.setItem("user_id", user_id);
+      localStorage.setItem("semester_id", semester_id);
+      localStorage.setItem("year", year);
     },
     grade: function grade() {
+      var _this = this;
+
       $.ajax({
         url: '/api/grades/' + this.id + '/' + this.select_semester + '/' + this.year,
         TYPE: 'GET',
         success: function success(r) {
-          // console.log(r[0].code);
+          _this.isprint = true;
           var $tr = $('.data');
-          var html = ""; // <v-progress-circular
-          //     indeterminate
-          //     color="green"
-          // ></v-progress-circular>
-          // html +=  <v-progress-circular indeterminate color="green">
-          //
-          // html += '<v-progress-circular>'
-
+          var html = "";
           $(r).each(function (r, v) {
             // console.log(v);
             html += '<tr>';
@@ -5132,7 +5080,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             html += '<td>' + v.units + '</td>';
             html += '<td>' + v.last_name + " " + v.first_name + " " + v.middle_name + '</td>';
 
-            if (v.grade >= 90) {
+            if (v.grade >= 98) {
               html += '<td>1.0</td>';
               html += '<td>Passed</td>';
             } else if (v.grade >= 95) {
@@ -5172,6 +5120,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         error: function error(r) {
           $('.data').html('');
           $('.data').html('<tr>\n' + '                <td colspan="99" class="text-center text-danger errormes">No records found</td>\n' + '              </tr>');
+          _this.isprint = false;
         }
       });
       $.ajax({
@@ -5198,7 +5147,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   mounted: function mounted() {
-    var _this = this;
+    var _this2 = this;
 
     return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
@@ -5208,20 +5157,41 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _context.next = 2;
               return axios.get('/api/user').then(function (r) {
                 // console.log(r.data.id);
-                _this.id = r.data.id;
+                _this2.id = r.data.id;
               });
 
             case 2:
-              axios.post('/api/student/information/' + _this.id).then(function (r) {
+              axios.post('/api/student/information/' + _this2.id).then(function (r) {
+                console.log(r);
                 $('#StudentId').html(r.data.student_id);
                 $('#StudentName').html(r.data.student_name);
                 $('#courses').html(r.data.course);
                 $('.course').html(r.data.course);
                 $('.title').html(r.data.student_name);
-              });
-              $('.title_information').html('Final Grade For' + " " + $("#semester").text());
+              }); // $('.title_information').html('Final Grade For' + " " + $("#semester").text());
 
-            case 4:
+              axios.get('/api/activated-semester').then(function (r) {
+                // console.log(r.data.school_year);
+                var semesterTitle;
+
+                if (r.data.activated_semester[0].id == 1) {
+                  semesterTitle = '1st Semester';
+                } else if (r.data.activated_semester[0].id == 2) {
+                  semesterTitle = '2nd Semester';
+                } else if (r.data.activated_semester[0].id == 3) {
+                  semesterTitle = '3rd Semester';
+                } // console.log(semesterTitle);
+                //
+                //
+
+
+                $('.title_information').html('Final Grade For' + " " + r.data.school_year + " " + semesterTitle);
+              });
+              $('#print').click(function () {
+                window.open("/print");
+              });
+
+            case 5:
             case "end":
               return _context.stop();
           }
@@ -49552,190 +49522,19 @@ var render = function() {
                                 return [
                                   _c(
                                     "v-btn",
-                                    _vm._g(
-                                      _vm._b(
-                                        {
-                                          attrs: { color: "orange", text: "" }
-                                        },
-                                        "v-btn",
-                                        attrs,
-                                        false
-                                      ),
-                                      on
-                                    ),
+                                    {
+                                      attrs: {
+                                        color: "orange",
+                                        text: "",
+                                        id: "print",
+                                        disabled: !_vm.isprint
+                                      }
+                                    },
                                     [
                                       _vm._v(
                                         "\n                  Print\n                "
                                       )
                                     ]
-                                  )
-                                ]
-                              }
-                            },
-                            {
-                              key: "default",
-                              fn: function(dialog) {
-                                return [
-                                  _c(
-                                    "v-card",
-                                    [
-                                      _c(
-                                        "v-toolbar",
-                                        {
-                                          attrs: { color: "primary", dark: "" }
-                                        },
-                                        [_vm._v("Print\n                  ")]
-                                      ),
-                                      _vm._v(" "),
-                                      _c("v-card-text", [
-                                        _c(
-                                          "div",
-                                          { staticClass: "text-h2 pa-12 page" },
-                                          [
-                                            _c("v-simple-table", {
-                                              scopedSlots: _vm._u(
-                                                [
-                                                  {
-                                                    key: "default",
-                                                    fn: function() {
-                                                      return [
-                                                        _c("thead", [
-                                                          _c("tr", [
-                                                            _c(
-                                                              "th",
-                                                              {
-                                                                staticClass:
-                                                                  "text-left"
-                                                              },
-                                                              [
-                                                                _vm._v(
-                                                                  "\n                              Subject Code\n                            "
-                                                                )
-                                                              ]
-                                                            ),
-                                                            _vm._v(" "),
-                                                            _c(
-                                                              "th",
-                                                              {
-                                                                staticClass:
-                                                                  "text-left"
-                                                              },
-                                                              [
-                                                                _vm._v(
-                                                                  "\n                              Subject Name\n                            "
-                                                                )
-                                                              ]
-                                                            ),
-                                                            _vm._v(" "),
-                                                            _c(
-                                                              "th",
-                                                              {
-                                                                staticClass:
-                                                                  "text-left"
-                                                              },
-                                                              [
-                                                                _vm._v(
-                                                                  "\n                              Credit\n                            "
-                                                                )
-                                                              ]
-                                                            ),
-                                                            _vm._v(" "),
-                                                            _c(
-                                                              "th",
-                                                              {
-                                                                staticClass:
-                                                                  "text-left"
-                                                              },
-                                                              [
-                                                                _vm._v(
-                                                                  "\n                              Instructor\n                            "
-                                                                )
-                                                              ]
-                                                            ),
-                                                            _vm._v(" "),
-                                                            _c(
-                                                              "th",
-                                                              {
-                                                                staticClass:
-                                                                  "text-left"
-                                                              },
-                                                              [
-                                                                _vm._v(
-                                                                  "\n                              Grade\n                            "
-                                                                )
-                                                              ]
-                                                            ),
-                                                            _vm._v(" "),
-                                                            _c(
-                                                              "th",
-                                                              {
-                                                                staticClass:
-                                                                  "text-left"
-                                                              },
-                                                              [
-                                                                _vm._v(
-                                                                  "\n                              Remarks\n                            "
-                                                                )
-                                                              ]
-                                                            )
-                                                          ])
-                                                        ]),
-                                                        _vm._v(" "),
-                                                        _c(
-                                                          "tbody",
-                                                          {
-                                                            staticClass: "data"
-                                                          },
-                                                          [_c("tr")]
-                                                        ),
-                                                        _vm._v(" "),
-                                                        _c(
-                                                          "tfoot",
-                                                          {
-                                                            staticClass:
-                                                              "footer"
-                                                          },
-                                                          [_c("tr")]
-                                                        )
-                                                      ]
-                                                    },
-                                                    proxy: true
-                                                  }
-                                                ],
-                                                null,
-                                                true
-                                              )
-                                            })
-                                          ],
-                                          1
-                                        )
-                                      ]),
-                                      _vm._v(" "),
-                                      _c(
-                                        "v-card-actions",
-                                        { staticClass: "justify-end" },
-                                        [
-                                          _c(
-                                            "v-btn",
-                                            {
-                                              attrs: { text: "" },
-                                              on: {
-                                                click: function($event) {
-                                                  dialog.value = false
-                                                }
-                                              }
-                                            },
-                                            [
-                                              _vm._v(
-                                                "Close\n                    "
-                                              )
-                                            ]
-                                          )
-                                        ],
-                                        1
-                                      )
-                                    ],
-                                    1
                                   )
                                 ]
                               }
