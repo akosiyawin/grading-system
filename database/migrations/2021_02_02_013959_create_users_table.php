@@ -32,20 +32,10 @@ class CreateUsersTable extends Migration
             [
                 'role_id' => 1,
                 'username' => "registrar",
-                'first_name' => "Chino",
-                'middle_name' => "Tasyo",
-                'last_name' => "Pasya",
-                'password' => \Illuminate\Support\Facades\Hash::make(123)
-            ]
-        );
-        \App\Models\User::insert(
-            [
-                'role_id' => 2,
-                'username' => "teacher",
-                'first_name' => "Susan",
-                'middle_name' => "Palasoy",
-                'last_name' => "Keriboom",
-                'password' => \Illuminate\Support\Facades\Hash::make(123)
+                'first_name' => "Eastwoods",
+                'middle_name' => "",
+                'last_name' => "Admin",
+                'password' => \Illuminate\Support\Facades\Hash::make('registrar')
             ]
         );
     }

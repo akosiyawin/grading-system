@@ -18,10 +18,6 @@ class CreateTeachersTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
         });
-
-        Teacher::insert([
-            'user_id' => 2,
-        ]);
     }
 
     /**
