@@ -41,6 +41,7 @@ Route::get('/student',[StudentController::class,'index'])->name('student.index')
 Route::get('/announcement',[StudentController::class,'announcementIndex'])->name('student.announcement');
 
 Route::get('/studentProfile/{student}',[RegistrarController::class,'studentProfile'])->name('student.profile');
+Route::get('/changePassword',[\App\Http\Controllers\AuthController::class,'changePassword']);
 
 
 

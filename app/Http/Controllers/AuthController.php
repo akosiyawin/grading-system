@@ -51,4 +51,9 @@ class AuthController extends Controller
         ]);
     }
 
+    public function changePassword()
+    {
+        return view('changePassword');
+    }
+
 }
