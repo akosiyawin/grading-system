@@ -11,6 +11,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\YearLevel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -55,5 +56,17 @@ class AuthController extends Controller
     {
         return view('changePassword');
     }
+
+    public function updatePassword(Request $request){
+        $validated = $request->validate([
+            'password' => ['required', 'string', 'min:3', 'confirmed'],
+        ]);
+        auth()->user()->update(['password' => Hash::make($validated['password'])]);
+
+        return response()->json([
+            'message' => "Password has been changed successfully!"
+        ]);
+    }
+
 
 }

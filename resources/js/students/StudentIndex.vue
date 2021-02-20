@@ -97,67 +97,13 @@
                   <v-btn
                       color="orange"
                       text
-                      v-bind="attrs"
-                      v-on="on"
+                      id = "print"
+                      :disabled="!isprint"
                   >
                     Print
                   </v-btn>
                 </template>
-                <template v-slot:default="dialog">
-                  <v-card>
-                    <v-toolbar
-                        color="primary"
-                        dark
-                    >Print
-                    </v-toolbar>
-                    <v-card-text>
-                      <div class="text-h2 pa-12 page">
-                        <v-simple-table>
-                          <template v-slot:default>
-                            <thead>
-                            <tr>
-                              <th class="text-left">
-                                Subject Code
-                              </th>
-                              <th class="text-left">
-                                Subject Name
-                              </th>
-                              <th class="text-left">
-                                Credit
-                              </th>
-                              <th class="text-left">
-                                Instructor
-                              </th>
-                              <th class="text-left">
-                                Grade
-                              </th>
-                              <th class="text-left">
-                                Remarks
-                              </th>
-                            </tr>
-                            </thead>
 
-                            <tbody class="data">
-                            <tr>
-                            </tr>
-                            </tbody>
-                            <tfoot class="footer">
-                            <tr>
-                            </tr>
-                            </tfoot>
-                          </template>
-                        </v-simple-table>
-                      </div>
-                    </v-card-text>
-                    <v-card-actions class="justify-end">
-                      <v-btn
-                          text
-                          @click="dialog.value = false"
-                      >Close
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </template>
               </v-dialog>
             </v-col>
           </v-card-actions>
@@ -230,6 +176,7 @@ export default {
     id: null,
     right: null,
     drawer: true,
+    isprint:false,
   }),
 
   methods: {
@@ -241,26 +188,25 @@ export default {
       alert(1)
     },
     viewGrade() {
+
       this.grade()
+      let user_id = this.id;
+      let semester_id = this.select_semester;
+      let year = this.year;
+
+      localStorage.setItem("user_id", user_id);
+      localStorage.setItem("semester_id", semester_id);
+      localStorage.setItem("year", year);
     },
     grade() {
+
       $.ajax({
         url: '/api/grades/' + this.id + '/' + this.select_semester + '/' + this.year,
         TYPE: 'GET',
-        success: function (r) {
-          // console.log(r[0].code);
+        success:(r)=> {
+          this.isprint= true;
           let $tr = $('.data');
           let html = "";
-
-          // <v-progress-circular
-          //     indeterminate
-          //     color="green"
-          // ></v-progress-circular>
-
-          // html +=  <v-progress-circular indeterminate color="green">
-          //
-          // html += '<v-progress-circular>'
-
           $(r).each(function (r, v) {
             // console.log(v);
             html += '<tr>'
@@ -268,7 +214,7 @@ export default {
             html += '<td>' + v.title + '</td>'
             html += '<td>' + v.units + '</td>'
             html += '<td>' + v.last_name + " " + v.first_name + " " + v.middle_name + '</td>'
-            if (v.grade >= 90) {
+            if (v.grade >= 98) {
               html += '<td>1.0</td>'
               html += '<td>Passed</td>'
             } else if (v.grade >= 95) {
@@ -304,11 +250,14 @@ export default {
           });
           $('.data').html(html);
           $tr.html(html);
-        }, error: function (r) {
+
+
+        }, error:  (r)=> {
           $('.data').html('');
           $('.data').html('<tr>\n' +
               '                <td colspan="99" class="text-center text-danger errormes">No records found</td>\n' +
               '              </tr>');
+          this.isprint= false;
         }
       })
       $.ajax({
@@ -323,7 +272,6 @@ export default {
           html += '<td class="font-weight-bold">' + r.units + '<td>'
           html += '<td class="font-weight-bold">' + r.Average + '<td>'
           html += '<td></td>'
-
           html += '</tr>'
           $('.footer').html(html);
           tr.html(html);
@@ -341,6 +289,7 @@ export default {
       this.id = r.data.id;
     })
     axios.post('/api/student/information/' + this.id).then(r => {
+      console.log(r);
       $('#StudentId').html(r.data.student_id);
       $('#StudentName').html(r.data.student_name);
       $('#courses').html(r.data.course);
@@ -348,9 +297,29 @@ export default {
       $('.title').html(r.data.student_name);
     })
 
-    $('.title_information').html('Final Grade For' + " " + $("#semester").text());
+    // $('.title_information').html('Final Grade For' + " " + $("#semester").text());
 
+    axios.get('/api/activated-semester').then(r => {
+      // console.log(r.data.school_year);
+      let semesterTitle;
+      if (r.data.activated_semester[0].id == 1){
+        semesterTitle = '1st Semester'
+      }else if(r.data.activated_semester[0].id == 2){
+        semesterTitle = '2nd Semester'
+      }
+      else if(r.data.activated_semester[0].id == 3){
+        semesterTitle = '3rd Semester'
+      }
+      // console.log(semesterTitle);
 
+      //
+      //
+      $('.title_information').html('Final Grade For' + " " + r.data.school_year + " " +semesterTitle);
+    });
+
+    $('#print').click(function (){
+      window.open("/print");
+    });
   }
 }
 

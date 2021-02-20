@@ -55,12 +55,14 @@
                     </a>
 
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        <a href="{{route('changePassword')}}" class="dropdown-item">
+                            Change Password
+                        </a>
                         <a class="dropdown-item" href="{{ route('logout') }}"
                            onclick="event.preventDefault();
                                                  document.getElementById('logout-form').submit();">
                             {{ __('Logout') }}
                         </a>
-
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                             @csrf
                         </form>
@@ -105,7 +107,7 @@
                         </a>
                     </li>
                     @if(\App\Models\Semester::where('status',1)->exists())
-                        <li class="nav-item">
+                       {{-- <li class="nav-item">
                             <a href="{{route('registrar.index')}}"
                                class="nav-link  {{Route::is('registrar.index') ? 'active' : ''}}">
                                 <i class="nav-icon fas fa-th"></i>
@@ -113,7 +115,7 @@
                                     Dashboard
                                 </p>
                             </a>
-                        </li>
+                        </li>--}}
                         <li class="nav-item">
                             <a href="{{route('registrar.subject')}}"
                                class="nav-link  {{Route::is('registrar.subject') ? 'active' : ''}}">
