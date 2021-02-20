@@ -98,13 +98,11 @@ class StudentController extends Controller
             )
 
 
-//            ->where('school_years.year', '=', $year)
-//            ->where('semesters.id', '=', $semester)
-            ->select()
-//            ->where('students.user_id', '=', $user_id)
+            ->where('school_years.year', '=', $year)
+            ->where('semesters.id', '=', $semester)
+//            ->select()
+            ->where('students.user_id', '=', $user_id)
             ->get();
-
-            print_r($grades);
 
         if (count($grades)) {
             return response($grades, 200);
