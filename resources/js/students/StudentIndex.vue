@@ -1,0 +1,359 @@
+<script src="../../../../../AppData/Local/Temp/englesson.js"></script>
+<template>
+  <v-app id="inspire">
+    <StudentBase></StudentBase>
+    <v-main>
+      <div class="blockQuote p-sm-0  p-md-5 pb-0">
+        <blockquote>
+          <h3 class="display-1 text-dark">Grade Per Exam Period</h3>
+        </blockquote>
+      </div>
+      <div class="row p-md-5 m-0 pb-0 pt-0 ">
+        <div class="col-12">
+          <div class="row">
+            <!--            <v-col-->
+            <!--                md="6"-->
+            <!--                lg="3"-->
+            <!--            >-->
+            <!--              <v-select-->
+            <!--                  :items="items"-->
+            <!--                  label="Period"-->
+            <!--                  outlined-->
+            <!--              ></v-select>-->
+            <!--            </v-col>-->
+            <v-col
+                md="6"
+                lg="3"
+            >
+              <v-select
+                  :items="semester"
+                  label="Semester"
+                  outlined
+                  item-value="value"
+                  item-text="title"
+                  id="semester"
+                  name="semester"
+                  v-model="select_semester"
+              ></v-select>
+            </v-col>
+            <v-col
+                md="6"
+                lg="3"
+            >
+              <v-text-field type="number" outlined label="School Year" id="year" name="year"
+                            v-model="year"></v-text-field>
+            </v-col>
+            <v-col
+                md="6"
+                lg="3"
+            >
+              <v-btn
+                  color="success"
+                  x-large
+                  id="view_grade"
+                  @click="viewGrade"
+              >
+                View Grade
+              </v-btn>
+            </v-col>
+          </div>
+        </div>
+      </div>
+    </v-main>
+    <div class="row p-md-5 p-sm-0 pt-0">
+      <div class="col-lg-4">
+        <v-card
+            class="mx-auto"
+            max-width="100%"
+        >
+          <v-img
+              class="white--text align-end"
+              height="200px"
+              src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+          >
+            <v-card-title>Student Information</v-card-title>
+          </v-img>
+
+          <v-card-title id="StudentId"></v-card-title>
+          <v-card-subtitle>Student ID</v-card-subtitle>
+
+          <v-card-title id="StudentName"></v-card-title>
+          <v-card-subtitle>Student Name</v-card-subtitle>
+
+          <v-card-title id="courses"></v-card-title>
+          <v-card-subtitle>Course</v-card-subtitle>
+
+          <!--            <v-card-title>First Year</v-card-title>-->
+          <!--            <v-card-subtitle>Year Level</v-card-subtitle>-->
+
+          <v-card-actions>
+
+            <v-col cols="auto">
+              <v-dialog
+                  transition="dialog-bottom-transition"
+                  max-width="600"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                      color="orange"
+                      text
+                      v-bind="attrs"
+                      v-on="on"
+                  >
+                    Print
+                  </v-btn>
+                </template>
+                <template v-slot:default="dialog">
+                  <v-card>
+                    <v-toolbar
+                        color="primary"
+                        dark
+                    >Print
+                    </v-toolbar>
+                    <v-card-text>
+                      <div class="text-h2 pa-12 page">
+                        <v-simple-table>
+                          <template v-slot:default>
+                            <thead>
+                            <tr>
+                              <th class="text-left">
+                                Subject Code
+                              </th>
+                              <th class="text-left">
+                                Subject Name
+                              </th>
+                              <th class="text-left">
+                                Credit
+                              </th>
+                              <th class="text-left">
+                                Instructor
+                              </th>
+                              <th class="text-left">
+                                Grade
+                              </th>
+                              <th class="text-left">
+                                Remarks
+                              </th>
+                            </tr>
+                            </thead>
+
+                            <tbody class="data">
+                            <tr>
+                            </tr>
+                            </tbody>
+                            <tfoot class="footer">
+                            <tr>
+                            </tr>
+                            </tfoot>
+                          </template>
+                        </v-simple-table>
+                      </div>
+                    </v-card-text>
+                    <v-card-actions class="justify-end">
+                      <v-btn
+                          text
+                          @click="dialog.value = false"
+                      >Close
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </template>
+              </v-dialog>
+            </v-col>
+          </v-card-actions>
+        </v-card>
+
+      </div>
+      <div class="col-lg-8">
+        <blockquote class="quote-dark p-0">
+          <v-card-title class="title_information"></v-card-title>
+          <v-card-subtitle><b>*Note:</b> Red color indicates grades not verified by registrar.
+          </v-card-subtitle>
+        </blockquote>
+        <v-simple-table>
+          <template v-slot:default>
+            <thead>
+            <tr>
+              <th class="text-left">
+                Subject Code
+              </th>
+              <th class="text-left">
+                Subject Name
+              </th>
+              <th class="text-left">
+                Credit
+              </th>
+              <th class="text-left">
+                Instructor
+              </th>
+              <th class="text-left">
+                Grade
+              </th>
+              <th class="text-left">
+                Remarks
+              </th>
+            </tr>
+            </thead>
+
+            <tbody class="data">
+            <tr>
+            </tr>
+            </tbody>
+            <tfoot class="footer">
+            <tr>
+            </tr>
+            </tfoot>
+          </template>
+        </v-simple-table>
+      </div>
+    </div>
+  </v-app>
+</template>
+
+<script>
+import StudentBase from "../base/StudentBase";
+
+export default {
+  components: {StudentBase},
+  data: () => ({
+    items: [
+      {title: 'Dashboard', icon: 'mdi-view-dashboard', href: '/student'},
+
+      {title: 'Chat', icon: 'mdi-image'},
+    ],
+    semester: [
+      {title: "1st Semester", value: 1},
+      {title: "2st Semester", value: 2},
+    ],
+    select_semester: null,
+    year: null,
+    id: null,
+    right: null,
+    drawer: true,
+  }),
+
+  methods: {
+    logout() {
+      axios.post('/logout')
+          .then(() => location.replace('/login'))
+    },
+    test() {
+      alert(1)
+    },
+    viewGrade() {
+      this.grade()
+    },
+    grade() {
+      $.ajax({
+        url: '/api/grades/' + this.id + '/' + this.select_semester + '/' + this.year,
+        TYPE: 'GET',
+        success: function (r) {
+          // console.log(r[0].code);
+          let $tr = $('.data');
+          let html = "";
+
+          // <v-progress-circular
+          //     indeterminate
+          //     color="green"
+          // ></v-progress-circular>
+
+          // html +=  <v-progress-circular indeterminate color="green">
+          //
+          // html += '<v-progress-circular>'
+
+          $(r).each(function (r, v) {
+            // console.log(v);
+            html += '<tr>'
+            html += '<td>' + v.code + '</td>'
+            html += '<td>' + v.title + '</td>'
+            html += '<td>' + v.units + '</td>'
+            html += '<td>' + v.last_name + " " + v.first_name + " " + v.middle_name + '</td>'
+            if (v.grade >= 90) {
+              html += '<td>1.0</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 95) {
+              html += '<td>1.25</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 92) {
+              html += '<td>1.50</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 89) {
+              html += '<td>1.75</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 86) {
+              html += '<td>2.0</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 83) {
+              html += '<td>2.25</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 80) {
+              html += '<td>2.50</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 77) {
+              html += '<td>2.75</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 75) {
+              html += '<td>3.0</td>'
+              html += '<td>Passed</td>'
+            } else {
+              html += '<td class="text-danger">5.0</td>'
+              html += '<td>Failed</td>'
+            }
+            html += '</tr>'
+            // console.log(v.grade);
+          });
+          $('.data').html(html);
+          $tr.html(html);
+        }, error: function (r) {
+          $('.data').html('');
+          $('.data').html('<tr>\n' +
+              '                <td colspan="99" class="text-center text-danger errormes">No records found</td>\n' +
+              '              </tr>');
+        }
+      })
+      $.ajax({
+        url: '/api/footer/total/' + this.id + '/' + this.select_semester + '/' + this.year,
+        TYPE: 'GET',
+        success: function (r) {
+          // console.log(r.units);
+          let tr = $('.footer');
+          let html = "";
+          html += '<tr>'
+          html += '<td><td>'
+          html += '<td class="font-weight-bold">' + r.units + '<td>'
+          html += '<td class="font-weight-bold">' + r.Average + '<td>'
+          html += '<td></td>'
+
+          html += '</tr>'
+          $('.footer').html(html);
+          tr.html(html);
+        }, error: function (r) {
+          $('.footer').html('');
+          $('.footer').html('<tr>\n' +
+              '                <td></td>\n' +
+              '              </tr>');
+        }
+      })
+    }
+  }, async mounted() {
+    await axios.get('/api/user').then(r => {
+      // console.log(r.data.id);
+      this.id = r.data.id;
+    })
+    axios.post('/api/student/information/' + this.id).then(r => {
+      $('#StudentId').html(r.data.student_id);
+      $('#StudentName').html(r.data.student_name);
+      $('#courses').html(r.data.course);
+      $('.course').html(r.data.course);
+      $('.title').html(r.data.student_name);
+    })
+
+    $('.title_information').html('Final Grade For' + " " + $("#semester").text());
+
+
+  }
+}
+
+// methods: {}
+
+</script>
