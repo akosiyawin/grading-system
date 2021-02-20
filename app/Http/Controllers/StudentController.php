@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\DB;
 class StudentController extends Controller
 {
 
-//    public function __construct()
-//    {
-//        $this->middleware(['auth','student']);
-//    }
+    public function __construct()
+    {
+        $this->middleware(['auth','student']);
+    }
 
     public function print()
     {
@@ -74,7 +74,7 @@ class StudentController extends Controller
 
     public function Grades(request $request, $user_id = "", $semester = "", $year = "")
     {
-            $grades = DB::table('students')
+        $grades = DB::table('students')
             ->join('student_subjects', 'students.id', '=', 'student_subjects.student_id')
             ->join('subject_teachers', 'student_subjects.subject_teacher_id', '=', 'subject_teachers.id')
             ->join('subjects', 'subject_teachers.subject_id', '=', 'subjects.id')
@@ -96,12 +96,11 @@ class StudentController extends Controller
                 'semesters.title as semesterTitle',
                 'school_years.year'
             )
-
-
             ->where('school_years.year', '=', $year)
             ->where('semesters.id', '=', $semester)
 //            ->select()
             ->where('students.user_id', '=', $user_id)
+            ->where('student_subjects.status', '=', 1)
             ->get();
 
         if (count($grades)) {
@@ -136,12 +135,12 @@ class StudentController extends Controller
 
         $year_end = $year_end += 1;
 
-        $semester_year = $year_start ." - " . $year_start ;
+        $semester_year = $year_start . " - " . $year_start;
 
         if (count($activated_semester)) {
-            return response(["activated_semester"=>$activated_semester,"school_year"=>$semester_year], 200);
+            return response(["activated_semester" => $activated_semester, "school_year" => $semester_year], 200);
         } else {
-            return reponse(['Message'=>'invalid request'],200);
+            return reponse(['Message' => 'invalid request'], 200);
         }
 
     }
@@ -174,9 +173,11 @@ class StudentController extends Controller
                 ->select(
                     DB::raw('SUM(grade) / count(subjects.id) as average')
                 )
+                ->where('student_subjects.status', '=', 1)
                 ->where('school_years.year', '=', $year)
                 ->where('semesters.id', '=', $semester)
                 ->where('students.user_id', '=', $user_id)
+
 //                 ->select()
                 ->get();
 
@@ -221,6 +222,7 @@ class StudentController extends Controller
                 ->where('school_years.year', '=', $year)
                 ->where('semesters.id', '=', $semester)
                 ->where('students.user_id', '=', $user_id)
+                ->where('student_subjects.status', '=', 1)
 //                ->select()
                 ->get();
 
@@ -311,6 +313,7 @@ class StudentController extends Controller
                 ->where('school_years.year', '=', $year)
                 ->where('students.user_id', '=', $user_id)
                 ->where('semesters.id', '=', $semester_id)
+                ->where('student_subjects.status', '=', 1)
 //            ->select()
                 ->get();
 
@@ -328,6 +331,7 @@ class StudentController extends Controller
                 ->where('school_years.year', '=', $year)
                 ->where('students.user_id', '=', $user_id)
                 ->where('semesters.id', '=', $semester_id)
+                ->where('student_subjects.status', '=', 1)
                 ->select()
                 ->get();
 
@@ -363,6 +367,7 @@ class StudentController extends Controller
                 ->where('school_years.year', '=', $year)
                 ->where('students.user_id', '=', $user_id)
                 ->where('semesters.id', '=', $semester_id)
+                ->where('student_subjects.status', '=', 1)
 //                 ->select()
                 ->get();
 
