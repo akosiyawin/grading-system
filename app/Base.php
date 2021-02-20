@@ -18,7 +18,7 @@ class Base
     const ANNOUNCEMENT_LIMIT = 10;
 
     const STUDENT_DEFAULT_PASSWORD = 123;
-    const TEACHER_DEFAULT_PASSWORD = 123;
+    const TEACHER_DEFAULT_PASSWORD = '#Epcst2021';
 
     const MIN_STUDENT_GRADE = 0;
     const MAX_STUDENT_GRADE = 101;
