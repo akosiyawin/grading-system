@@ -188,6 +188,7 @@ export default {
       alert(1)
     },
     viewGrade() {
+
       this.grade()
       let user_id = this.id;
       let semester_id = this.select_semester;

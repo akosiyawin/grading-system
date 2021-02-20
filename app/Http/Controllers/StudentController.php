@@ -266,6 +266,8 @@ class StudentController extends Controller
             ->get();
 
 
+//        dd($student_information);
+
         if (count($student_information)) {
             $activated_semester = DB::table('semesters')
                 ->Where('status', '=', 1)

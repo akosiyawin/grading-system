@@ -121,18 +121,18 @@ Route::prefix('api')->group(function () {
 
     Route::post('/student/information/{user_id}', [\App\Http\Controllers\StudentController::class, 'Student_information']);
 //grade by period and semester
-
     Route::get('/grades/{user_id}/{semester}/{year}', [\App\Http\Controllers\StudentController::class, 'Grades']);
     Route::get('/footer/total/{user_id}/{semester}/{year}', [\App\Http\Controllers\StudentController::class, 'Totalfooter']);
-    Route::get('/print/{user_id}', [\App\Http\Controllers\StudentController::class, 'CopyOfGrades']);
+    Route::get('/print/{user_id}/{semester}/{year}', [\App\Http\Controllers\StudentController::class, 'CopyOfGrades']);
     Route::get('/activated-semester', [\App\Http\Controllers\StudentController::class, 'activated_semester']);
 });
 
-Route::get('/grades/{user_id}/{semester}/{year}', [\App\Http\Controllers\StudentController::class, 'Grades']);
-Route::get('/footer/total/{user_id}/{semester}/{year}', [\App\Http\Controllers\StudentController::class, 'Totalfooter']);
-Route::get('/print/{user_id}', [\App\Http\Controllers\StudentController::class, 'CopyOfGrades']);
-});
+/*//student view routes
+Route::get('/student',[StudentController::class,'index'])->name('student.index');
+Route::get('/announcement',[StudentController::class,'announcementIndex'])->name('student.announcement');
+Route::get('/studentProfile/{student}',[RegistrarController::class,'studentProfile'])->name('student.profile');*/
 
+Route::get('/print',[StudentController::class,'print'])->name('student.print');
 
 /* Redirector */
 
