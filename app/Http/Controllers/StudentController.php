@@ -106,11 +106,11 @@ class StudentController extends Controller
 
             print_r($grades);
 
-//        if (count($grades)) {
-//            return response($grades, 200);
-//        } else {
-//            return response(['Message' => 'No records found'], 404);
-//        }
+        if (count($grades)) {
+            return response($grades, 200);
+        } else {
+            return response(['Message' => 'No records found'], 404);
+        }
 
     }
 
