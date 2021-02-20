@@ -17,6 +17,7 @@ use App\Models\SubjectTeacher as ModelsSubjectTeacher;
 use App\Models\Teacher;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\RequiredIf;
 
 class TeacherController extends Controller
 {
@@ -131,9 +132,8 @@ class TeacherController extends Controller
     {
         $request->validate([
             'status' => 'required|numeric',
-            'remarks' => 'nullable|string'
+            'remarks' => 'required_unless:status,==,0'
         ]);
-
 
         /*Add subject*/
         if ($request->status) {
@@ -143,19 +143,16 @@ class TeacherController extends Controller
                 'semester_id' => Semester::where('status',1)->first()->id,
                 'remarks' => $request->get('remarks')
                 ]);
-                
             // }
-
             return response()->json([
                 'message' => "Subject Assigned Successfully",
             ]);
         } else { /*Remove Subject*/
             $subject = ModelsSubjectTeacher::find($subject);
-
+            
             if (StudentSubject::join('semesters','student_subjects.semester_id','semesters.id')
                 ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
-                ->where('subject_teachers.teacher_id',auth()->user()->teacher->id)
-                ->where('subject_id',$subject)
+                ->where('subject_teachers.id',$subject->id)
                 ->where('semesters.status',1)
                 ->count() > 0) {
                 return response()->json([
@@ -300,7 +297,7 @@ class TeacherController extends Controller
     }
 
     /* Not Used */
-    public function destroyStudentSubject(Request $request, Subject $subject)
+    public function destroyStudentSubject(Request $request, $subject)
     {
         $validated = $request->validate([
             'students' => 'required|array',
@@ -308,17 +305,13 @@ class TeacherController extends Controller
         ]);
         $students = $validated['students'];
 
-        $teacherSubject = \App\Models\SubjectTeacher::where('subject_id',$subject->id)
-            ->where('teacher_id',auth()->user()->teacher->id)
-            ->first();
-
         /*Delete student and subject relation*/
         /*todo consider deleting if subject is approved  -restrict*/
-        $restricted = StudentSubject::whereIn('student_id', $students)->where('subject_teacher_id', $teacherSubject->id)
+        $restricted = StudentSubject::whereIn('student_id', $students)->where('subject_teacher_id', $subject)
             ->select(['student_id'])
             ->where('status', 1)->get();
 
-        StudentSubject::whereIn('student_id', $students)->where('subject_teacher_id', $teacherSubject->id)
+        StudentSubject::whereIn('student_id', $students)->where('subject_teacher_id', $subject)
             ->where('status', 0)
             ->delete();
 

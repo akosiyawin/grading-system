@@ -5894,7 +5894,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return _tools_api__WEBPACK_IMPORTED_MODULE_1__.default.destroyStudentSubject(_this7.subjectSelected, {
+                return _tools_api__WEBPACK_IMPORTED_MODULE_1__.default.destroyStudentSubject(_this7.selectedSubject, {
                   students: _this7.unselectedStudents
                 });
 
@@ -50981,7 +50981,7 @@ var render = function() {
             "v-card",
             [
               _c("v-card-title", { staticClass: "headline" }, [
-                _vm._v("\n        Use Google's location service?\n      ")
+                _vm._v("\n        ENTER SUBJECT REMARKS\n      ")
               ]),
               _vm._v(" "),
               _c("v-card-text", [

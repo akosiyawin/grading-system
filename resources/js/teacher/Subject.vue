@@ -73,7 +73,7 @@
     >
       <v-card>
         <v-card-title class="headline">
-          Use Google's location service?
+          ENTER SUBJECT REMARKS
         </v-card-title>
         <v-card-text>
           <input type="text" v-model="remarksModel" placeholder="Subject Remarks" class="form-control">
