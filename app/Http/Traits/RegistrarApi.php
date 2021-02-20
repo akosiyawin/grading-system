@@ -410,7 +410,6 @@ trait RegistrarApi
         ]);
     }
 
-
     public function destroyStudent(User $user)
     {
         if ($user->student->subjects->count() > 0) {
