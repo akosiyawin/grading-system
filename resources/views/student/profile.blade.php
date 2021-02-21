@@ -17,13 +17,13 @@
                     <p class="text-muted text-center">{{$student->course->title}}</p>
                     <ul class="list-group list-group-unbordered mb-3">
                         <li class="list-group-item">
-                            <b>Student No.</b> <a class="float-right">18-0048</a>
+                            <b>Student No.</b> <a class="float-right">{{$student->user->username}}</a>
                         </li>
 {{--                        <li class="list-group-item">--}}
 {{--                            <b>Subjects This Semester</b> <a class="float-right">999</a>--}}
 {{--                        </li>--}}
                         <li class="list-group-item">
-                            <b>Birthdate</b> <a class="float-right">{{date('F d, Y', strtotime($student->user->birthdate))}}</a>
+                            <b>Birthdate</b> <a class="float-right">{{date('F d, Y', strtotime($student->birthdate))}}</a>
                         </li>
                         <li class="list-group-item">
                             <b>Status</b> <a class="float-right">

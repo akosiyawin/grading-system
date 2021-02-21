@@ -39,10 +39,11 @@
       <div class="col-4 my-2" v-for="year in getSchoolYears" :key="year.id">
         <div class="year-content bg-dark p-4">
           <h3>{{ year.year + " - " + (parseInt(year.year) + 1) }}</h3>
+
           <button
             class="btn mr-2 mt-2"
             @click="activateSemester(sem.id)"
-            :class="sem.status ? 'btn-danger' : 'btn-success'"
+            :class="sem.status == 0 ? 'btn-danger' : 'btn-success'"
             v-for="sem in year.semesters"
             :key="sem.id"
             v-text="sem.title"

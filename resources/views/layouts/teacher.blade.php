@@ -6,7 +6,7 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
+    <link rel="icon" href="https://www.epcst.edu.ph/images/epcst_logo.png">
     <title>{{ config('app.name', 'Laravel') }}</title>
     <!-- Fonts -->
 {{-- <link rel="dns-prefetch" href="//fonts.gstatic.com">

@@ -646,7 +646,8 @@ trait RegistrarApi
         ]);
 
         $existing = new Collection();
-
+        set_time_limit(0);
+        ini_set('max_execution_time','300');
         $courses = Course::all();
         $data = array_map(function ($item) use ($courses) {
             $split = explode(',', $item);

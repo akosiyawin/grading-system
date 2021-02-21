@@ -121,7 +121,7 @@
                 <td>{{ student.middle_name }}</td>
                 <td>{{ student.last_name }}</td>
                 <td>
-                  <span v-if="student.status" class="badge badge-success">Active</span>
+                  <span v-if="student.status == 1" class="badge badge-success">Active</span>
                   <span v-else class="badge badge-danger">Suspended</span>
                 </td>
                 <td class="project-actions text-right">

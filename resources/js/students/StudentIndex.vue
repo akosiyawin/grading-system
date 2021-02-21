@@ -44,10 +44,10 @@
               >
                 View Grade
               </v-btn>
+            </v-col>
             </div>
           </div>
         </div>
-      </div>
     </v-main>
     <div class="row p-md-5 p-sm-0 pt-0">
       <div class="col-lg-4">
