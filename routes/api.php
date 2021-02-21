@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AuthorizeController;
 use App\Http\Controllers\RegistrarController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Http\Request;

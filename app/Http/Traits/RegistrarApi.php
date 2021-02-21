@@ -400,7 +400,7 @@ trait RegistrarApi
             'last_name' => 'required|string',
         ]);
         $validated['role_id'] = Base::STUDENT_ROLE_ID;
-        $validated['password'] = \Hash::make(Carbon::parse($validated['birthdate'])->format('Y-m-d'));
+        $validated['password'] = \Hash::make(Carbon::parse($validated['birthdate'])->format('Ymd'));
         $user = User::create($validated);
 
         $user->student()->create($validated);
@@ -648,9 +648,9 @@ trait RegistrarApi
         $existing = new Collection();
 
         $courses = Course::all();
-        $password = \Hash::make(Base::STUDENT_DEFAULT_PASSWORD);
-        $data = array_map(function ($item) use ($courses, $password) {
+        $data = array_map(function ($item) use ($courses) {
             $split = explode(',', $item);
+            $password = \Hash::make(Carbon::parse(trim($split[4],'"').','.trim($split[5],'"'))->format('Ymd'));
             return [
                 'username' => $split[3],
                 'first_name' => substr(trim($split[1]),0,strlen($split[1])-5),$split,

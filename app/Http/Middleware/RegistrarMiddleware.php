@@ -18,7 +18,7 @@ class RegistrarMiddleware
     public function handle(Request $request, Closure $next)
     {
         $user = auth()->user();
-        if($user->role_id !== Base::REGISTRAR_ROLE_ID){
+        if($user->role_id != Base::REGISTRAR_ROLE_ID){
             abort(403);
         }
         return $next($request);

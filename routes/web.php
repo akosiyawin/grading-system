@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\AuthorizeController;
 use App\Http\Controllers\PageHandlerController;
 use App\Http\Controllers\RegistrarController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
@@ -14,11 +16,6 @@ Auth::routes([
     'reset' => false, // Password Reset Routes...
     'verify' => false, // Email Verification Routes...
 ]);
-
-
-Route::get('/tester', function () {
-    return "what the fuck";
-});
 
 Route::get('/handler', [PageHandlerController::class, 'handle'])->name('handler');
 
@@ -41,7 +38,7 @@ Route::get('/student',[StudentController::class,'index'])->name('student.index')
 Route::get('/announcement',[StudentController::class,'announcementIndex'])->name('student.announcement');
 
 Route::get('/studentProfile/{student}',[RegistrarController::class,'studentProfile'])->name('student.profile');
-Route::get('/changePassword',[\App\Http\Controllers\AuthController::class,'changePassword'])->name('changePassword');
+Route::get('/changePassword',[AuthorizeController::class,'changePassword'])->name('changePassword');
 
 
 
@@ -78,9 +75,9 @@ Route::prefix('api')->group(function () {
 //Department - Subjects
     Route::get('/department-subjects', [TeacherController::class, 'departmentSubjectIndex']);
 //Periods
-    Route::get('/periods', [AuthController::class, 'periodsIndex']);
+    Route::get('/periods', [AuthorizeController::class, 'periodsIndex']);
 //Roles
-    Route::get('/roles', [AuthController::class, 'rolesIndex']);
+    Route::get('/roles', [AuthorizeController::class, 'rolesIndex']);
 //Teacher
     Route::post('/teachers', [RegistrarController::class, 'teacherStore']);
     Route::patch('/updateSubjectStatus/{subject}', [TeacherController::class, 'updateSubjectStatus']);
@@ -126,15 +123,14 @@ Route::prefix('api')->group(function () {
     Route::get('/subjectStudentsGrade/{subject}', [RegistrarController::class, 'subjectStudentsGrade']);
     Route::patch('/approveAllGrade/{subject}', [RegistrarController::class, 'approveAllGrade']);
     Route::post('/announcement', [RegistrarController::class, 'announcementStore']);
-    Route::get('/announcement', [AuthController::class, 'announcement']);
-
-    Route::patch('/updatePassword',[\App\Http\Controllers\AuthController::class,'updatePassword']);
-
+    Route::get('/announcement', [AuthorizeController::class, 'announcement']);
+    /*DIto na ko, Iba yung pinupuntahan ng announcenment api*/
+    Route::patch('/updatePassword',[AuthorizeController::class,'updatePassword']);
 
 //teachers
-    Route::post('/subjects/acquired', [\App\Http\Controllers\TeacherController::class, 'Acquired_subjects']);
-    Route::post('/view/subjects/cs/{user_id}', [\App\Http\Controllers\TeacherController::class, 'View_subject_cs_department']);
-    Route::post('/view/subjects/coe', [\App\Http\Controllers\TeacherController::class, 'View_subject_coe_department']);
+    Route::post('/subjects/acquired', [TeacherController::class, 'Acquired_subjects']);
+    Route::post('/view/subjects/cs/{user_id}', [TeacherController::class, 'View_subject_cs_department']);
+    Route::post('/view/subjects/coe', [TeacherController::class, 'View_subject_coe_department']);
 
     Route::post('/subjects/acquired', [TeacherController::class, 'Acquired_subjects']);
     Route::post('/view/subjects/cs', [TeacherController::class, 'View_subject_cs_department']);
@@ -142,12 +138,12 @@ Route::prefix('api')->group(function () {
 
 //students
 
-    Route::post('/student/information/{user_id}', [\App\Http\Controllers\StudentController::class, 'Student_information']);
+    Route::post('/student/information/{user_id}', [StudentController::class, 'Student_information']);
 //grade by period and semester
-    Route::get('/grades/{user_id}/{semester}/{year}', [\App\Http\Controllers\StudentController::class, 'Grades']);
-    Route::get('/footer/total/{user_id}/{semester}/{year}', [\App\Http\Controllers\StudentController::class, 'Totalfooter']);
-    Route::get('/print/{user_id}/{semester}/{year}', [\App\Http\Controllers\StudentController::class, 'CopyOfGrades']);
-    Route::get('/activated-semester', [\App\Http\Controllers\StudentController::class, 'activated_semester']);
+    Route::get('/grades/{user_id}/{semester}/{year}', [StudentController::class, 'Grades']);
+    Route::get('/footer/total/{user_id}/{semester}/{year}', [StudentController::class, 'Totalfooter']);
+    Route::get('/print/{user_id}/{semester}/{year}', [StudentController::class, 'CopyOfGrades']);
+    Route::get('/activated-semester', [StudentController::class, 'activated_semester']);
 });
 
 Route::get('/print',[StudentController::class,'print'])->name('student.print');
@@ -156,6 +152,6 @@ Route::get('/print',[StudentController::class,'print'])->name('student.print');
 Route::redirect('/teacher', '/teacher-subject');
 Route::redirect('/registrar', '/registrar-subject');
 
-Route::middleware('auth')->get('/api/user', function (\Illuminate\Http\Request $request) {
+Route::middleware('auth')->get('/api/user', function (Request $request) {
     return auth()->user();
 });

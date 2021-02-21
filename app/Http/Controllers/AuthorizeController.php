@@ -13,7 +13,7 @@ use App\Models\YearLevel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class AuthController extends Controller
+class AuthorizeController extends Controller
 {
 
     public function __construct()
