@@ -4,11 +4,6 @@
     <style>
 
 
-
-
-
-
-
         body {
             margin-top: 20px;
             background: #eee;
@@ -29,7 +24,7 @@
             padding: 20px;
         }
 
-        blockquote{
+        blockquote {
             background: #f0f3f4;
             padding: 40px;
             margin: 0px;
@@ -155,9 +150,6 @@
             }
 
 
-
-
-
         }
 
 
@@ -170,29 +162,32 @@
             <!-- begin invoice-company -->
             <div class="invoice-company text-inverse f-w-600">
             <span class="pull-right hidden-print">
-            <a href="javascript:;" class="btn btn-sm btn-white m-b-10 p-l-5"><i
+            <a href="javascript:;" class="btn btn-sm btn-white m-b-10 p-l-5 pdf"><i
                         class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a>
             <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i
                         class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
             </span>
                 <br>
                 <br>
-                <div>
-                    <div class="product-row row">
-                        <div class="product-image col-md-3">
-                            <img src="{{asset('assets/images/logo.png')}}">
-                        </div>
-                        <div class="product-text col-md">
-                            <h4 class="text-success">Eastwoods Professional College of Science and Technology</h4>
-                            <hr>
-                            <p class><small>We Educate, Develop and Inspire</small>.</p>
-                            {{--                            <div class="product-buttons">--}}
-                            {{--                                <a href="http://bit.ly/2hqwtm2" target="_blank" id="Instant-Film" class="gift-guide-2017 shop btn">Shop Now</a>--}}
-                            {{--                            </div>--}}
+                <div id="content">
+                    <div>
+                        <div class="product-row row">
+                            <div class="product-image col-md-3">
+                                <img src="{{asset('assets/images/logo.png')}}">
+                            </div>
+                            <div class="product-text col-md">
+                                <h4 class="text-success">Eastwoods Professional College of Science and Technology</h4>
+                                <hr>
+                                <p class><small>We Educate, Develop and Inspire</small>.</p>
+                                {{--                            <div class="product-buttons">--}}
+                                {{--                                <a href="http://bit.ly/2hqwtm2" target="_blank" id="Instant-Film" class="gift-guide-2017 shop btn">Shop Now</a>--}}
+                                {{--                            </div>--}}
+                            </div>
                         </div>
                     </div>
+                    <div class="text-center text-bold">CERTIFICATION OF GRADES</div>
                 </div>
-                <div class="text-center text-bold">CERTIFICATION OF GRADES</div>
+
             </div>
             <!-- end invoice-company -->
             <!-- begin invoice-header -->
@@ -331,14 +326,19 @@
     {{--        </div>--}}
     <!-- end invoice-footer -->
     </div>
+
 </div>
 </div>
+
+
 @section('content')
 
 @endsection
 
 @push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
     <script>
+
         async function ready() {
             let user_id = await axios.get('/api/user').then(r => {
                 // console.log(r)
@@ -349,7 +349,7 @@
                 let year = localStorage.getItem("year");
 
                 $.ajax({
-                    url: '/api/print/' + user_id +"/"+ semester_id +"/"+ year,
+                    url: '/api/print/' + user_id + "/" + semester_id + "/" + year,
                     TYPE: 'POST',
                     success: function (r) {
                         let $tr = $('.data');
@@ -406,12 +406,12 @@
                 })
 
                 $.ajax({
-                    url: '/api/print/' + user_id +"/"+ semester_id +"/"+ year,
+                    url: '/api/print/' + user_id + "/" + semester_id + "/" + year,
                     TYPE: 'POST',
                     success: function (r) {
                         $('.units').html(r.units);
                         // console.log(r.semester_year);
-                            console.log(r);
+                        console.log(r);
                         // student information
                         $('.name').html(r.student_information[0].last_name + ", " + r.student_information[0].first_name + " " + r.student_information[0].middle_name + ".");
                         $('.id_number').html(r.student_information[0].username)
@@ -420,7 +420,7 @@
 
 
                         if (r.activated_semester[0].id == 1) {
-                            $('.semester').html('<b>1st Semester</b>'+ " , AY " + r.semester_year);
+                            $('.semester').html('<b>1st Semester</b>' + " , AY " + r.semester_year);
                         } else if (r.activated_semester[0].id == 2) {
                             $('.semester').html('2nd Semester');
                         }
@@ -434,6 +434,26 @@
                         }
                     }
                 });
+
+                var doc = new jsPDF();
+                var specialElementHandlers = {
+                    '#editor': function (element, renderer) {
+                        return true;
+                    }
+                };
+
+                $('.pdf').click(function () {
+                    doc.fromHTML($('.invoice').html(), 15, 15, {
+                        'width': 170,
+                        'elementHandlers': specialElementHandlers
+                    });
+                    // doc.save('sample-file.pdf');
+                    setTimeout(function () {
+                        doc.save(`sample-file.pdf`);
+                    }, 5000);
+                });
+
+
             })
         }
 
