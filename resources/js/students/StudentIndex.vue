@@ -10,16 +10,6 @@
       <div class="row p-md-5 m-0 pb-0 pt-0 ">
         <div class="col-12">
           <div class="row">
-            <!--            <v-col-->
-            <!--                md="6"-->
-            <!--                lg="3"-->
-            <!--            >-->
-            <!--              <v-select-->
-            <!--                  :items="items"-->
-            <!--                  label="Period"-->
-            <!--                  outlined-->
-            <!--              ></v-select>-->
-            <!--            </v-col>-->
             <v-col
                 md="6"
                 lg="3"
@@ -50,10 +40,11 @@
                   color="success"
                   x-large
                   id="view_grade"
+                  @click="viewGrade"
               >
                 View Grade
               </v-btn>
-            </v-col>
+            </div>
           </div>
         </div>
       </div>
@@ -221,7 +212,97 @@ export default {
         $('.title_information').html('Final Grade For' + " " + r.data.school_year + " " +semesterTitle);
       });
     },
-g
+    viewGrade() {
+      this.grade()
+      let user_id = this.id;
+      let semester_id = this.select_semester;
+      let year = this.year;
+      localStorage.setItem("user_id", user_id);
+      localStorage.setItem("semester_id", semester_id);
+      localStorage.setItem("year", year);
+    },
+    grade() {
+      $.ajax({
+        url: '/api/grades/' + this.id + '/' + this.select_semester + '/' + this.year,
+        TYPE: 'GET',
+        success:(r)=> {
+          this.isprint= true;
+          let $tr = $('.data');
+          let html = "";
+          $(r).each(function (r, v) {
+            // console.log(v);
+            html += '<tr>'
+            html += '<td>' + v.code + '</td>'
+            html += '<td>' + v.title + '</td>'
+            html += '<td>' + v.units + '</td>'
+            html += '<td>' + v.last_name + " " + v.first_name + " " + v.middle_name + '</td>'
+            if (v.grade >= 98) {
+              html += '<td>1.0</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 95) {
+              html += '<td>1.25</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 92) {
+              html += '<td>1.50</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 89) {
+              html += '<td>1.75</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 86) {
+              html += '<td>2.0</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 83) {
+              html += '<td>2.25</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 80) {
+              html += '<td>2.50</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 77) {
+              html += '<td>2.75</td>'
+              html += '<td>Passed</td>'
+            } else if (v.grade >= 75) {
+              html += '<td>3.0</td>'
+              html += '<td>Passed</td>'
+            } else {
+              html += '<td class="text-danger">5.0</td>'
+              html += '<td>Failed</td>'
+            }
+            html += '</tr>'
+            // console.log(v.grade);
+          });
+          $('.data').html(html);
+          $tr.html(html);
+        }, error:  (r)=> {
+          $('.data').html('');
+          $('.data').html('<tr>\n' +
+              '                <td colspan="99" class="text-center text-danger errormes">No records found</td>\n' +
+              '              </tr>');
+          this.isprint= false;
+        }
+      })
+      $.ajax({
+        url: '/api/footer/total/' + this.id + '/' + this.select_semester + '/' + this.year,
+        TYPE: 'GET',
+        success: function (r) {
+          // console.log(r.units);
+          let tr = $('.footer');
+          let html = "";
+          html += '<tr>'
+          html += '<td><td>'
+          html += '<td class="font-weight-bold">' + r.units + '<td>'
+          html += '<td class="font-weight-bold">' + r.Average + '<td>'
+          html += '<td></td>'
+          html += '</tr>'
+          $('.footer').html(html);
+          tr.html(html);
+        }, error: function (r) {
+          $('.footer').html('');
+          $('.footer').html('<tr>\n' +
+              '                <td></td>\n' +
+              '              </tr>');
+        }
+      })
+    }
   }
 }
 

@@ -5,6 +5,12 @@
 @endpush
 
 @section('content')
+{{--    <pre>
+        {{\App\Models\Teacher::all()}}
+    </pre>
+    <pre>
+        {{\App\Models\User::where('role_id',2)->get()}}
+    </pre>--}}
     <div class="jumbotron">
         <blockquote class="bg-transparent">
             <h1 class="display-4 text-dark">MANAGE TEACHERS</h1>
