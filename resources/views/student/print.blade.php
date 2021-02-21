@@ -198,11 +198,11 @@
             <!-- begin invoice-header -->
             <div class="invoice-header">
                 <div class="row container">
-                    <div class="col-md-5">
+                    <div class="col-md-8">
                         <div class="invoice-from">
                             <address class="m-t-5 m-b-5">
                                 <div class="row">
-                                    <div class="col-md-4 text-bold">
+                                    <div class="col-md-2 text-bold">
                                         <div>Name:</div>
                                         <div>Student No.:</div>
                                         <div>Course:</div>
