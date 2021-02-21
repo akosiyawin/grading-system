@@ -415,4 +415,9 @@ class StudentController extends Controller
         }
     }
 
+    public function userInfo()
+    {
+        return response(['Message' => 'Authenticated User GET Successfully','data' => ['id'=>auth()->user()->id]],200);
+    }
+
 }

@@ -7,10 +7,10 @@
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title class="title">
-            Darwin Marcelo
+            Student Dashboard
           </v-list-item-title>
           <v-list-item-subtitle>
-            BS Computer Sciecne
+            EPCST Grade Book
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
