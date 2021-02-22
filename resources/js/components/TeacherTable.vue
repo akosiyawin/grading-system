@@ -311,7 +311,11 @@
                             {{ student.student_number }}
                           </td>
                           <td v-if="student.grade!==0">{{student.grade}}<br>
+<<<<<<< HEAD
                           <v-btn x-small class="bg-danger" v-if="student.status == 1" @click="approveGrade(student.student_id)">Cancel</v-btn>
+=======
+                          <v-btn x-small class="bg-danger" v-if="student.status" @click="approveGrade(student.student_id)">Cancel</v-btn>
+>>>>>>> bf8422f7d4deb3d2e4cb2833bd0bab851ae14f2b
                           <v-btn x-small class="bg-success" v-else @click="approveGrade(student.student_id)">Approve</v-btn>
                           </td>
                           <td v-else></td>

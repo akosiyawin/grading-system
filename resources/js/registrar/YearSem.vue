@@ -43,7 +43,11 @@
           <button
             class="btn mr-2 mt-2"
             @click="activateSemester(sem.id)"
+<<<<<<< HEAD
             :class="sem.status == 1 ? 'btn-danger' : 'btn-success'"
+=======
+            :class="sem.status == 0 ? 'btn-danger' : 'btn-success'"
+>>>>>>> bf8422f7d4deb3d2e4cb2833bd0bab851ae14f2b
             v-for="sem in year.semesters"
             :key="sem.id"
             v-text="sem.title"
