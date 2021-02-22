@@ -102,7 +102,8 @@
       <div class="col-lg-8">
         <blockquote class="quote-dark p-0">
           <v-card-title class="title_information"></v-card-title>
-          <v-card-subtitle><b>*Note:</b> Red color indicates grades not verified by registrar.
+          <v-card-subtitle><b>*Note:</b> If this is not you, message us at the Eastwoods
+            <a href="https://www.facebook.com/eastwoodstech">Technical Assistance Page </a>
           </v-card-subtitle>
         </blockquote>
         <v-simple-table>
