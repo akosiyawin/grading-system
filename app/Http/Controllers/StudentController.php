@@ -179,7 +179,7 @@ class StudentController extends Controller
                 ->where('school_years.year', '=', $year)
                 ->where('semesters.id', '=', $semester)
                 ->where('students.user_id', '=', $user_id)
-
+                ->where('student_subjects.grade','<>','4')
 //                 ->select()
                 ->get();
 
@@ -348,10 +348,10 @@ class StudentController extends Controller
                 $units = explode('(', $units);
                 $units = str_replace(')', '', $units);
 
-                $lecture_units = $units[0];
+                $lecture_units = $units[0] ?? 0;
                 $total_lecture += $lecture_units;
 
-                $lab_units = $units[1];
+                $lab_units = $units[1] ?? 0;
                 $total_lab += $lab_units;
 
             }
