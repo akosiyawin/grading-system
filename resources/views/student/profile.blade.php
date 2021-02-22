@@ -151,13 +151,14 @@
                 tableBody.innerHTML =  ""
                 records.map(item => {
                     if(parseInt(item.grade) !== 4){
+                        const units = item.units.replace(/[()]/g,'').split(' ')
                         totalGrade += parseFloat(gradeDecider(item.grade))
+                        lecTotal+= parseInt(units[0] ? units[0] : 0)
+                        labTotal+= parseInt(units[1] ? units[1] : 0)
                     }else{
                         recordsLength--
                     }
-                    const units = item.units.replace(/[()]/g,'').split(' ')
-                    lecTotal+= parseInt(units[0] ? units[0] : 0)
-                    labTotal+= parseInt(units[1] ? units[1] : 0)
+                    
                     // const grade = Number.isInteger(item.grade) ? item.grade + ".0" : item.grade
                     tableBody.innerHTML +=
                         `
@@ -167,7 +168,8 @@
                                 <td>${item.units}</td>
                                 <td>${item.teacher}</td>
                                 <td class="${item.status ? '' : 'text-danger'}">${gradeDecider(item.grade)} ${parseInt(item.grade) === 4 ? '':`(${item.grade})`}</td>
-                                <td>${remarksDecider(item.grade)}</td>
+                                <td>${parseInt(item.grade) === 4 ? 'DROPPED' :
+                                    parseInt(item.grade) === 0 ? "INCOMPLETE" : remarksDecider(item.grade)}</td>
                             </tr>
                         `
                 })
@@ -197,7 +199,8 @@
             }
         }
 
-        function gradeDecider(grade){
+        function gradeDecider(initial_grade){
+            const grade = parseInt(initial_grade)
             if (grade >= 98){
                 return "1.00"
             }else if(grade >= 95){
@@ -219,7 +222,7 @@
             }else if (grade === 0){
                 return "INC"
             }else if (grade === 4){
-                return "DROPPED"
+                return "DRP"
             }else{
                 /*5.00*/
                 return "5.00"

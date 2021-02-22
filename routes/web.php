@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
 
+
+/* Redirector */
+Route::redirect('/teacher', '/teacher-subject');
+Route::redirect('/registrar', '/registrar-subject');
+
+
 Auth::routes([
     'register' => false, // Registration Routes...
     'reset' => false, // Password Reset Routes...
@@ -149,7 +155,3 @@ Route::prefix('api')->group(function () {
 });
 
 Route::get('/print',[StudentController::class,'print'])->name('student.print');
-
-/* Redirector */
-Route::redirect('/teacher', '/teacher-subject');
-Route::redirect('/registrar', '/registrar-subject');

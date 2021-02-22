@@ -112,7 +112,7 @@
                             <a href="{{route('teacher.subject')}}" class="nav-link {{Route::is('teacher.subject') ? 'active' : ''}}">
                                 <i class="nav-icon fas fa-th"></i>
                                 <p>
-                                    Create Subject
+                                    My Subjects
                                 </p>
                             </a>
                         </li>
@@ -120,7 +120,7 @@
                             <a href="{{route('teacher.assignStudentsToSubjects')}}" class="nav-link {{Route::is('teacher.assignStudentsToSubjects') ? 'active' : ''}}">
                                 <i class="nav-icon fas fa-th"></i>
                                 <p>
-                                    Designate Students
+                                    My Students
                                 </p>
                             </a>
                         </li>

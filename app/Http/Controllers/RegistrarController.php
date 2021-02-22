@@ -70,7 +70,7 @@ class RegistrarController extends Controller
                 'subjects.title',
                 'subjects.units',
                 'student_subjects.status',
-                DB::raw('CONCAT(users.last_name,", ",users.first_name," ",users.last_name) as teacher')
+                DB::raw('CONCAT(users.last_name,", ",users.first_name," ",users.middle_name) as teacher')
             ])
             ->get();
         return response()->json([
