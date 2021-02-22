@@ -21,7 +21,7 @@
 <script>
 export default {
   data: () => ({
-    dialog: true,
+    dialog: false,
     test: "Hdarwiaje",
     loadingCount: 0,
   }),

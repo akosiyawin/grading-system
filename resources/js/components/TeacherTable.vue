@@ -310,7 +310,10 @@
                             ><br />
                             {{ student.student_number }}
                           </td>
-                          <td v-if="student.grade!==0">{{student.grade}}<br>
+                          <td v-if="student.grade!==0">
+                          <span v-if="student.grade != 4">{{student.grade}}</span>
+                          <span v-else class="text-danger">(DROPPED)</span>
+                          <br>
                           <v-btn x-small class="bg-danger" v-if="student.status == 1" @click="approveGrade(student.student_id)">Cancel</v-btn>
                           <v-btn x-small class="bg-success" v-else @click="approveGrade(student.student_id)">Approve</v-btn>
                           </td>

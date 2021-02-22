@@ -142,13 +142,19 @@
             let totalGrade = 0
             let lecTotal = 0
             let labTotal = 0
+            let recordsLength = 0
             axios.get(`/api/fetchGradeForSemester/${year}/${semester}/${selectedStudent}`)
             .then(r=>{
                 const tableBody = document.getElementById('tableBody')
                 const records = r.data.data
+                recordsLength = records.length
                 tableBody.innerHTML =  ""
                 records.map(item => {
-                    totalGrade += parseFloat(gradeDecider(item.grade))
+                    if(parseInt(item.grade) !== 4){
+                        totalGrade += parseFloat(gradeDecider(item.grade))
+                    }else{
+                        recordsLength--
+                    }
                     const units = item.units.replace(/[()]/g,'').split(' ')
                     lecTotal+= parseInt(units[0] ? units[0] : 0)
                     labTotal+= parseInt(units[1] ? units[1] : 0)
@@ -160,7 +166,7 @@
                                 <td>${item.title}</td>
                                 <td>${item.units}</td>
                                 <td>${item.teacher}</td>
-                                <td class="${item.status ? '' : 'text-danger'}">${gradeDecider(item.grade)} (${item.grade})</td>
+                                <td class="${item.status ? '' : 'text-danger'}">${gradeDecider(item.grade)} ${parseInt(item.grade) === 4 ? '':`(${item.grade})`}</td>
                                 <td>${remarksDecider(item.grade)}</td>
                             </tr>
                         `
@@ -170,7 +176,7 @@
                 })
                 document.getElementById(semesterID).classList.add('active')
                 if(records.length){
-                    const total = totalGrade / records.length
+                    const total = (totalGrade / recordsLength).toFixed(2)
                     document.getElementById('totalGrade').innerText = totalGrade ? Number.isInteger(total) ? (totalGrade / records.length) + ".0" : total : "INC"
                     document.getElementById('totalCredit').innerText = `${lecTotal} (${labTotal})`
                     document.getElementById('gradeTable').classList.remove('d-none')
@@ -183,7 +189,6 @@
         }
 
         /*Todo remarks */
-
         function remarksDecider(grade){
             if(grade < 75){
                 return "Failed"
@@ -213,6 +218,8 @@
                 return "3.00"
             }else if (grade === 0){
                 return "INC"
+            }else if (grade === 4){
+                return "DROPPED"
             }else{
                 /*5.00*/
                 return "5.00"

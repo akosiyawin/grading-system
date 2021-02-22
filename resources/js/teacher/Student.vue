@@ -399,10 +399,13 @@
                 <td>{{ rowsPerPage !== 99 ? (i + 1 + (rowsPerPage * page - 1)) - rowsPerPage + 1 : i + 1 }}</td>
                 <td><b>{{ student.name }} </b><br> {{ student.course }}</td>
                 <td>{{ student.student_number }}</td>
-                <td class="d-flex"><input type="number" class="form-control" :disabled="student.grade_status == 1" v-model="student.grade">
-                  <v-btn class="bg-danger ml-1" @click="student.grade = 4">
-                    DROP
-                  </v-btn>
+                <td>
+                  <div class="d-flex p-1">
+                    <input type="number" class="form-control" :disabled="student.grade_status == 1" v-model="student.grade">
+                    <v-btn class="bg-danger ml-1" @click="student.grade = 4" :disabled="student.grade_status == 1">
+                      DROP
+                    </v-btn>
+                  </div>
                 </td>
               </tr>
               </tbody>
