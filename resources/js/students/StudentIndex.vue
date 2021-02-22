@@ -290,7 +290,7 @@ export default {
           html += '<tr>'
           html += '<td><td>'
           html += '<td class="font-weight-bold">' + r.units + '<td>'
-          html += '<td class="font-weight-bold">' + r.Average + '<td>'
+          html += '<td class="font-weight-bold">' + parseFloat(r.Average) + '<td>'
           html += '<td></td>'
           html += '</tr>'
           $('.footer').html(html);
