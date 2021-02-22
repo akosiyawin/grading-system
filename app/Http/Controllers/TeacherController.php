@@ -24,7 +24,7 @@ class TeacherController extends Controller
 
     public function __construct()
     {
-        $this->middleware(['auth','teacher']);
+        $this->middleware(['auth','teacher','status']);
     }
 
     public function dashboard()
@@ -210,7 +210,7 @@ class TeacherController extends Controller
     }
 
 
-    public function studentWithoutSubject(Request $request, Subject $subject)
+    public function studentWithoutSubject(Request $request, $subject)
     {
         $request->validate([
             'rowsPerPage' => 'required|numeric',
@@ -252,7 +252,7 @@ class TeacherController extends Controller
         $studentSubjects->join('subjects', 'subject_teachers.subject_id', 'subjects.id');;
         $studentSubjects->join('semesters', 'student_subjects.semester_id', 'semesters.id');
         $studentSubjects->where('semesters.status', 1);
-        $studentSubjects->where('subject_teachers.id', $subject->id);
+        $studentSubjects->where('subject_teachers.id', $subject);
         $studentSubjects->where('subject_teachers.teacher_id', auth()->user()->teacher->id);
         $studentSubjects->groupBy('student_id', 'subject_id');
         $studentSubjects = $studentSubjects->pluck('student_id');

@@ -19,7 +19,8 @@ class SubjectResource extends JsonResource
             'code' => $this->code,
             'title' => $this->title,
             'units' => $this->units,
-            'department' => $this->department
+            'department' => $this->department,
+            'department_id' => $this->department_id
         ];
     }
 }

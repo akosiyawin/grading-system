@@ -25,6 +25,14 @@
 
 <body class="hold-transition sidebar-mini layout-fixed">
 
+@if (session('message'))
+    <div class="container">
+        <div class="alert alert-danger" style="max-width: 600px" role="alert">
+            <strong>{{session()->get('message')}}</strong>
+        </div>
+    </div>
+@endif
+
 <div id="app">
     @yield('content')
     <loading />

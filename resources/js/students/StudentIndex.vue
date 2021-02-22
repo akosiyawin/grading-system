@@ -102,7 +102,8 @@
       <div class="col-lg-8">
         <blockquote class="quote-dark p-0">
           <v-card-title class="title_information"></v-card-title>
-          <v-card-subtitle><b>*Note:</b> Red color indicates grades not verified by registrar.
+          <v-card-subtitle><b>*Note:</b> If this is not you, message us at the Eastwoods
+            <a href="https://www.facebook.com/eastwoodstech">Technical Assistance Page </a>
           </v-card-subtitle>
         </blockquote>
         <v-simple-table>
@@ -179,13 +180,11 @@ export default {
   methods: {
     async getUserInfoNow(){
       await axios.get('/api/userInfo').then(r => {
-        // console.log(r.data.id);
         this.id = r.data.data.id;
       })
     },
     async getStudentInfoNow(){
       axios.post('/api/student/information/' + this.id).then(r => {
-        // console.log(r);
         $('#StudentId').html(r.data.student_id);
         $('#StudentName').html(r.data.student_name);
         $('#courses').html(r.data.course);
@@ -195,7 +194,6 @@ export default {
     },
     async getActiveSemester(){
       axios.get('/api/activated-semester').then(r => {
-        // console.log(r.data.school_year);
         let semesterTitle;
         if (r.data.activated_semester[0].id == 1){
           semesterTitle = '1st Semester'
@@ -263,12 +261,18 @@ export default {
             } else if (v.grade >= 75) {
               html += '<td>3.0</td>'
               html += '<td>Passed</td>'
+            } else if (v.grade == 4) {
+              html += '<td class="text-danger">DRP</td>'
+              html += '<td>Dropped</td>'
+            } else if (v.grade == 0) {
+              html += '<td class="text-danger">INC</td>'
+              html += '<td>Incomplete</td>'
             } else {
               html += '<td class="text-danger">5.0</td>'
               html += '<td>Failed</td>'
             }
             html += '</tr>'
-            // console.log(v.grade);
+            console.log(v.grade);
           });
           $('.data').html(html);
           $tr.html(html);
@@ -290,7 +294,7 @@ export default {
           html += '<tr>'
           html += '<td><td>'
           html += '<td class="font-weight-bold">' + r.units + '<td>'
-          html += '<td class="font-weight-bold">' + r.Average + '<td>'
+          html += '<td class="font-weight-bold">' + parseFloat(r.Average) + '<td>'
           html += '<td></td>'
           html += '</tr>'
           $('.footer').html(html);

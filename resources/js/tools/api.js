@@ -42,5 +42,8 @@ export default {
     approveAllGrade: (subject_id,data) => axios.patch(prefix+"/approveAllGrade/"+subject_id,data),
     announcementStore: prefix+"/announcement",
     announcement: () => axios.get(prefix+"/announcement/"),
-    updateGrades: (data) => axios.patch(prefix+"/updateGrades",data)
+    updateGrades: (data) => axios.patch(prefix+"/updateGrades",data),
+    updateSubject: (id) =>  prefix+"/updateSubject/"+id,
+    deleteSubject: (id) => axios.delete(prefix+"/deleteSubject/"+id),
+    updateStudent: (id) => prefix+"/updateStudent/"+id,
 }

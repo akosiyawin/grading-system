@@ -48,7 +48,7 @@
             <v-text-field
                 :error-messages="form.errors.get('last_name')"
                 v-model="form.last_name" small type="text" class="m-0" filled placeholder="Last Name"/>
-            <v-btn type="submit" class="bg-success">Save this student</v-btn>
+            <v-btn type="submit" class="bg-success">Submit this student</v-btn>
           </div>
         </div>
       </form>
@@ -130,7 +130,7 @@
                     </i>
                     View
                   </v-btn>
-                  <v-btn x-small class="bg-success">
+                  <v-btn x-small class="bg-success" @click="handleEditDialog(student)">
                     <i class="fas fa-pencil-alt mr-1">
                     </i>
                     Edit
@@ -248,6 +248,108 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+
+    <!--  Edit student Dialog  -->
+    <v-dialog
+        v-model="editStudentDialog"
+        persistent
+        max-width="600px"
+    >
+      <v-card>
+        <v-card-title>
+          <span class="headline">User Profile</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="6">
+                <v-text-field
+                    v-model="editForm.username"
+                    type="text"
+                    filled
+                    :error-messages="editForm.errors.get('username')"
+                    placeholder="Student ID"
+                />
+              </v-col>
+              <v-col cols="6">
+                <v-select
+                    v-model="editForm.course_id"
+                    :items="courses"
+                    :error-messages="editForm.errors.get('course_id')"
+                    item-value="id"
+                    item-text="title"
+                    filled
+                    placeholder="Course"
+                ></v-select>
+              </v-col>
+              <v-col cols="12">
+                <div class="input-group mb-4">
+                  <div class="input-group-prepend">
+                    <label class="input-group-text">Birthdate</label>
+                  </div>
+                  <input
+                      v-model="editForm.birthdate" type="date" :class="{'is-invalid' : editForm.errors.get('birthdate')}"
+                      class="form-control" placeholder="Birthdate"
+                      aria-label="Birthdate"
+                      >
+                  <div class="invalid-feedback">
+                    {{ editForm.errors.get('birthdate') }}
+                  </div>
+                </div>
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                    v-model="editForm.first_name"
+                    type="text"
+                    filled
+                    :error-messages="editForm.errors.get('first_name')"
+                    placeholder="First Name"
+                />
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                    v-model="editForm.middle_name"
+                    type="text"
+                    filled
+                    :error-messages="editForm.errors.get('middle_name')"
+                    placeholder="Middle Name"
+                />
+              </v-col>
+              <v-col
+                  cols="12"
+              >
+                <v-text-field
+                    v-model="editForm.last_name"
+                    type="text"
+                    filled
+                    :error-messages="editForm.errors.get('last_name')"
+                    placeholder="Last Name"
+                />
+              </v-col>
+            </v-row>
+          </v-container>
+          <small>*fill out this edit form to update the selected student</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+              color="blue darken-1"
+              text
+              @click="editStudentDialog = false"
+          >
+            Close
+          </v-btn>
+          <v-btn
+              color="blue darken-1"
+              text
+              @click="handleEditSave"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -280,7 +382,17 @@ export default {
     searchStudent: null,
     questionDialog: {state: false, title: null, body: null,handler : null},
     selectedUserID : null,
-    duplicatedDialog : {state: false, students: []}
+    duplicatedDialog : {state: false, students: []},
+    editForm: new Form({
+      id: null,
+      first_name: null,
+      middle_name: null,
+      last_name: null,
+      birthdate: null,
+      course_id: null,
+      username: null,
+    }),
+    editStudentDialog: false,
   }),
   watch: {
     page() {
@@ -303,6 +415,23 @@ export default {
       api.courses().then(r => {
         this.courses = r.data.data
       })
+    },
+    handleEditSave(){
+      this.editForm.patch(api.updateStudent(this.editForm.id)).then(r=>{
+        this.fetchStudents()
+        this.editForm.reset()
+        this.editStudentDialog = false
+      }).catch(err=> this.editForm.errors.set(err.errors))
+    },
+    handleEditDialog(item) {
+      this.editForm.id = item.user_id
+      this.editForm.birthdate = item.birthdate_real
+      this.editForm.username = item.student_number
+      this.editForm.first_name = item.first_name
+      this.editForm.middle_name = item.middle_name
+      this.editForm.last_name = item.last_name
+      this.editForm.course_id = item.course_id
+      this.editStudentDialog = true
     },
     saveStudent() {
       this.form.errors.clear()

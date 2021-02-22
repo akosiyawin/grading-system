@@ -373,7 +373,8 @@
         <v-card-title class="headline">
           Encode Grades In Table Mode
         </v-card-title>
-          <v-card-subtitle><b>**Note: </b> Approved grades by Registrar will be disabled</v-card-subtitle>
+          <v-card-subtitle><b>**Note: </b> Approved grades by Registrar will be disabled.<br>
+          -Grades with value of <b>4.00</b> will be recognized as <i>dropped</i>.</v-card-subtitle>
         <v-card-text>
           <v-simple-table dense height="400px">
             <template v-slot:default>
@@ -398,7 +399,14 @@
                 <td>{{ rowsPerPage !== 99 ? (i + 1 + (rowsPerPage * page - 1)) - rowsPerPage + 1 : i + 1 }}</td>
                 <td><b>{{ student.name }} </b><br> {{ student.course }}</td>
                 <td>{{ student.student_number }}</td>
-                <td><input type="number" class="form-control" :disabled="student.grade_status == 1" v-model="student.grade"></td>
+                <td>
+                  <div class="d-flex p-1">
+                    <input type="number" min="0" max="101" class="form-control" :disabled="student.grade_status == 1" v-model="student.grade">
+                    <v-btn class="bg-danger ml-1" @click="student.grade = 4" :disabled="student.grade_status == 1">
+                      DROP
+                    </v-btn>
+                  </div>
+                </td>
               </tr>
               </tbody>
             </template>
@@ -527,7 +535,6 @@ export default {
         this.snackbar.text = r.data.message
         this.snackbar.state = true
         this.handleEncodeGradeCancel()
-      }).catch(err=>{
       }).catch(err=>{
         this.setDialog({state: true, message: err.response.data.message})
       })

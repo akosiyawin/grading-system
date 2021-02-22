@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
 
+
+/* Redirector */
+Route::redirect('/teacher', '/teacher-subject');
+Route::redirect('/registrar', '/registrar-subject');
+
+
 Auth::routes([
     'register' => false, // Registration Routes...
     'reset' => false, // Password Reset Routes...
@@ -144,12 +150,12 @@ Route::prefix('api')->group(function () {
     Route::get('/footer/total/{user_id}/{semester}/{year}', [StudentController::class, 'Totalfooter']);
     Route::get('/print/{user_id}/{semester}/{year}', [StudentController::class, 'CopyOfGrades']);
     Route::get('/activated-semester', [StudentController::class, 'activated_semester']);
-
     Route::get('/userInfo',[StudentController::class,'userInfo']);
+
+    Route::patch('/updateSubject/{subject}',[RegistrarController::class,'updateSubject']);
+    Route::delete('/deleteSubject/{subject}',[RegistrarController::class,'deleteSubject']);
+
+    Route::patch('/updateStudent/{user}',[RegistrarController::class,'updateStudent']);
 });
 
 Route::get('/print',[StudentController::class,'print'])->name('student.print');
-
-/* Redirector */
-Route::redirect('/teacher', '/teacher-subject');
-Route::redirect('/registrar', '/registrar-subject');

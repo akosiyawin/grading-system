@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\PreventSuspendedMiddleware;
 use App\Http\Middleware\RegistrarMiddleware;
 use App\Http\Middleware\StudentMiddleware;
 use App\Http\Middleware\TeacherMiddleware;
@@ -67,6 +68,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'teacher' => TeacherMiddleware::class,
         'registrar' => RegistrarMiddleware::class,
-        'student' => StudentMiddleware::class
+        'student' => StudentMiddleware::class,
+        'status' => PreventSuspendedMiddleware::class
     ];
 }

@@ -180,7 +180,8 @@ trait RegistrarApi
                 'subjects.title',
                 'subjects.code',
                 'subjects.units',
-                'departments.title as department'
+                'departments.title as department',
+                'departments.id as department_id'
             ])
             ->groupBy('subjects.id')
             ->get();
@@ -219,12 +220,13 @@ trait RegistrarApi
         $subjects->select([
             'teachers.id as teacher_id',
             'subjects.code',
-            'subjects.id as subject_id',
+            'subject_teachers.id as subject_id',
             'subjects.title',
             'subjects.units',
             'users.id as user_id',
             'users.first_name',
             'users.last_name',
+            'subject_teachers.remarks'
         ]);
         $subjects = $subjects->get();
 
@@ -237,26 +239,13 @@ trait RegistrarApi
     // Teachers for assigning subjects
     public function teacherAssigned(Subject $subject)
     {
-        $query = Teacher::join('subject_teachers', 'teachers.id', 'subject_teachers.teacher_id')
-        ->join('semesters', 'subject_teachers.semester_id', 'semesters.id');;
-        $query->where('semesters.status',1);
-        $query->where('subject_id', $subject->id);
-        $query->select([
-            'teachers.id',
-        ]);
+        $teachers = Teacher::join('users','teachers.user_id','users.id')
+        ->select([
+            'users.id as user_id',
+            'teachers.id'
+        ])->get();
 
-        $assignedTeachers = array_map(function ($item) {
-            return $item['id'];
-        }, $query->get()->toArray());
-
-        $teachers = Teacher::whereNotIn('teachers.id', $assignedTeachers);
-        $teachers->join('users', 'teachers.user_id', 'users.id');
-        $teachers->select([
-            'teachers.id',
-            'first_name',
-            'last_name'
-        ]);
-        $teachers = TeacherAssignedResource::collection($teachers->get());
+        $teachers = TeacherAssignedResource::collection($teachers);
         return response()->json([
             'message' => 'Teachers GET successful',
             'data' => $teachers
@@ -268,13 +257,19 @@ trait RegistrarApi
         return Semester::where('status', '=', 1)->first();
     }
 
-    public function designateSubject(Teacher $teacher, Subject $subject)
+    public function designateSubject(Request $request,Teacher $teacher, Subject $subject)
     {
+        $validated = $request->validate([
+            'section' => 'required|string'
+        ]);
+        
         $teacher = SubjectTeacher::create([
             'teacher_id' => $teacher->id,
             'subject_id' => $subject->id,
-            'semester_id' => Semester::where('status',1)->pluck('id')[0]
+            'semester_id' => Semester::where('status',1)->pluck('id')[0],
+            'remarks' => $validated['section']
         ]);
+
         return response()->json([
             'message' => 'Teacher Assigned to Subject successful',
             'data' => $teacher
@@ -286,13 +281,13 @@ trait RegistrarApi
         $students = StudentSubject::join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
         ->join('semesters','subject_teachers.semester_id','semesters.id')
         ->where('semesters.status',1)
-        ->where(['subject_teachers.subject_id' => $subject, 'subject_teachers.teacher_id' => $teacher])->first();
+        ->where(['subject_teachers.id' => $subject, 'subject_teachers.teacher_id' => $teacher])->first();
         if($students){
             return response()->json([
                 'message' => 'Teacher has an existing students on selected subject.',
             ],400);
         }else{
-            SubjectTeacher::where(['subject_id' => $subject, 'teacher_id' => $teacher])->delete();
+            SubjectTeacher::where(['id' => $subject, 'teacher_id' => $teacher])->delete();
             return response()->json([
                 'message' => 'Teacher has been deleted successfully.',
             ],200);
@@ -307,7 +302,7 @@ trait RegistrarApi
             ->join('users', 'teachers.user_id', 'users.id')
             ->where(['semesters.status' => 1, 'teacher_id' => $teacher->id])
             ->select([
-                'subjects.title'
+                DB::raw('CONCAT(subjects.title," - ",subject_teachers.remarks) as title')
             ])
             ->get();
 
@@ -356,14 +351,15 @@ trait RegistrarApi
             'rowsPerPage' => 'required'
         ]);
 
-        $query = Student::join('users', 'students.user_id', 'users.id');
+        $query = Student::join('users', 'students.user_id', 'users.id')
+        ->join('courses','students.course_id','courses.id');
 //        $query->join('student_teachers','students.id','student_teachers.student_id');
 //        $query->join('semesters','student_teachers.semester_id','semesters.id');
 //        $query->where('semesters.status',1);
         $query->select([
-            'first_name',
-            'middle_name',
-            'last_name',
+            'users.first_name',
+            'users.middle_name',
+            'users.last_name',
             'students.id as student_id',
             'users.id as user_id',
             'users.username',
@@ -376,6 +372,7 @@ trait RegistrarApi
             $query->orWhere('middle_name', 'like', "%{$request->search}%");
             $query->orWhere('last_name', 'like', "%{$request->search}%");
             $query->orWhere('username', 'like', "%{$request->search}%");
+            $query->orWhere('courses.title', 'like', "%{$request->search}%");
         }
         if ($request->get('rowsPerPage') == 99) {
             $students = StudentResource::collection($query->get());
@@ -396,7 +393,7 @@ trait RegistrarApi
             'course_id' => 'required|exists:courses,id',
             'birthdate' => 'required|date',
             'first_name' => 'required|string',
-            'middle_name' => 'required|string',
+            'middle_name' => 'nullable|string',
             'last_name' => 'required|string',
         ]);
         $validated['role_id'] = Base::STUDENT_ROLE_ID;
@@ -499,18 +496,17 @@ trait RegistrarApi
         ]);
     }
 
-    public function approveAllGrade(Request $request,Subject $subject)
+    public function approveAllGrade(Request $request,$subject)
     {
         $validated = $request->validate([
            'students' => 'required|array',
             'students.*' => 'numeric|exists:students,id',
             'teacher' => 'required|numeric|exists:teachers,id'
         ]);
-
         StudentSubject::join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
             ->join('semesters','student_subjects.semester_id','semesters.id')
             ->where('semesters.status',1)
-            ->where('subject_teachers.teacher_id',$validated['teacher'])
+            ->where('subject_teachers.id',$subject)
             ->whereIn('student_subjects.student_id',$validated['students'])
             ->update(['student_subjects.status' => 1]);
 
@@ -714,6 +710,55 @@ trait RegistrarApi
 
         return response()->json([
             'message' => 'Subjects Stored Successfully',
+        ]);
+    }
+
+    public function updateSubject(Request $request, Subject $subject)
+    {
+        $validated = $request->validate([
+            'department_id' => 'required|numeric|exists:departments,id',
+            'code' => 'required|string',
+            'title' => 'required|string',
+            'lecture' => 'nullable|numeric',
+            'lab' => 'nullable|numeric',
+        ]);
+        $validated['units'] = $validated['lecture'] . ($validated['lab'] ? " (${validated['lab']})" : "");
+        $subject->update($validated);
+        return response()->json([
+            'message' => 'Subject update Successfully',
+        ]);
+    }
+
+
+    public function deleteSubject(Subject $subject)
+    {
+        if($subject->subject_teachers->count() > 0){
+            return response()->json([
+                'message' => 'Subject has an existing relation from teachers.',
+            ],400);
+        }
+
+        $subject->delete();
+        return response()->json([
+            'message' => 'Subject has been deleted Successfully!',
+        ]);
+    }
+
+
+    public function updateStudent(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'first_name' => 'required|string',
+            'middle_name' => 'nullable|string',
+            'last_name' => 'required|string',
+            'birthdate' => 'required|date',
+            'course_id' => 'required|numeric|exists:courses,id',
+            'username' => 'required|unique:users,username,'.$user->id,
+        ]);
+        $user->update($validated);
+        $user->student->update($validated);
+        return response()->json([
+            'message' => 'Student has been updated Successfully!',
         ]);
     }
 

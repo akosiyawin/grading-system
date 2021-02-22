@@ -82,10 +82,10 @@
     >
       <v-card>
         <v-card-title class="headline">
-          ENTER SUBJECT REMARKS
+          ENTER SECTION
         </v-card-title>
         <v-card-text>
-          <input type="text" v-model="remarksModel" placeholder="Subject Remarks" class="form-control">
+          <input type="text" v-model="remarksModel" placeholder="Section" class="form-control">
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
