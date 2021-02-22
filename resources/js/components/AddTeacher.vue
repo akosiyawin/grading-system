@@ -46,7 +46,7 @@
         class="mr-4 mt-3 bg-success"
         type="submit"
     >
-      Save this teacher
+      Submit This Record
     </v-btn>
     <dialog-message></dialog-message>
   </v-form>

@@ -46,4 +46,5 @@ export default {
     updateSubject: (id) =>  prefix+"/updateSubject/"+id,
     deleteSubject: (id) => axios.delete(prefix+"/deleteSubject/"+id),
     updateStudent: (id) => prefix+"/updateStudent/"+id,
+    deleteAnnouncement: (id) => axios.delete(prefix+"/deleteAnnouncement/"+id),
 }

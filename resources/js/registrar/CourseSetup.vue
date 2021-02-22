@@ -55,7 +55,7 @@
             :error-messages="form.errors.get('department_id')"
             solo
         ></v-select>
-        <v-btn type="submit" class="bg-success mt-3">Save this course</v-btn>
+        <v-btn type="submit" class="bg-success mt-3">Save this record</v-btn>
       </form>
     </div>
   </div>

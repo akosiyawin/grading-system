@@ -21,7 +21,9 @@
             <tbody>
               <tr v-for="announcement in announcements">
                 <td>
-                  <h5>{{announcement.title}}</h5>
+                  <h5>
+                    <v-icon small class="mr-1 text-danger" @click="handleDeleteAnnounceDialog(announcement.id)">mdi-delete</v-icon>
+                    {{announcement.title}}</h5>
                   <small>{{announcement.posted_at}}</small>
                   <p class="text-justify">{{announcement.message}}</p>
                 </td>
@@ -31,12 +33,44 @@
         </v-simple-table>
       </div>
     </form>
+
+    <!--    Delete Dialog-->
+    <v-dialog
+        v-model="deleteDialog"
+        persistent
+        max-width="390"
+    >
+      <v-card>
+        <v-card-title class="headline">
+          Are you sure you want to delete this announcement?
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+              color="green darken-1"
+              text
+              @click="deleteDialog = false"
+              class="text-danger"
+          >
+            No
+          </v-btn>
+          <v-btn
+              color="green darken-1"
+              text
+              @click="handleYesDelete"
+          >
+            Yes
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import api from "../tools/api";
 import Form from "../tools/form";
+import {mapActions} from "vuex";
 
 export default {
   name: "Announcement",
@@ -45,9 +79,12 @@ export default {
       title : null,
       message : null
     }),
-    announcements : []
+    announcements : [],
+    deleteDialog: false,
+    announcementToDelete: null
   }),
   methods: {
+    ...mapActions(['setDialog']),
     submitAnnouncement(){
       this.form.post(api.announcementStore).then(r=>{
         this.fetchAnnouncement()
@@ -60,6 +97,16 @@ export default {
       api.announcement().then(r=>{
         this.announcements = r.data.data
       })
+    },
+    handleDeleteAnnounceDialog(id){
+      this.announcementToDelete = id
+      this.deleteDialog = true
+    },
+    handleYesDelete(){
+      api.deleteAnnouncement(this.announcementToDelete).then(r=>{
+        this.fetchAnnouncement()
+        this.setDialog({state: true, message: r.data.message})
+      }).finally(() => this.deleteDialog = false)
     }
   },
   mounted() {

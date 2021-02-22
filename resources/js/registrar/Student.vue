@@ -48,7 +48,7 @@
             <v-text-field
                 :error-messages="form.errors.get('last_name')"
                 v-model="form.last_name" small type="text" class="m-0" filled placeholder="Last Name"/>
-            <v-btn type="submit" class="bg-success">Submit this student</v-btn>
+            <v-btn type="submit" class="bg-success">Submit this record</v-btn>
           </div>
         </div>
       </form>

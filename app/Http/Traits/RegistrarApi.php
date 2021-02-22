@@ -762,5 +762,13 @@ trait RegistrarApi
         ]);
     }
 
+    public function deleteAnnouncement(Announcement $announcement)
+    {
+        $announcement->delete();
+        return response()->json([
+            'message' => 'Announcement has been deleted Successfully!',
+        ]);
+    }
+
 
 }

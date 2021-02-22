@@ -156,6 +156,8 @@ Route::prefix('api')->group(function () {
     Route::delete('/deleteSubject/{subject}',[RegistrarController::class,'deleteSubject']);
 
     Route::patch('/updateStudent/{user}',[RegistrarController::class,'updateStudent']);
+
+    Route::delete('/deleteAnnouncement/{announcement}',[RegistrarController::class,'deleteAnnouncement']);
 });
 
 Route::get('/print',[StudentController::class,'print'])->name('student.print');

@@ -9,9 +9,9 @@
         <blockquote class="bg-transparent">
             <h1 class="display-4 text-dark">ANNOUNCEMENT PAGE</h1>
         </blockquote>
-        <p class="lead">This page will let you encode and manage a certain students.</p>
+        <p class="lead">This page will help you reach out to all students</p>
         <hr class="my-4">
-        <p>Normally students are batch encoded using a CSV File, but you can also add a student manually.</p>
+        <p>Please be careful with your words.</p>
         <p class="lead">
             <v-btn
                     rounded

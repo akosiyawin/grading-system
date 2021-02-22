@@ -92,7 +92,7 @@
             </div>
           </div>
           <v-btn class="bg-success btn-block" type="submit" dark>
-            SUBMIT THIS SUBJECT
+            SUBMIT THIS RECORD
           </v-btn>
         </form>
       </div>

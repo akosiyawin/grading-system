@@ -43,7 +43,7 @@
                       filled
                       v-model="form.title"
                       placeholder="Department Description (ex. Computer Studies Department)"></v-text-field>
-        <v-btn type="submit" class="bg-success">Save this department</v-btn>
+        <v-btn type="submit" class="bg-success">Save this record</v-btn>
       </form>
     </div>
   </div>
