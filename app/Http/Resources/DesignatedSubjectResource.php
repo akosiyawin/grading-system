@@ -18,7 +18,7 @@ class DesignatedSubjectResource extends JsonResource
             'teacher_id' => $this->teacher_id,
             'subject_id' => $this->subject_id,
             'code'=> $this->code,
-            'title'=> $this->title,
+            'title'=> $this->title." - ". $this->remarks,
             'units'=> $this->units,
             'user_id'=> $this->user_id,
             'name'=> $this->first_name." ".$this->last_name,

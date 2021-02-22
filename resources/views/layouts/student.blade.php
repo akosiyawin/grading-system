@@ -1,9 +1,5 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<<<<<<< HEAD
-
-=======
->>>>>>> bf8422f7d4deb3d2e4cb2833bd0bab851ae14f2b
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,7 +23,6 @@
 <body class="hold-transition sidebar-mini layout-fixed">
 
 
-<<<<<<< HEAD
     <div id="app">
         @yield('content')
         <loading />
@@ -39,14 +34,3 @@
 </body>
 
 </html>
-=======
-<div id="app">
-    @yield('content')
-</div>
-
-
-<script src="{{ asset('js/app.js') }}"></script>
-@stack('scripts')
-</body>
-</html>
->>>>>>> bf8422f7d4deb3d2e4cb2833bd0bab851ae14f2b

@@ -373,7 +373,8 @@
         <v-card-title class="headline">
           Encode Grades In Table Mode
         </v-card-title>
-          <v-card-subtitle><b>**Note: </b> Approved grades by Registrar will be disabled</v-card-subtitle>
+          <v-card-subtitle><b>**Note: </b> Approved grades by Registrar will be disabled.<br>
+          -Grades with value of <b>4.00</b> will be recognized as <i>dropped</i>.</v-card-subtitle>
         <v-card-text>
           <v-simple-table dense height="400px">
             <template v-slot:default>
@@ -398,7 +399,11 @@
                 <td>{{ rowsPerPage !== 99 ? (i + 1 + (rowsPerPage * page - 1)) - rowsPerPage + 1 : i + 1 }}</td>
                 <td><b>{{ student.name }} </b><br> {{ student.course }}</td>
                 <td>{{ student.student_number }}</td>
-                <td><input type="number" class="form-control" :disabled="student.grade_status == 1" v-model="student.grade"></td>
+                <td class="d-flex"><input type="number" class="form-control" :disabled="student.grade_status == 1" v-model="student.grade">
+                  <v-btn class="bg-danger ml-1" @click="student.grade = 4">
+                    DROP
+                  </v-btn>
+                </td>
               </tr>
               </tbody>
             </template>

@@ -4,21 +4,31 @@
     <div class="row">
       <div class="col-6">
         <blockquote class="bg-transparent">
-          <h1 class="display-4 text-dark" style="font-size: 2rem">Encode Subjects Using CSV File</h1>
+          <h1 class="display-4 text-dark" style="font-size: 2rem">
+            Encode Subjects Using CSV File
+          </h1>
         </blockquote>
         <form action="">
           <label for="csvFileUpload">Please select a valid CSV file.</label>
           <div class="input-group mb-3">
             <div class="custom-file">
-              <input type="file" class="custom-file-input" id="csvFileUpload">
-              <label class="custom-file-label" for="csvFileUpload">Choose .csv file</label>
+              <input type="file" class="custom-file-input" id="csvFileUpload" />
+              <label class="custom-file-label" for="csvFileUpload"
+                >Choose .csv file</label
+              >
             </div>
             <div class="input-group-append">
-              <button class="btn bg-success" type="button" @click="encodeSubject">Encode</button>
+              <button
+                class="btn bg-success"
+                type="button"
+                @click="encodeSubject"
+              >
+                Encode
+              </button>
             </div>
           </div>
         </form>
-        <hr>
+        <hr />
         <blockquote class="bg-transparent">
           <h3 class="display-4 text-dark" style="font-size: 2rem">
             Fill out, Subject Information
@@ -103,6 +113,7 @@
             ></v-text-field>
           </v-card-title>
           <v-data-table
+            height="450px"
             id="subjectEast144"
             fixed-header
             :headers="designatedHeaders"
@@ -137,6 +148,7 @@
             ></v-text-field>
           </v-card-title>
           <v-data-table
+            height="500px"
             fixed-header
             :headers="subjectHeaders"
             :items="subjects"
@@ -153,7 +165,7 @@
               </v-btn>
             </template>
             <template v-slot:item.index="{ item }">
-              {{item.id}}
+              {{ item.id }}
             </template>
           </v-data-table>
         </v-card>
@@ -179,7 +191,9 @@
                       <v-btn
                         class="bg-danger"
                         @click="unPushToTeachers"
-                        v-if="selectedTeachers && selectedTeachers.id === item.id"
+                        v-if="
+                          selectedTeachers && selectedTeachers.id === item.id
+                        "
                       >
                         Unselect
                       </v-btn>
@@ -254,6 +268,26 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="remarksDialog" max-width="400">
+      <v-card>
+        <v-card-title class="headline"> ENTER SECTION OF SUBJECT </v-card-title>
+        <v-card-text>
+          <input
+            type="text"
+            v-model="remarksModel"
+            placeholder="Section"
+            class="form-control"
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="handlePostDesignateSubject">
+            Confirm
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
     
@@ -277,9 +311,7 @@ export default {
       teacherSearch: "",
       selectedSubject: null,
       subjects: [],
-      departments: [
-
-      ],
+      departments: [],
       page: 1,
       teacherTotal: 0,
       rowsPerPage: 10,
@@ -332,16 +364,15 @@ export default {
       ],
       designatedSubjects: [],
       teachers: [],
+      selectedTeacher: null,
+      remarksModel: null,
+      remarksDialog: false
     };
   },
   computed: mapGetters(["getTeachers", "getSemester"]),
   // Todo:: Move some unregistered API to api.js
   methods: {
-    ...mapActions([
-      "setTeachers",
-      "setSemester",
-      "setDialog",
-    ]),
+    ...mapActions(["setTeachers", "setSemester", "setDialog"]),
     next(page) {
       this.fetchTeachers();
     },
@@ -352,7 +383,7 @@ export default {
         .then((r) => {
           this.form.reset();
           this.selectedTeachers = null;
-          this.fetchSubjects()
+          this.fetchSubjects();
           this.fetchDesignatedSubjects();
           this.setDialog({ state: true, message: r.message });
         })
@@ -401,53 +432,59 @@ export default {
       });
     },
     handleDesignateSubject(teacher) {
-      axios
+      this.selectedTeacher = teacher
+      this.remarksDialog = true
+    },
+    async handlePostDesignateSubject(){
+      const teacher = this.selectedTeacher
+      await axios
         .patch(
-          `/api/subjects-designate/${teacher.id}/${this.selectedSubject.id}`
+          `/api/subjects-designate/${teacher.id}/${this.selectedSubject.id}`,{section: this.remarksModel}
         )
         .then((r) => {
-          this.teachers = this.teachers.filter(
-            (item) => item.id !== teacher.id
-          );
           this.fetchDesignatedSubjects();
-          this.fetchSubjects()
-        });
+          this.fetchSubjects();
+        })
+        .catch(err=>{
+          this.setDialog({state: true, message: err.response.data.message})
+        })
+        this.remarksDialog = false
     },
     revoke(item) {
       axios
         .delete(`/api/subjects-revoke/${item.teacher_id}/${item.subject_id}`)
         .then((r) => {
           this.fetchDesignatedSubjects();
-          this.fetchSubjects()
-        }).catch(err=>{
-          this.setDialog({state: true, message : err.response.data.message})
-      })
+          this.fetchSubjects();
+        })
+        .catch((err) => {
+          this.setDialog({ state: true, message: err.response.data.message });
+        });
     },
-    handleEdit(item){
-      alert("Handle Edit")
+    handleEdit(item) {
+      alert("Handle Edit");
     },
-    fetchDepartments(){
-      api.departments().then(r=>{
-        this.departments = r.data.data
-      })
+    fetchDepartments() {
+      api.departments().then((r) => {
+        this.departments = r.data.data;
+      });
     },
     async encodeSubject() {
       //todo add a loading animation
-      const file = document.getElementById('csvFileUpload').files.item(0)
+      const file = document.getElementById("csvFileUpload").files.item(0);
       const text = await file.text();
-      const data = text.split('\n')
-      data.pop()
-      api.bulkSubjects({data})
-          .then(r=>{
-            console.log(r)
-          })
+      const data = text.split("\n");
+      data.pop();
+      api.bulkSubjects({ data }).then((r) => {
+        this.setDialog({ state: true, message: r.data.message });
+      });
     },
   },
   mounted() {
     this.fetchDisplaySemester();
     this.fetchSubjects();
     this.fetchDesignatedSubjects();
-    this.fetchDepartments()
+    this.fetchDepartments();
   },
 };
 </script>
