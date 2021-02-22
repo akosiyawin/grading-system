@@ -237,15 +237,17 @@ class StudentController extends Controller
                 $units = explode('(', $units);
                 $units = str_replace(')', '', $units);
 
-                $lecture_units = $units[0];
+                $lecture_units = $units[0] ?? 0;
                 $total_lecture += $lecture_units;
 
-                $lab_units = $units[1];
+                $lab_units = $units[1] ?? 0;
                 $total_lab += $lab_units;
 
             }
-
+//
             $units = $total_lecture . "(" . $total_lab . ")";
+//            print_r($units);
+
 
             return response(['Average' => $average, 'units' => $units], 200);
         } else {
