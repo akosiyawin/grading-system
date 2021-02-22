@@ -263,12 +263,18 @@ export default {
             } else if (v.grade >= 75) {
               html += '<td>3.0</td>'
               html += '<td>Passed</td>'
+            } else if (v.grade == 4) {
+              html += '<td class="text-danger">DRP</td>'
+              html += '<td>Dropped</td>'
+            } else if (v.grade == 0) {
+              html += '<td class="text-danger">INC</td>'
+              html += '<td>Incomplete</td>'
             } else {
               html += '<td class="text-danger">5.0</td>'
               html += '<td>Failed</td>'
             }
             html += '</tr>'
-            // console.log(v.grade);
+            console.log(v.grade);
           });
           $('.data').html(html);
           $tr.html(html);

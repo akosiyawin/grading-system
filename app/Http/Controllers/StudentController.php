@@ -180,6 +180,7 @@ class StudentController extends Controller
                 ->where('semesters.id', '=', $semester)
                 ->where('students.user_id', '=', $user_id)
                 ->where('student_subjects.grade','<>','4')
+                ->where('student_subjects.grade','<>','0')
 //                 ->select()
                 ->get();
 
@@ -208,7 +209,8 @@ class StudentController extends Controller
                 $average = "2.75";
             } elseif ($average >= 75) {
                 $average = "3.0";
-            } else {
+            }
+            else {
                 $average = "5.0";
             }
 
