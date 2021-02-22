@@ -356,14 +356,15 @@ trait RegistrarApi
             'rowsPerPage' => 'required'
         ]);
 
-        $query = Student::join('users', 'students.user_id', 'users.id');
+        $query = Student::join('users', 'students.user_id', 'users.id')
+        ->join('courses','students.course_id','courses.id');
 //        $query->join('student_teachers','students.id','student_teachers.student_id');
 //        $query->join('semesters','student_teachers.semester_id','semesters.id');
 //        $query->where('semesters.status',1);
         $query->select([
-            'first_name',
-            'middle_name',
-            'last_name',
+            'users.first_name',
+            'users.middle_name',
+            'users.last_name',
             'students.id as student_id',
             'users.id as user_id',
             'users.username',
@@ -376,6 +377,7 @@ trait RegistrarApi
             $query->orWhere('middle_name', 'like', "%{$request->search}%");
             $query->orWhere('last_name', 'like', "%{$request->search}%");
             $query->orWhere('username', 'like', "%{$request->search}%");
+            $query->orWhere('courses.title', 'like', "%{$request->search}%");
         }
         if ($request->get('rowsPerPage') == 99) {
             $students = StudentResource::collection($query->get());
