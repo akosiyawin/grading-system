@@ -27,10 +27,7 @@
 
 <div id="app">
     @yield('content')
-<<<<<<< HEAD
     <loading />
-=======
->>>>>>> bf8422f7d4deb3d2e4cb2833bd0bab851ae14f2b
 </div>
 
 
