@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\DB;
 class StudentController extends Controller
 {
 
-    public function __construct()
-    {
-        $this->middleware(['auth','student']);
-    }
+//    public function __construct()
+//    {
+//        $this->middleware(['auth','student']);
+//    }
 
     public function print()
     {
@@ -78,7 +78,8 @@ class StudentController extends Controller
             ->join('student_subjects', 'students.id', '=', 'student_subjects.student_id')
             ->join('subject_teachers', 'student_subjects.subject_teacher_id', '=', 'subject_teachers.id')
             ->join('subjects', 'subject_teachers.subject_id', '=', 'subjects.id')
-            ->join('users', 'subject_teachers.teacher_id', '=', 'users.id')
+            ->join('teachers', 'subject_teachers.teacher_id', '=', 'teachers.id')
+            ->join('users', 'teachers.user_id', '=', 'users.id')
             ->join('semesters', 'subject_teachers.semester_id', '=', 'semesters.id')
             ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
             ->select(
@@ -86,7 +87,7 @@ class StudentController extends Controller
                 'subjects.title',
                 'student_subjects.grade',
                 'subjects.units',
-//               'semesters.id',
+               'semesters.id',
                 DB::raw('CONCAT(users.last_name,", ",users.first_name," ",users.middle_name) as name'),
                 'users.last_name',
                 'users.first_name',
@@ -102,6 +103,7 @@ class StudentController extends Controller
             ->where('students.user_id', '=', $user_id)
             ->where('student_subjects.status', '=', 1)
             ->get();
+
 
         if (count($grades)) {
             return response($grades, 200);
@@ -235,15 +237,17 @@ class StudentController extends Controller
                 $units = explode('(', $units);
                 $units = str_replace(')', '', $units);
 
-                $lecture_units = $units[0];
+                $lecture_units = $units[0] ?? 0;
                 $total_lecture += $lecture_units;
 
-                $lab_units = $units[1];
+                $lab_units = $units[1] ?? 0;
                 $total_lab += $lab_units;
 
             }
-
+//
             $units = $total_lecture . "(" . $total_lab . ")";
+//            print_r($units);
+
 
             return response(['Average' => $average, 'units' => $units], 200);
         } else {
