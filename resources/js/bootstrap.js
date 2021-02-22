@@ -39,16 +39,3 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     forceTLS: true
 // });
-<<<<<<< HEAD
-=======
-
-axios.interceptors.request.use(function(config) {
-    // Do something before request is sent
-    console.log('Start Ajax Call');
-    return config;
-}, function(error) {
-    // Do something with request error
-    console.log('Error');
-    return Promise.reject(error);
-});
->>>>>>> bf8422f7d4deb3d2e4cb2833bd0bab851ae14f2b

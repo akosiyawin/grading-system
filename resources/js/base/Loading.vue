@@ -1,5 +1,6 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="390">
+  <div data-app>
+    <v-dialog v-model="dialog" persistent max-width="390">
     <v-card>
       <v-card-text>
         <div class="row justify-content-center aligin-items-center w-100 p-3">
@@ -14,6 +15,7 @@
       </v-card-text>
     </v-card>
   </v-dialog>
+  </div>
 </template>
 
 <script>
