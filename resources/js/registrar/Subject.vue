@@ -661,7 +661,7 @@ export default {
       this.editForm.code = item.code
       this.editForm.title = item.title
       this.editForm.lecture = units[0]
-      this.editForm.lab = units[1]
+      this.editForm.lab = units[1] ?? null
       this.editForm.department_id = item.department_id
       document.body.classList.add('sidebar-collapse')
       this.editDialog = true

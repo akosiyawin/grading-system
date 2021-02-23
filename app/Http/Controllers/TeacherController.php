@@ -226,7 +226,8 @@ class TeacherController extends Controller
         ];
 
         $students = Student::join('users', 'students.user_id', 'users.id')
-            ->join('courses', 'students.course_id', 'courses.id');
+            ->join('courses', 'students.course_id', 'courses.id')
+            ->orderBy('users.last_name');
 
         $search = $request->get('search') ?? '';
         $students->where(function ($q) use ($columns, $search) {
@@ -281,7 +282,6 @@ class TeacherController extends Controller
                 ->join('semesters', 'subject_teachers.semester_id', 'semesters.id')
                 ->where('student_id', $student)
                 ->where('semesters.status',1)
-                ->where('subject_id',$validated['subject_id'])
                 ->where('subject_teacher_id', $subjectTeacherID)->exists()) {
                 StudentSubject::create([
                     'student_id' => $student,
@@ -357,6 +357,7 @@ class TeacherController extends Controller
         $studentSubjects->where('semesters.status', 1);
         $studentSubjects->where('subject_teachers.id', $subject);
         $studentSubjects->where('teacher_id', auth()->user()->teacher->id);
+        $studentSubjects->orderBy('users.last_name');
         $studentSubjects->groupBy('student_id', 'subject_id');
         if ($request->get('rowsPerPage') == 99) {
             $data = $studentSubjects->get();

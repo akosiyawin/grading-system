@@ -16,7 +16,7 @@ class StudentWithoutSubjectResource extends JsonResource
     {
         return [
             'student_id' => $this->student_id,
-            'name' => $this->user->name,
+            'name' => $this->user->fullName,
             'student_number' => $this->user->username,
             'status' => $this->user->status,
             'course' => $this->course

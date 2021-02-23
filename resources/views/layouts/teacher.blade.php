@@ -17,9 +17,7 @@
     <link rel="stylesheet" href="{{asset('assets/adminlte/adminlte.min.css')}}">
     @stack('styles')
 </head>
-
-<body class="hold-transition sidebar-mini layout-fixed layout-footer-fixed layout-navbar-fixed">
-
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">
     <div class="wrapper">
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->

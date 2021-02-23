@@ -694,7 +694,11 @@ trait RegistrarApi
                 $split[3] = $split[5];
                 $split[4] = $split[6];
             }elseif (count($split) > 7){
-                dd($split);
+//                dd($split);
+                /*If this pops out, it means there is suject with >=4 commas*/
+                return response()->json([
+                    'message' => 'Please Contact the developer for this issue',
+                ]);
             }
 
             $lab = $split[3] !== "" ? ' ('.$split[3].')' : '';
