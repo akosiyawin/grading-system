@@ -167,7 +167,7 @@
                                 <td>${item.title}</td>
                                 <td>${item.units}</td>
                                 <td>${item.teacher}</td>
-                                <td class="${item.status ? '' : 'text-danger'}">${gradeDecider(item.grade)} ${parseInt(item.grade) === 4 ? '':`(${item.grade})`}</td>
+                                <td class="${item.status == 1 ? '' : 'text-danger'}">${gradeDecider(item.grade)} ${parseInt(item.grade) === 4 ? '':`(${item.grade})`}</td>
                                 <td>${parseInt(item.grade) === 4 ? 'DROPPED' :
                                     parseInt(item.grade) === 0 ? "INCOMPLETE" : remarksDecider(item.grade)}</td>
                             </tr>
