@@ -431,6 +431,7 @@ export default {
       this.editForm.middle_name = item.middle_name
       this.editForm.last_name = item.last_name
       this.editForm.course_id = item.course_id
+      document.body.classList.add('sidebar-collapse')
       this.editStudentDialog = true
     },
     saveStudent() {

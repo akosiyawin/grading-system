@@ -58,6 +58,37 @@
         <v-btn type="submit" class="bg-success mt-3">Save this record</v-btn>
       </form>
     </div>
+
+    <!--    Delete Dialog-->
+    <v-dialog
+        v-model="deleteDialog"
+        persistent
+        max-width="390"
+    >
+      <v-card>
+        <v-card-title class="headline">
+          Are you sure you want to delete this course?
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+              color="green darken-1"
+              text
+              @click="deleteDialog = false"
+              class="text-danger"
+          >
+            No
+          </v-btn>
+          <v-btn
+              color="green darken-1"
+              text
+              @click="handleYesDelete"
+          >
+            Yes
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -74,13 +105,30 @@ export default {
     form: new Form({
       title: '',
       department_id: ''
-    })
+    }),
+    deleteDialog: false,
+    courseToDelete: null
   }),
   computed: {
     ...mapGetters(['getCourses','getDepartments']),
   },
   methods: {
     ...mapActions(['setCourses','setDialog','pushToCourses']),
+    handleYesDelete(){
+      api.destroyCourse(this.courseToDelete).then(r=>{
+        this.fetchCourses().then(()=>{
+          this.setDialog({message: r.data.message,state: true})
+        })
+      })
+      .catch(err=>{
+        const r = err.response.data
+        this.setDialog({message: r.message +", "+ r.reason,state: true})
+      }).finally(() => this.deleteDialog = false)
+    },
+    handleDeleteDialog(id){
+      this.courseToDelete = id
+      this.deleteDialog = true
+    },
     async fetchCourses(){
       return await api.courses().then(r=>{
         this.setCourses(r.data.data)
@@ -98,15 +146,7 @@ export default {
       })
     },
     deestroyCourse(id){
-      api.destroyCourse(id).then(r=>{
-        this.fetchCourses().then(()=>{
-          this.setDialog({message: r.data.message,state: true})
-        })
-      })
-      .catch(err=>{
-        const r = err.response.data
-        this.setDialog({message: r.message +", "+ r.reason,state: true})
-      })
+      this.handleDeleteDialog(id)
     }
   },
   mounted() {

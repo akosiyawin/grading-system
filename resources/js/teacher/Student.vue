@@ -185,7 +185,7 @@
                       {{ student.course }}
                     </td>
                     <td>{{ student.student_number }}</td>
-                    <td>{{ student.status ? 'Active' : 'Suspended' }}</td>
+                    <td>{{ student.status == 1 ? 'Active' : 'Suspended' }}</td>
                   </tr>
                   </tbody>
                 </template>
@@ -293,7 +293,7 @@
                     <td>{{ rowsPerPage !== 99 ? (i + 1 + (rowsPerPage * page - 1)) - rowsPerPage + 1 : i + 1 }}</td>
                     <td>{{ student.name }} <br> {{ student.course }}</td>
                     <td>{{ student.student_number }}</td>
-                    <td>{{ student.status ? "Active" : "Suspended" }}</td>
+                    <td>{{ student.status == 1 ? "Active" : "Suspended" }}</td>
 <!--                    <td>
                       <v-btn x-small @click="handleGradeView(student.student_id)">Grade</v-btn>
                     </td>-->
@@ -373,8 +373,13 @@
         <v-card-title class="headline">
           Encode Grades In Table Mode
         </v-card-title>
-          <v-card-subtitle><b>**Note: </b> Approved grades by Registrar will be disabled.<br>
-          -Grades with value of <b>4.00</b> will be recognized as <i>dropped</i>.</v-card-subtitle>
+          <v-card-subtitle><b>**Note: </b>
+            <ul class="ml-4">
+              <li>Approved grades by Registrar will be disabled. </li>
+              <li> -Grades with value of <b>4/4.00</b> will be recognized as <i>dropped</i>.</li>
+              <li> -Grades with value of <b>0</b> will be recognized as <i>incompelete</i>.</li>
+            </ul>
+          </v-card-subtitle>
         <v-card-text>
           <v-simple-table dense height="400px">
             <template v-slot:default>
@@ -397,7 +402,10 @@
               <tbody>
               <tr v-for="(student,i) in studentsViewData">
                 <td>{{ rowsPerPage !== 99 ? (i + 1 + (rowsPerPage * page - 1)) - rowsPerPage + 1 : i + 1 }}</td>
-                <td><b>{{ student.name }} </b><br> {{ student.course }}</td>
+                <td><b>{{ student.name }} </b>
+                  <span v-if="parseInt(student.grade) == 4" class="text-danger">(DRP)</span>
+                  <span v-else-if="parseInt(student.grade) == 0" class="text-danger">(INC)</span>
+                  <br> {{ student.course }}</td>
                 <td>{{ student.student_number }}</td>
                 <td>
                   <div class="d-flex p-1">
@@ -545,7 +553,6 @@ export default {
       })
     },
     async fetchStudents() {
-      console.log(this.selectedSubject)
       return await api.studentWithoutSubject(this.selectedSubject, {
         rowsPerPage: this.rowsPerPage,
         page: this.page,
@@ -566,6 +573,7 @@ export default {
     handleViewDialog(subject) {
       this.selectedSubject = subject
       this.fetchStudents().then(r => {
+        document.body.classList.add('sidebar-collapse')
         this.viewDialog = !this.viewDialog
       })
     },
@@ -637,7 +645,6 @@ export default {
       this.selectAll = false
     },
     async fetchViewStudents() {
-      console.log(this.selectedSubject.subject_id);
       return await api.studentOfMySubject(this.selectedSubject.subject_id, {
         rowsPerPage: this.rowsPerPage,
         page: this.page,
@@ -650,6 +657,7 @@ export default {
       this.selectedSubject = subject
       this.fetchViewStudents().then(() => {
         if(this.studentsViewData.length > 0){
+          document.body.classList.add('sidebar-collapse')
           this.studentViewDialog = !this.studentViewDialog
         }else{
           this.setDialog({state: true, message: "There are no students for this subject"})

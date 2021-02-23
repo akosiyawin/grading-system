@@ -22,7 +22,6 @@
 export default {
   data: () => ({
     dialog: false,
-    test: "Hdarwiaje",
     loadingCount: 0,
   }),
   watch: {
@@ -33,7 +32,6 @@ export default {
     },
   },
   created() {
-    console.log("Loading Created");
     axios.interceptors.request.use(
       (config) => {
         // Do something before request is sent
@@ -60,10 +58,7 @@ export default {
         return Promise.reject(error);
       }
     );
-  },
-  mounted() {
-    console.log("Loading Moundted");
-  },
+  }
 };
 </script>
 

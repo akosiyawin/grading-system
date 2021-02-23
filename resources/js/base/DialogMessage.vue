@@ -32,9 +32,6 @@ export default {
     handleDialog(){
       this.setDialog({state: false,message: null,value:null})
     }
-  },
-  mounted () {
-    console.log("Dialog");
   }
 }
 </script>

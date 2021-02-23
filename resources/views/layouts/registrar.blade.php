@@ -30,7 +30,7 @@
 
 </head>
 
-<body class="hold-transition sidebar-mini layout-fixed">
+<body class="hold-transition sidebar-mini layout-fixed layout-footer-fixed layout-navbar-fixed">
 
 <div class="wrapper">
 
@@ -72,15 +72,16 @@
 
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
-        <a href="index3.html" class="brand-link">
-            <!-- <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
-                 style="opacity: .8"> -->
-            <span class="brand-text font-weight-light">EPCST GRADE BOOK</span>
+        <a href="{{route('handler')}}" class="brand-link text-center">
+            <span class="brand-text font-weight-bold">EPCST GRADE BOOK <i class="fas fa-book-open"></i></span>
         </a>
+
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="image">
+                    <img src="https://www.epcst.edu.ph/images/epcst_logo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                         style="opacity: .8">
                 </div>
                 <div class="info">
                     <a href="#" class="d-block">Hi, {{auth()->user()->first_name}}</a>
@@ -94,7 +95,7 @@
                     <li class="nav-item">
                         <a href="{{route('registrar.yearSemesterView')}}"
                            class="nav-link {{Route::is('registrar.yearSemesterView') ? 'active' : ''}}">
-                            <i class="nav-icon fas fa-th"></i>
+                            <i class="nav-icon fas fa-calendar-alt"></i>
                             <p>
                                 Year | Semester
                             </p>
@@ -113,7 +114,7 @@
                         <li class="nav-item">
                             <a href="{{route('registrar.subject')}}"
                                class="nav-link  {{Route::is('registrar.subject') ? 'active' : ''}}">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fas fa-swatchbook"></i>
                                 <p>
                                     Subjects
                                 </p>
@@ -122,7 +123,7 @@
                         <li class="nav-item">
                             <a href="{{route('registrar.studentView')}}"
                                class="nav-link {{Route::is('registrar.studentView') ? 'active' : ''}}">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fas fa-user-graduate"></i>
                                 <p>
                                     Students
                                 </p>
@@ -131,7 +132,7 @@
                         <li class="nav-item">
                             <a href="{{route('registrar.teacherView')}}"
                                class="nav-link {{Route::is('registrar.teacherView') ? 'active' : ''}}">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fas fa-chalkboard-teacher"></i>
                                 <p>
                                     Teachers
                                 </p>
@@ -140,7 +141,7 @@
                         <li class="nav-item">
                             <a href="{{route('registrar.setup')}}"
                                class="nav-link {{Route::is('registrar.setup') ? 'active' : ''}}">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fas fa-cog"></i>
                                 <p>
                                     Setup
                                 </p>
@@ -149,7 +150,7 @@
                         <li class="nav-item">
                             <a href="{{route('registrar.announcement')}}"
                                class="nav-link {{Route::is('registrar.announcement') ? 'active' : ''}}">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fas fa-scroll"></i>
                                 <p>
                                     Announcement
                                 </p>

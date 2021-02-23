@@ -390,31 +390,31 @@ class TeacherController extends Controller
         ]);
     }
 
-    public function updateGrade(Request $request, Student $student, Subject $subject)
-    {
-        $validated = $request->validate([
-            'grade' => 'nullable|numeric|min:' . Base::MIN_STUDENT_GRADE . "|max:" . Base::MAX_STUDENT_GRADE,
-        ]);
-        $subjectTeacherID = \App\Models\SubjectTeacher::where('subject_id',$subject->id)
-            ->where('teacher_id',auth()->user()->teacher->id)->first()->id;
-
-        $subjectID = $subject->id;
-        $grade = $student->subjects()
-            ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
-            ->where('subject_teachers.id', $subjectTeacherID)
-            ->where('subject_teachers.subject_id', $subjectID)->first();
-        /*update only the subject that are not approved*/
-        if (!$grade->status) {
-            $student->subjects()
-                ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
-                ->where('subject_teachers.id', $subjectTeacherID)
-                ->where('subject_teachers.subject_id', $subjectID)
-                ->update(['grade' => $validated['grade']]);
-        }
-        return response()->json([
-            'message' => "Student Subject Grade UPDATE successfully!",
-        ]);
-    }
+//    public function updateGrade(Request $request, Student $student, Subject $subject)
+//    {
+//        $validated = $request->validate([
+//            'grade' => 'nullable|numeric|min:' . Base::MIN_STUDENT_GRADE . "|max:" . Base::MAX_STUDENT_GRADE,
+//        ]);
+//        $subjectTeacherID = \App\Models\SubjectTeacher::where('subject_id',$subject->id)
+//            ->where('teacher_id',auth()->user()->teacher->id)->first()->id;
+//
+//        $subjectID = $subject->id;
+//        $grade = $student->subjects()
+//            ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
+//            ->where('subject_teachers.id', $subjectTeacherID)
+//            ->where('subject_teachers.subject_id', $subjectID)->first();
+//        /*update only the subject that are not approved*/
+//        if (!$grade->status) {
+//            $student->subjects()
+//                ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
+//                ->where('subject_teachers.id', $subjectTeacherID)
+//                ->where('subject_teachers.subject_id', $subjectID)
+//                ->update(['grade' => $validated['grade']]);
+//        }
+//        return response()->json([
+//            'message' => "Student Subject Grade UPDATE successfully!",
+//        ]);
+//    }
 
     public function updateGrades(Request $request)
     {

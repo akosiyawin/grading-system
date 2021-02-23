@@ -46,6 +46,39 @@
         <v-btn type="submit" class="bg-success">Save this record</v-btn>
       </form>
     </div>
+
+    <!--    Delete Dialog-->
+    <v-dialog
+        v-model="deleteDialog"
+        persistent
+        max-width="390"
+    >
+      <v-card>
+        <v-card-title class="headline">
+          Are you sure you want to delete this course?
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+              color="green darken-1"
+              text
+              @click="deleteDialog = false"
+              class="text-danger"
+          >
+            No
+          </v-btn>
+          <v-btn
+              color="green darken-1"
+              text
+              @click="handleYesDelete"
+          >
+            Yes
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+
   </div>
 </template>
 
@@ -63,12 +96,26 @@ export default {
     form: new Form({
       title: null
     }),
+    deleteDialog: false,
+    departmentToDelete: null
   }),
   computed: {
     ...mapGetters(['getDepartments'])
   },
   methods: {
     ...mapActions(['setDepartments', 'setDialog']),
+    handleYesDelete(){
+      api.destroyDepartment(this.departmentToDelete)
+      .then((r) => {
+        this.fetchDepartments().then(()=>{
+          this.setDialog({state: true, message: r.data.message})
+        })
+      })
+      .catch(err=>{
+        const r = err.response.data
+        this.setDialog({message: r.message +", "+ r.reason,state: true})
+      }).finally(() => this.deleteDialog = false)
+    },
     saveDepartment() {
       this.form.post(api.departmentStore)
       .then(r => {
@@ -84,16 +131,8 @@ export default {
       })
     },
     deleteDepartment(id) {
-      api.destroyDepartment(id)
-      .then((r) => {
-        this.fetchDepartments().then(()=>{
-          this.setDialog({state: true, message: r.data.message})
-        })
-      })
-      .catch(err=>{
-        const r = err.response.data
-        this.setDialog({message: r.message +", "+ r.reason,state: true})
-      })
+      this.departmentToDelete = id
+      this.deleteDialog = true
     }
   },
   mounted() {

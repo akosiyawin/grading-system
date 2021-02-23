@@ -8,22 +8,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="https://www.epcst.edu.ph/images/epcst_logo.png">
     <title>{{ config('app.name', 'Laravel') }}</title>
-    <!-- Fonts -->
-    {{-- <link rel="dns-prefetch" href="//fonts.gstatic.com">
- <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
- <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">--}}
+
     <!-- Styles -->
     @stack('before-styles')
     <link rel="stylesheet" href="{{asset('css/app.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://adminlte.io/themes/dev/AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <link rel="stylesheet" href="{{asset('assets/adminlte/adminlte.min.css')}}">
-
     @stack('styles')
-
 </head>
 
-<body class="hold-transition sidebar-mini layout-fixed">
+<body class="hold-transition sidebar-mini layout-fixed layout-footer-fixed layout-navbar-fixed">
 
     <div class="wrapper">
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -77,28 +72,25 @@
 
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="index3.html" class="brand-link">
-                <!-- <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
-                 style="opacity: .8"> -->
-                <span class="brand-text font-weight-light">EPCST GRADE BOOK</span>
+            <a href="{{route('handler')}}" class="brand-link text-center">
+                <span class="brand-text font-weight-bold">EPCST GRADE BOOK <i class="fas fa-book-open"></i></span>
             </a>
             <!-- Sidebar -->
             <div class="sidebar">
                 <!-- Sidebar user panel (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
-                        <!-- <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image"> -->
+                        <img src="https://www.epcst.edu.ph/images/epcst_logo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                             style="opacity: .8">
                     </div>
                     <div class="info">
-                        <a href="#" class="d-block">Hi, {{auth()->user()->first_name}}</a>
+                        <a href="{{route('handler')}}" class="d-block">Hi, {{auth()->user()->first_name}}</a>
                     </div>
                 </div>
 
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <!-- Add icons to the links using the .nav-icon class
-                         with font-awesome or any other icon font library -->
                         {{-- <li class="nav-item ">
                         <a href="#"
                            class="nav-link {{Route::is('teacher.dashboard') ? 'active' : ''}}">
@@ -110,7 +102,7 @@
                         </li> --}}
                         <li class="nav-item">
                             <a href="{{route('teacher.subject')}}" class="nav-link {{Route::is('teacher.subject') ? 'active' : ''}}">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fas fa-swatchbook"></i>
                                 <p>
                                     My Subjects
                                 </p>
@@ -118,7 +110,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="{{route('teacher.assignStudentsToSubjects')}}" class="nav-link {{Route::is('teacher.assignStudentsToSubjects') ? 'active' : ''}}">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fas fa-user-graduate"></i>
                                 <p>
                                     My Students
                                 </p>

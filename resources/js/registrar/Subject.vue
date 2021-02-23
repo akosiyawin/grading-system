@@ -618,6 +618,7 @@ export default {
     },
     handleAssignDialog(data) {
       this.fetchSimpleTeachers(data.id).then((r) => {
+        document.body.classList.add('sidebar-collapse')
         this.dialogManage = true;
         this.selectedSubject = data;
       });
@@ -662,6 +663,7 @@ export default {
       this.editForm.lecture = units[0]
       this.editForm.lab = units[1]
       this.editForm.department_id = item.department_id
+      document.body.classList.add('sidebar-collapse')
       this.editDialog = true
     },
     handleEditSave() {

@@ -159,7 +159,8 @@ export default {
     ],
     semester: [
       {title: "1st Semester", value: 1},
-      {title: "2st Semester", value: 2},
+      {title: "2nd Semester", value: 2},
+      {title: "Summer", value: 3},
     ],
     select_semester: null,
     year: null,

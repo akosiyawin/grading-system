@@ -219,7 +219,6 @@
                   @keyup.enter="fetchStudents"
               ></v-text-field>
             </v-card-title>
-
             <div class="table-responsive" style="height: 400px">
               <v-simple-table>
                 <template v-slot:default>
@@ -289,7 +288,7 @@
                   </div>
                 </v-col>
                 <v-col md="8">
-                  <v-simple-table height="500px">
+                  <v-simple-table height="350px">
                     <template v-slot:default>
                       <thead>
                       <tr>
@@ -331,11 +330,12 @@
                           ><br/>
                           {{ student.student_number }}
                         </td>
-                        <td v-if="student.grade !== 0">
-                            <span v-if="student.grade != 4">{{
+                        <td>
+                          <span v-if="parseInt(student.grade) == 0" class="text-danger">(INC)</span>
+                          <span v-else-if="parseInt(student.grade) == 4" class="text-danger">(DRP)</span>
+                          <span v-else>{{
                                 student.grade
-                              }}</span>
-                          <span v-else class="text-danger">(DROPPED)</span>
+                          }}</span>
                           <br/>
                           <v-btn
                               x-small
@@ -354,7 +354,6 @@
                           </v-btn
                           >
                         </td>
-                        <td v-else></td>
                       </tr>
                       </tbody>
                     </template>
@@ -406,6 +405,9 @@
         </v-btn>
       </template>
     </v-snackbar>
+
+    <loading/>
+
   </div>
 </template>
 
@@ -555,6 +557,7 @@ export default {
       this.activeTeacher = item.id;
       this.fetchTeacherSubjects(item.id).then((r) => {
         this.subjectLists = r.data.data;
+        document.body.classList.add('sidebar-collapse')
         this.viewGradeDialog = true;
       });
     },
