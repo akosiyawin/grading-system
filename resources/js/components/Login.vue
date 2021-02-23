@@ -2,7 +2,7 @@
   <div class="container d-flex justify-content-center align-items-center" style="height: 100vh">
     <div class="login-box">
       <div class="login-logo">
-        <a href="#"><b>EPCST</b>Grade Book</a>
+        <a href="#"><b>EPCST</b> Grade Book <i class="fas fa-book-open"></i></a>
       </div>
       <div class="card">
         <div class="card-body login-card-body">
@@ -56,7 +56,7 @@
             <a href="https://www.facebook.com/EPCST" class="btn btn-block btn-primary">
               <i class="fab fa-facebook mr-2"></i> Visit Us On Facebook
             </a>
-            <a href="https://www.youtube.com/channel/UCTrlBNO2fjww9zfoSgxXfdA" class="btn btn-block btn-danger">
+            <a href="https://www.youtube.com/channel/UCGQMVO8_CpGE_a4zVAgO50g" class="btn btn-block btn-danger">
               <i class="fab fa-youtube mr-2"></i> Check Out Our YouTube Channel
             </a>
           </div>
@@ -99,4 +99,5 @@ export default {
   color: red !important;
   font-weight: 500;
 }
+
 </style>
