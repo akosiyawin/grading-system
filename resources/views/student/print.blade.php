@@ -2,8 +2,6 @@
 
 @push('styles')
     <style>
-
-
         body {
             margin-top: 20px;
             background: #eee;
@@ -162,10 +160,12 @@
             <!-- begin invoice-company -->
             <div class="invoice-company text-inverse f-w-600">
             <span class="pull-right hidden-print">
-            <a href="javascript:;" class="btn btn-sm btn-white m-b-10 p-l-5 pdf"><i
+            <a href="javascript:void()" class="btn btn-sm btn-white m-b-10 p-l-5 pdf"><i
                         class="fa fa-file t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a>
-            <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i
+            <a href="javascript:void()" onclick="window.print()" class="btn btn-sm btn-white m-b-10 p-l-5"><i
                         class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a>
+                 <a href="javascript:void()" onclick="printNow()" class="btn btn-sm btn-white m-b-10 p-l-5"><i
+                             class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print Grades</a>
             </span>
                 <br>
                 <br>
@@ -338,6 +338,177 @@
 @push('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
     <script>
+
+
+        function printNow(){
+            const currentWindow = window.open('', 'PRINT', 'height=920,width=1280');
+
+            currentWindow.document.write('<html><head><title>' + document.title + '</title>');
+            currentWindow.document.write(`
+
+    <link rel="stylesheet" href="{{asset('css/app.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="{{asset('assets/adminlte/adminlte.min.css')}}">
+   <style>
+        /*Overrides bootstrap, removing orientation layout upon printing*/
+        @page {
+            size: auto;
+        }
+
+         .invoice {
+            background: #fff;
+            padding: 20px
+        }
+
+        .invoice-company {
+            font-size: 20px
+        }
+
+        .invoice-header {
+            margin: 0 -20px;
+            background: #f0f3f4;
+            padding: 20px;
+        }
+
+        blockquote {
+            background: #f0f3f4;
+            padding: 40px;
+            margin: 0px;
+        }
+
+        .invoice-date,
+        .invoice-from,
+        .invoice-to {
+            margin: 0px;
+            display: table-cell;
+            width: 1%
+        }
+
+        .invoice-from,
+        .invoice-to {
+            padding-top: 20px;
+        }
+
+        .invoice-date .date,
+        .invoice-from strong,
+        .invoice-to strong {
+            font-size: 16px;
+            font-weight: 600
+        }
+
+        .invoice-date {
+            text-align: right;
+            padding-left: 20px
+        }
+
+        .invoice-price {
+            background: #f0f3f4;
+            display: table;
+            width: 100%
+        }
+
+        .invoice-price .invoice-price-left,
+        .invoice-price .invoice-price-right {
+            display: table-cell;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: 600;
+            width: 75%;
+            position: relative;
+            vertical-align: middle
+        }
+
+        .invoice-price .invoice-price-left .sub-price {
+            display: table-cell;
+            vertical-align: middle;
+            padding: 0 20px
+        }
+
+        .invoice-price small {
+            font-size: 12px;
+            font-weight: 400;
+            display: block
+        }
+
+        .invoice-price .invoice-price-row {
+            display: table;
+            float: left
+        }
+
+        .invoice-price .invoice-price-right {
+            width: 25%;
+            background: #2d353c;
+            color: #fff;
+            font-size: 28px;
+            text-align: right;
+            vertical-align: bottom;
+            font-weight: 300
+        }
+
+        .invoice-price .invoice-price-right small {
+            display: block;
+            opacity: .6;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 12px
+        }
+
+        .invoice-footer {
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            font-size: 10px
+        }
+
+        .invoice-note {
+            color: #999;
+            margin-top: 80px;
+            font-size: 85%
+        }
+
+        .invoice > div:not(.invoice-footer) {
+            margin-bottom: 20px
+        }
+
+        .btn.btn-white, .btn.btn-white.disabled, .btn.btn-white.disabled:focus, .btn.btn-white.disabled:hover, .btn.btn-white[disabled], .btn.btn-white[disabled]:focus, .btn.btn-white[disabled]:hover {
+            color: #2d353c;
+            background: #fff;
+            border-color: #d9dfe3;
+        }
+
+        .product-image {
+            width: 120px;
+            min-height: 120px;
+            /*max-height: auto;*/
+            float: left;
+            margin: 3px;
+            padding: 3px;
+        }
+
+        img {
+            max-width: 70%;
+            height: auto;
+        }
+
+        @media print {
+            .btn {
+                display: none;
+            }
+
+
+        }
+    </style>
+</head><body >`);
+            currentWindow.document.write(document.querySelector('.invoice-content').innerHTML);
+            currentWindow.document.write('</body></html>');
+
+            currentWindow.document.close(); // necessary for IE >= 10
+            // currentWindow.focus(); // necessary for IE >= 10*/
+
+            currentWindow.print();
+
+            return true;
+        }
 
         async function ready() {
             let user_id = await axios.get('/api/user').then(r => {

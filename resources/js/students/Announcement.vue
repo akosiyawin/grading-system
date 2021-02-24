@@ -4,6 +4,7 @@
     <v-main>
       <div class="mt-10">
         <v-timeline
+            v-if="announcements.length > 0"
             dense
         >
           <v-timeline-item
@@ -21,6 +22,16 @@
             </v-card>
           </v-timeline-item>
         </v-timeline>
+        <v-alert
+            class="ma-5"
+            v-else
+            text
+            outlined
+            color="deep-orange"
+            icon="mdi-bullhorn"
+        >
+          There are no announcement yet!
+        </v-alert>
       </div>
     </v-main>
   </v-app>

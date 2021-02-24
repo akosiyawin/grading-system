@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Base;
+use App\Models\SchoolYear;
+use App\Models\Semester;
+use App\Models\Student;
+use App\Models\StudentSubject;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -11,7 +16,7 @@ class StudentController extends Controller
 
     public function __construct()
     {
-        $this->middleware(['auth','student','status']);
+        $this->middleware(['auth', 'student', 'status']);
     }
 
     public function print()
@@ -24,6 +29,149 @@ class StudentController extends Controller
         return view('student.index');
     }
 
+    public function myGrade()
+    {
+        return view('student.myGrade');
+    }
+
+    public function mySchoolYear()
+    {
+        $student = auth()->user()->student;
+        $schoolYears = StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
+            ->join('subjects', 'subject_teachers.subject_id', 'subjects.id')
+            ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
+            ->join('school_years', 'semesters.school_year_id', 'school_years.id')
+            ->where('student_subjects.student_id', $student->id)
+            ->where('student_subjects.status', 1)
+            ->select(['school_years.id', 'school_years.year'])
+            ->groupBy('school_years.id')
+            ->get();
+        return response()->json([
+            'message' => "My School Years GET Successful!",
+            'data' => $schoolYears
+        ]);
+    }
+
+    public function mySemester(SchoolYear $schoolYear)
+    {
+        $semesters = StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
+            ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
+            ->join('school_years', 'semesters.school_year_id', 'school_years.id')
+            ->where('school_years.id', $schoolYear->id)
+            ->where('student_subjects.status', 1)
+            ->select(['semesters.id', 'semesters.title'])
+            ->groupBy('semesters.id')
+            ->get();
+
+        return response()->json([
+            'message' => "My Semesters For School Year GET Successful!",
+            'data' => $semesters
+        ]);
+    }
+
+    public function myGradeForSemester(SchoolYear $schoolYear, Semester $semester)
+    {
+        $student = auth()->user()->student;
+        $grades = StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
+            ->join('subjects', 'subject_teachers.subject_id', 'subjects.id')
+            ->join('teachers', 'subject_teachers.teacher_id', 'teachers.id')
+            ->join('users', 'teachers.user_id', 'users.id')
+            ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
+            ->join('school_years', 'semesters.school_year_id', 'school_years.id')
+            ->where('school_years.id', $schoolYear->id)
+            ->where('semesters.id', $semester->id)
+            ->where('student_subjects.status', 1)
+            ->where('student_subjects.student_id', $student->id)
+            ->select([
+                'student_subjects.grade',
+                'subjects.code',
+                'subjects.title',
+                'subjects.units',
+                'student_subjects.status',
+                DB::raw('CONCAT(users.last_name,", ",users.first_name," ",IFNULL(users.middle_name, "")) as teacher')
+            ])
+            ->get();
+
+        $totalGrade = 0;
+        $lecTotal = 0;
+        $labTotal = 0;
+        $recordLength = count($grades);
+        $hasIncomplete = false;
+        foreach ($grades as &$item) {
+            $grade = $item['grade'];
+            $item['grade'] = $this->gradeDecider($item['grade']);
+            if ($item['grade'] === 'INC') {
+                $item['remarks'] = 'INCOMPLETE';
+                $hasIncomplete = true;
+            } else if ($item['grade'] === 'DRP') {
+                $item['remarks'] = 'DROPPED';
+            } else {
+                $item['remarks'] = $this->remarksDecider($grade);
+            }
+
+            if (intval($grade) !== 4) {
+                $totalGrade += floatval($item['grade'] ?? 0);
+                $units = explode(' ', str_replace(['(', ')'], '', $item['units']));
+                $lecTotal += $units[0] ?? 0;
+                $labTotal += $units[1] ?? 0;
+            } else {
+                $recordLength--;
+            }
+        }
+        if($recordLength){
+            return response()->json([
+                'message' => "Grades for semester GET Successful!",
+                'data' => $grades,
+                'totalUnits' => $lecTotal . ($labTotal ? " ({$labTotal})" : ''),
+                'totalGrade' => $hasIncomplete ? "INC" :  number_format($totalGrade / $recordLength, 2)
+            ]);
+        }
+
+        return response()->json([
+            'message' => "Your grades is on process for School Year ".$schoolYear->year." - ".$semester->title,
+            'data' => [],
+        ]);
+    }
+
+    private function gradeDecider($initial_grade)
+    {
+        $grade = intval($initial_grade);
+        if ($grade >= 98) {
+            return "1.00";
+        } else if ($grade >= 95) {
+            return "1.25";
+        } else if ($grade >= 92) {
+            return "1.50";
+        } else if ($grade >= 89) {
+            return "1.75";
+        } else if ($grade >= 86) {
+            return "2.00";
+        } else if ($grade >= 83) {
+            return "2.25";
+        } else if ($grade >= 80) {
+            return "2.50";
+        } else if ($grade >= 77) {
+            return "2.75";
+        } else if ($grade >= 75) {
+            return "3.00";
+        } else if ($grade === 0) {
+            return "INC";
+        } else if ($grade === 4) {
+            return "DRP";
+        } else {
+            /*5.00*/
+            return "5.00";
+        }
+    }
+
+    private function remarksDecider($grade)
+    {
+        if (floatval($grade) < 75) {
+            return "Failed";
+        } else {
+            return "Passed";
+        }
+    }
 
     public function announcementIndex()
     {
@@ -87,7 +235,7 @@ class StudentController extends Controller
                 'subjects.title',
                 'student_subjects.grade',
                 'subjects.units',
-               'semesters.id',
+                'semesters.id',
                 DB::raw('CONCAT(users.last_name,", ",users.first_name," ",users.middle_name) as name'),
                 'users.last_name',
                 'users.first_name',
@@ -179,8 +327,8 @@ class StudentController extends Controller
                 ->where('school_years.year', '=', $year)
                 ->where('semesters.id', '=', $semester)
                 ->where('students.user_id', '=', $user_id)
-                ->where('student_subjects.grade','<>','4')
-                ->where('student_subjects.grade','<>','0')
+                ->where('student_subjects.grade', '<>', '4')
+                ->where('student_subjects.grade', '<>', '0')
 //                 ->select()
                 ->get();
 
@@ -209,8 +357,7 @@ class StudentController extends Controller
                 $average = "2.75";
             } elseif ($average >= 75) {
                 $average = "3.0";
-            }
-            else {
+            } else {
                 $average = "5.0";
             }
 
@@ -423,7 +570,20 @@ class StudentController extends Controller
 
     public function userInfo()
     {
-        return response(['Message' => 'Authenticated User GET Successfully','data' => ['id'=>auth()->user()->id]],200);
+        return response(['Message' => 'Authenticated User GET Successfully', 'data' => ['id' => auth()->user()->id]], 200);
+    }
+
+    public function authUser()
+    {
+        $user = auth()->user();
+        $profile = [
+            'student_number' => $user->username,
+            'birthdate' => date('F d, Y', strtotime($user->student->birthdate)),
+            'name' => $user->fullName,
+            'status' => $user->status,
+            'course' => $user->student->course->title
+        ];
+        return response(['Message' => 'Authenticated User GET Successfully', 'data' => $profile], 200);
     }
 
 }

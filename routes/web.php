@@ -151,6 +151,7 @@ Route::prefix('api')->group(function () {
     Route::get('/print/{user_id}/{semester}/{year}', [StudentController::class, 'CopyOfGrades']);
     Route::get('/activated-semester', [StudentController::class, 'activated_semester']);
     Route::get('/userInfo',[StudentController::class,'userInfo']);
+    Route::get('/authUser',[StudentController::class,'authUser']);
 
     Route::patch('/updateSubject/{subject}',[RegistrarController::class,'updateSubject']);
     Route::delete('/deleteSubject/{subject}',[RegistrarController::class,'deleteSubject']);
@@ -158,6 +159,12 @@ Route::prefix('api')->group(function () {
     Route::patch('/updateStudent/{user}',[RegistrarController::class,'updateStudent']);
 
     Route::delete('/deleteAnnouncement/{announcement}',[RegistrarController::class,'deleteAnnouncement']);
+
+    Route::get('/mySchoolYear', [StudentController::class, 'mySchoolYear']);
+    Route::get('/mySemester/{schoolYear}', [StudentController::class, 'mySemester']);
+    Route::get('/myGradeForSemester/{schoolYear}/{semester}', [StudentController::class, 'myGradeForSemester']);
+
 });
 
 Route::get('/print',[StudentController::class,'print'])->name('student.print');
+Route::get('/myGrade',[StudentController::class,'myGrade'])->name('student.myGrade');

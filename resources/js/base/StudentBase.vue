@@ -7,10 +7,10 @@
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title class="title">
-            Student Dashboard
+            {{getAuthUser.name}}
           </v-list-item-title>
           <v-list-item-subtitle>
-            EPCST Grade Book
+            EPCST Grade Book <v-icon class="ml-1">mdi-book-open-variant</v-icon>
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -35,10 +35,13 @@
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-
       </v-list>
       <template v-slot:append>
         <div class="pa-2">
+          <v-btn block color="success" href="https://www.facebook.com/eastwoodstech" class="mb-2" small>
+            <v-icon small class="mr-2">mdi-alert</v-icon>
+            Report An Issue
+          </v-btn>
           <v-btn block color="error" @click="logout">
             Logout
           </v-btn>
@@ -54,21 +57,29 @@
 </template>
 
 <script>
+import {mapActions, mapGetters} from "vuex";
+
 export default {
   name: "StudentBase",
   data: () => ({
     items: [
-      {title: 'Dashboard', icon: 'mdi-view-dashboard', href: '/student'},
+      {title: 'Periodic Search', icon: 'mdi-magnify', href: '/student'},
+      {title: 'My Grades', icon: 'mdi-star', href: '/myGrade'},
       {title: 'Announcement', icon: 'mdi-comment', href: '/announcement'},
     ],
     right: null,
-    drawer: true,
+    drawer: false,
   }),
+  computed: mapGetters(['getAuthUser']),
   methods: {
+    ...mapActions(['setAuthUser']),
     logout(){
       axios.post('/logout')
           .then(() => location.replace('/login'))
     }
+  },
+  async created() {
+    await this.setAuthUser()
   }
 }
 </script>

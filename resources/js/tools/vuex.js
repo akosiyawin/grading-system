@@ -13,7 +13,8 @@ export default new Vuex.Store({
         teachers: [],
         schoolYears: [],
         dialog: {message: null, state: null, value: null},
-        semester : null
+        semester : null,
+        authUser: {name: null, birthdate: null, status: null, student_number: null, course: null},
     },
     mutations: { //Synchronous
         setYearLevels(state,payload){
@@ -54,6 +55,9 @@ export default new Vuex.Store({
         },
         setSemester(state,payload){
             state.semester = payload
+        },
+        setAuthUser(state,payload){
+            state.authUser = payload
         }
     },
     actions: { //Async
@@ -95,6 +99,11 @@ export default new Vuex.Store({
         },
         setSemester(state,payload){
             state.commit('setSemester',payload)
+        },
+        async setAuthUser(state){
+            await api.getAuthUser().then(r=>{
+                state.commit('setAuthUser',r.data.data)
+            })
         }
     },
     getters: {
@@ -107,6 +116,7 @@ export default new Vuex.Store({
         getTeachers : state => state.teachers,
         getSelectedTeachers: state => state.selectedTeachers,
         getSchoolYears: state => state.schoolYears,
-        getSemester: state => state.semester
+        getSemester: state => state.semester,
+        getAuthUser: state => state.authUser,
     }
 })

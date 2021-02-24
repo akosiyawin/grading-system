@@ -299,7 +299,7 @@
                                  min="0" type="number">
                           <v-btn :disabled="student.grade_status == 1" class="bg-danger ml-1"
                                  @click="student.grade = 4">
-                            DROP
+                            DROPPED
                           </v-btn>
                         </div>
                       </td>

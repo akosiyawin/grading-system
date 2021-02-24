@@ -337,7 +337,7 @@ class TeacherController extends Controller
             'student_subjects.grade',
             'student_subjects.status as grade_status',
             'users.status',
-            DB::raw('CONCAT(users.last_name,", ",users.first_name," ",users.middle_name) as name')
+            DB::raw('CONCAT(users.last_name,", ",users.first_name," ",IFNULL(users.middle_name, "")) as name')
         ]);
 
         $columns = [

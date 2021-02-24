@@ -47,4 +47,8 @@ export default {
     deleteSubject: (id) => axios.delete(prefix+"/deleteSubject/"+id),
     updateStudent: (id) => prefix+"/updateStudent/"+id,
     deleteAnnouncement: (id) => axios.delete(prefix+"/deleteAnnouncement/"+id),
+    mySchoolYear: () => axios.get(prefix+"/mySchoolYear"),
+    mySemester: (id) => axios.get(prefix+"/mySemester/"+id),
+    myGradeForSemester: (year,sem) => axios.get(prefix+`/myGradeForSemester/${year}/${sem}`),
+    getAuthUser: () => axios.get(prefix+"/authUser")
 }

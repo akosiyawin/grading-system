@@ -58,9 +58,9 @@
           <v-img
               class="white--text align-end"
               height="200px"
-              src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+              src="https://epcst.files.wordpress.com/2012/08/eastwoods-3.jpg"
           >
-            <v-card-title>Student Information</v-card-title>
+            <v-card-title><span class="bg-success pa-2">Student Information</span></v-card-title>
           </v-img>
 
           <v-card-title id="StudentId"></v-card-title>
