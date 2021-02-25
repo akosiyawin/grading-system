@@ -168,3 +168,4 @@ Route::prefix('api')->group(function () {
 
 Route::get('/print',[StudentController::class,'print'])->name('student.print');
 Route::get('/myGrade',[StudentController::class,'myGrade'])->name('student.myGrade');
+Route::get('/printGrade/{schoolYear}/{semester}',[StudentController::class,'printGrade'])->name('student.printGrade');

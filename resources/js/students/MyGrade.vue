@@ -123,7 +123,7 @@
             </div>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="success">Print</v-btn>
+              <v-btn color="success" :href="'/printGrade/'+selectedSchoolYear.id+'/'+selectedSemester.id">Print</v-btn>
             </v-card-actions>
           </div>
           <v-alert

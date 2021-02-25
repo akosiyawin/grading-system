@@ -19,6 +19,47 @@ class StudentController extends Controller
         $this->middleware(['auth', 'student', 'status']);
     }
 
+    public function printGrade(SchoolYear $schoolYear, Semester $semester)
+    {
+        $student = auth()->user()->student;
+        $grades = $this->getgrades($schoolYear,$semester,$student);
+        $totalGrade = 0;
+        $lecTotal = 0;
+        $labTotal = 0;
+        $recordLength = count($grades);
+        $hasIncomplete = false;
+        foreach ($grades as &$item) {
+            $grade = $item['grade'];
+            $item['grade'] = $this->gradeDecider($item['grade']);
+            if ($item['grade'] === 'INC') {
+                $item['remarks'] = 'INCOMPLETE';
+                $hasIncomplete = true;
+            } else if ($item['grade'] === 'DRP') {
+                $item['remarks'] = 'DROPPED';
+            } else {
+                $item['remarks'] = $this->remarksDecider($grade);
+            }
+
+            if (intval($grade) !== 4) {
+                $totalGrade += floatval($item['grade'] ?? 0);
+                $units = explode(' ', str_replace(['(', ')'], '', $item['units']));
+                $lecTotal += $units[0] ?? 0;
+                $labTotal += $units[1] ?? 0;
+            } else {
+                $recordLength--;
+            }
+        }
+        if($recordLength){
+            $data = $grades;
+            $totalUnits = $lecTotal . ($labTotal ? " ({$labTotal})" : '');
+            $totalGrade =  $hasIncomplete ? "INC" :  number_format($totalGrade / $recordLength, 2);
+            return view('student.printGrade',compact('data','totalUnits','totalGrade'));
+        }
+
+        abort(404);
+        return  null;
+    }
+
     public function print()
     {
         return view('student.print');
@@ -69,10 +110,9 @@ class StudentController extends Controller
         ]);
     }
 
-    public function myGradeForSemester(SchoolYear $schoolYear, Semester $semester)
+    private function getgrades(SchoolYear $schoolYear, Semester $semester, Student $student)
     {
-        $student = auth()->user()->student;
-        $grades = StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
+        return StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
             ->join('subjects', 'subject_teachers.subject_id', 'subjects.id')
             ->join('teachers', 'subject_teachers.teacher_id', 'teachers.id')
             ->join('users', 'teachers.user_id', 'users.id')
@@ -91,7 +131,11 @@ class StudentController extends Controller
                 DB::raw('CONCAT(users.last_name,", ",users.first_name," ",IFNULL(users.middle_name, "")) as teacher')
             ])
             ->get();
-
+    }
+    public function myGradeForSemester(SchoolYear $schoolYear, Semester $semester)
+    {
+        $student = auth()->user()->student;
+        $grades = $this->getgrades($schoolYear,$semester,$student);
         $totalGrade = 0;
         $lecTotal = 0;
         $labTotal = 0;
