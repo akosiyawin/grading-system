@@ -54,6 +54,9 @@ class AuthorizeController extends Controller
 
     public function changePassword()
     {
+        if(auth()->user()->role_id == Base::STUDENT_ROLE_ID){
+            abort(404);
+        }
         return view('changePassword');
     }
 
