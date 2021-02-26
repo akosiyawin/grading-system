@@ -21,6 +21,9 @@ class RegistrarController extends Controller
     use RegistrarApi, RegistrarViews;
     public function __construct()
     {
+        $semester = Semester::where('status',1)->first();
+        $yearTitle = "School Year of {$semester->schoolYear->year} - {$semester->title}";
+        \View::share('yearTitle',$yearTitle);
         $this->middleware(['auth','registrar','status']);
     }
 

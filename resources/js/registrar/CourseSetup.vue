@@ -20,11 +20,6 @@
             <td>{{course.title}}</td>
             <td>{{course.department}}</td>
             <td class="project-actions text-right">
-              <v-btn class="btn bg-primary" small href="#">
-                <i class="fas fa-folder">
-                </i>
-                View
-              </v-btn>
               <v-btn class="btn bg-danger" small @click="deestroyCourse(course.id)">
                 <i class="fas fa-trash">
                 </i>

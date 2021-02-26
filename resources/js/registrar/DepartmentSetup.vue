@@ -18,11 +18,6 @@
             <td>{{ department.id }}</td>
             <td>{{ department.title }}</td>
             <td class="project-actions text-right">
-              <v-btn class="btn bg-primary" small href="#">
-                <i class="fas fa-folder">
-                </i>
-                View
-              </v-btn>
               <v-btn class="btn bg-danger" small @click="deleteDepartment(department.id)">
                 <i class="fas fa-trash">
                 </i>

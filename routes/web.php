@@ -14,7 +14,7 @@ Route::redirect('/', '/login');
 
 /* Redirector */
 Route::redirect('/teacher', '/teacher-subject');
-Route::redirect('/registrar', '/registrar-subject');
+//Route::redirect('/registrar', '/registrar-subject');
 
 
 Auth::routes([

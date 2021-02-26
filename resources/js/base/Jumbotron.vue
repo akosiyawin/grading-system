@@ -1,12 +1,12 @@
 <template>
   <div class="jumbotron">
     <blockquote class="bg-transparent">
-      <h1 class="display-4 text-dark">{{Title}}</h1>
+      <h1 class="display-4 text-dark">{{title}}</h1>
     </blockquote>
-    <p class="lead">{{Subtitle}}</p>
+    <p class="lead">{{subtitle}}</p>
     <hr class="my-4">
-    <p>{{Note}}</p>
-    <p class="lead">
+    <p>{{note}}</p>
+    <p class="lead" v-if="dashboardBtn">
       <v-btn
           rounded
           class="bg-primary"
@@ -23,12 +23,16 @@
 export default {
   name: "Jumbotron",
   props: {
-    Title : String,
-    Subtitle : String,
-    Note : String
+    title : String,
+    subtitle : String,
+    note : String,
+    dashboardBtn: {
+      default: true,
+      type: Boolean
+    }
   },
-  mounted() {
-    console.log(this.Title)
+  mounted(){
+    console.log(this.dashboardBtn)
   }
 }
 </script>

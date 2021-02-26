@@ -39,6 +39,9 @@
             <li class="nav-item">
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
+            <li class="nav-item">
+                <b class="navbar-text">{{$yearTitle}}</b>
+            </li>
         </ul>
 
         <ul class="navbar-nav ml-auto">
@@ -91,26 +94,25 @@
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                     data-accordion="false">
-
-                    <li class="nav-item">
-                        <a href="{{route('registrar.yearSemesterView')}}"
-                           class="nav-link {{Route::is('registrar.yearSemesterView') ? 'active' : ''}}">
-                            <i class="nav-icon fas fa-calendar-alt"></i>
-                            <p>
-                                Year | Semester
-                            </p>
-                        </a>
-                    </li>
                     @if(\App\Models\Semester::where('status',1)->exists())
-                       {{-- <li class="nav-item">
+                        <li class="nav-item">
                             <a href="{{route('registrar.index')}}"
                                class="nav-link  {{Route::is('registrar.index') ? 'active' : ''}}">
-                                <i class="nav-icon fas fa-th"></i>
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
                                 <p>
                                     Dashboard
                                 </p>
                             </a>
-                        </li>--}}
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route('registrar.announcement')}}"
+                               class="nav-link {{Route::is('registrar.announcement') ? 'active' : ''}}">
+                                <i class="nav-icon fas fa-scroll"></i>
+                                <p>
+                                    Announcement
+                                </p>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="{{route('registrar.subject')}}"
                                class="nav-link  {{Route::is('registrar.subject') ? 'active' : ''}}">
@@ -147,16 +149,16 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{route('registrar.announcement')}}"
-                               class="nav-link {{Route::is('registrar.announcement') ? 'active' : ''}}">
-                                <i class="nav-icon fas fa-scroll"></i>
-                                <p>
-                                    Announcement
-                                </p>
-                            </a>
-                        </li>
                     @endif
+                    <li class="nav-item">
+                        <a href="{{route('registrar.yearSemesterView')}}"
+                           class="nav-link {{Route::is('registrar.yearSemesterView') ? 'active' : ''}}">
+                            <i class="nav-icon fas fa-calendar-alt"></i>
+                            <p>
+                                Year | Semester
+                            </p>
+                        </a>
+                    </li>
                 </ul>
             </nav>
             <!-- /.sidebar-menu -->

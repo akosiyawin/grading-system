@@ -15,8 +15,8 @@ class CreateStudentSubjectsPivotTable extends Migration
     {
         Schema::create('student_subjects', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('subject_teacher_id');
             $table->foreignId('student_id')->constrained();
+            $table->unsignedBigInteger('subject_teacher_id');
             $table->foreignId('semester_id')->constrained();
             $table->float('grade')->default(0);
             $table->boolean('status')->default(0);
