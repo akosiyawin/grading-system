@@ -174,7 +174,7 @@ trait RegistrarApi
 
     public function subjectIndex()
     {
-        $subjects = Subject::join('departments','subjects.department_id','departments.id')
+        $subjects = Subject::join('departments', 'subjects.department_id', 'departments.id')
             ->select([
                 'subjects.id as subject_id',
                 'subjects.title',
@@ -216,7 +216,7 @@ trait RegistrarApi
         $subjects->join('semesters', 'subject_teachers.semester_id', 'semesters.id');
         $subjects->join('teachers', 'subject_teachers.teacher_id', 'teachers.id');
         $subjects->join('users', 'teachers.user_id', 'users.id');
-        $subjects->where('semesters.status',1);
+        $subjects->where('semesters.status', 1);
         $subjects->select([
             'teachers.id as teacher_id',
             'subjects.code',
@@ -239,11 +239,11 @@ trait RegistrarApi
     // Teachers for assigning subjects
     public function teacherAssigned(Subject $subject)
     {
-        $teachers = Teacher::join('users','teachers.user_id','users.id')
-        ->select([
-            'users.id as user_id',
-            'teachers.id'
-        ])->get();
+        $teachers = Teacher::join('users', 'teachers.user_id', 'users.id')
+            ->select([
+                'users.id as user_id',
+                'teachers.id'
+            ])->get();
 
         $teachers = TeacherAssignedResource::collection($teachers);
         return response()->json([
@@ -257,16 +257,16 @@ trait RegistrarApi
         return Semester::where('status', '=', 1)->first();
     }
 
-    public function designateSubject(Request $request,Teacher $teacher, Subject $subject)
+    public function designateSubject(Request $request, Teacher $teacher, Subject $subject)
     {
         $validated = $request->validate([
             'section' => 'required|string'
         ]);
-        
+
         $teacher = SubjectTeacher::create([
             'teacher_id' => $teacher->id,
             'subject_id' => $subject->id,
-            'semester_id' => Semester::where('status',1)->pluck('id')[0],
+            'semester_id' => Semester::where('status', 1)->pluck('id')[0],
             'remarks' => $validated['section']
         ]);
 
@@ -278,19 +278,19 @@ trait RegistrarApi
 
     public function revokeSubject($teacher, $subject)
     {
-        $students = StudentSubject::join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
-        ->join('semesters','subject_teachers.semester_id','semesters.id')
-        ->where('semesters.status',1)
-        ->where(['subject_teachers.id' => $subject, 'subject_teachers.teacher_id' => $teacher])->first();
-        if($students){
+        $students = StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
+            ->join('semesters', 'subject_teachers.semester_id', 'semesters.id')
+            ->where('semesters.status', 1)
+            ->where(['subject_teachers.id' => $subject, 'subject_teachers.teacher_id' => $teacher])->first();
+        if ($students) {
             return response()->json([
                 'message' => 'Teacher has an existing students on selected subject.',
-            ],400);
-        }else{
+            ], 400);
+        } else {
             SubjectTeacher::where(['id' => $subject, 'teacher_id' => $teacher])->delete();
             return response()->json([
                 'message' => 'Teacher has been deleted successfully.',
-            ],200);
+            ], 200);
         }
     }
 
@@ -352,7 +352,7 @@ trait RegistrarApi
         ]);
 
         $query = Student::join('users', 'students.user_id', 'users.id')
-        ->join('courses','students.course_id','courses.id');
+            ->join('courses', 'students.course_id', 'courses.id');
 //        $query->join('student_teachers','students.id','student_teachers.student_id');
 //        $query->join('semesters','student_teachers.semester_id','semesters.id');
 //        $query->where('semesters.status',1);
@@ -434,7 +434,7 @@ trait RegistrarApi
 
     public function destroyCourse(Course $course)
     {
-        if($course->students->count() > 0) {
+        if ($course->students->count() > 0) {
             return response()->json([
                 'message' => 'Unable To Delete Course',
                 'reason' => 'Due to this course has an existing records of students.'
@@ -448,13 +448,13 @@ trait RegistrarApi
 
     public function destroyDepartment(Department $department)
     {
-        if($department->courses->count() > 0){
+        if ($department->courses->count() > 0) {
             return response()->json([
                 'message' => 'Unable To Delete Department',
                 'reason' => 'Due to this department has an existing records of courses.'
             ], 400);
         }
-        if($department->subjects->count() > 0){
+        if ($department->subjects->count() > 0) {
             return response()->json([
                 'message' => 'Unable To Delete Department',
                 'reason' => 'Due to this department has an existing records of subjects.'
@@ -467,7 +467,7 @@ trait RegistrarApi
         ]);
     }
 
-    public function approveGrade(Request $request,$subject)
+    public function approveGrade(Request $request, $subject)
     {
         // dd($subject);
         /*
@@ -484,30 +484,30 @@ trait RegistrarApi
             'teacher' => 'required|numeric|exists:teachers,id'
         ]);
 
-        StudentSubject::join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
-        ->join('semesters','student_subjects.semester_id','semesters.id')
-        ->where('semesters.status',1)
-        ->where('subject_teachers.id',$subject)
-        // ->where('subject_teachers.teacher_id',$validated['teacher'])
-        ->where('student_subjects.student_id',$validated['student_id'])
-        ->update(['student_subjects.status' => DB::raw('!student_subjects.status')]);
+        StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
+            ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
+            ->where('semesters.status', 1)
+            ->where('subject_teachers.id', $subject)
+            // ->where('subject_teachers.teacher_id',$validated['teacher'])
+            ->where('student_subjects.student_id', $validated['student_id'])
+            ->update(['student_subjects.status' => DB::raw('!student_subjects.status')]);
         return response()->json([
             'message' => 'Subject status has been updated successfully!'
         ]);
     }
 
-    public function approveAllGrade(Request $request,$subject)
+    public function approveAllGrade(Request $request, $subject)
     {
         $validated = $request->validate([
-           'students' => 'required|array',
+            'students' => 'required|array',
             'students.*' => 'numeric|exists:students,id',
             'teacher' => 'required|numeric|exists:teachers,id'
         ]);
-        StudentSubject::join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
-            ->join('semesters','student_subjects.semester_id','semesters.id')
-            ->where('semesters.status',1)
-            ->where('subject_teachers.id',$subject)
-            ->whereIn('student_subjects.student_id',$validated['students'])
+        StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
+            ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
+            ->where('semesters.status', 1)
+            ->where('subject_teachers.id', $subject)
+            ->whereIn('student_subjects.student_id', $validated['students'])
             ->update(['student_subjects.status' => 1]);
 
         return response()->json([
@@ -541,13 +541,13 @@ trait RegistrarApi
             'page' => 'required|numeric',
             'teacher' => 'required|numeric|exists:teachers,id'
         ]);
-/*         $subjectTeacher = SubjectTeacher::join('semesters','subject_teachers.semester_id','semesters.id')
-            ->where('subject_teachers.id',$subject)
-            ->where('semesters.status',1)
-            // ->where('teacher_id',$validated['teacher'])
-//            ->where('subject_id',$subject->id)
-            ->select(['subject_teachers.id'])
-            ->first(); */
+        /*         $subjectTeacher = SubjectTeacher::join('semesters','subject_teachers.semester_id','semesters.id')
+                    ->where('subject_teachers.id',$subject)
+                    ->where('semesters.status',1)
+                    // ->where('teacher_id',$validated['teacher'])
+        //            ->where('subject_id',$subject->id)
+                    ->select(['subject_teachers.id'])
+                    ->first(); */
 
         /*
          * SELECT student_subjects.id, student_subjects.student_id,
@@ -558,12 +558,12 @@ trait RegistrarApi
         inner join semesters on student_subjects.semester_id = semesters.id
         WHERE teacher_id = 3 and semesters.status = 1*/
 
-        $students =  Student::join('student_subjects','students.id','student_subjects.student_id')
-            ->join('users','students.user_id','users.id')
-            ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
-            ->join('semesters','student_subjects.semester_id','semesters.id')
-            ->where('subject_teachers.id',$subject)
-            ->where('semesters.status',1)
+        $students = Student::join('student_subjects', 'students.id', 'student_subjects.student_id')
+            ->join('users', 'students.user_id', 'users.id')
+            ->join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
+            ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
+            ->where('subject_teachers.id', $subject)
+            ->where('semesters.status', 1)
             // ->where('teacher_id',$validated['teacher'])
 //            ->where('subject_teachers.subject_id',$subject->id)
 //            ->where('subject_teachers.id',$subjectTeacher->id)
@@ -635,36 +635,44 @@ trait RegistrarApi
         }
     }
 
+    private function inArrayOfNull($split): bool
+    {
+        return in_array(strtolower($split), ['(end)', '', null]);
+    }
+
     public function bulkStudents(Request $request)
     {
         $request->validate([
             'data' => 'required|array',
         ]);
-
         $existing = new Collection();
         set_time_limit(0);
-        ini_set('max_execution_time','300');
+        ini_set('max_execution_time', '300');
         $courses = Course::all();
         $data = array_map(function ($item) use ($courses) {
             $split = explode(',', $item);
-            $password = \Hash::make(Carbon::parse(trim($split[4],'"').','.trim($split[5],'"'))->format('Ymd'));
+            if ($this->inArrayOfNull($split[0]) || $this->inArrayOfNull($split[1]) || $this->inArrayOfNull($split[2])) {
+                return null;
+            }
+            $password = \Hash::make(Carbon::parse(trim($split[4], '"') . ',' . trim($split[5], '"'))->format('Ymd'));
             return [
                 'username' => $split[3],
-                'first_name' => substr(trim($split[1]),0,strlen($split[1])-5),$split,
-                'middle_name' => substr(trim($split[1],'"'),-3),
-                'last_name' => trim($split[0],'"'),
+                'first_name' => substr(trim($split[1]), 0, strlen($split[1]) - 5), $split,
+                'middle_name' => substr(trim($split[1], '"'), -3),
+                'last_name' => trim($split[0], '"'),
                 'course_id' => $this->findCourse($courses, $split),
-                'birthdate' => Carbon::parse(trim($split[4],'"').','.trim($split[5],'"'))->format('Y-m-d'),
+                'birthdate' => Carbon::parse(trim($split[4], '"') . ',' . trim($split[5], '"'))->format('Y-m-d'),
                 'role_id' => Base::STUDENT_ROLE_ID,
                 'password' => $password
             ];
         }, $request->get('data'));
         foreach ($data as $student) {
+            if (!$student) continue;
             $user = User::where('username', $student['username'])->first();
             if (!$user) {
                 $newUser = User::create($student);
                 $newUser->student()->create($student);
-            }else{
+            } else {
                 $existing->push($user->username);
             }
         }
@@ -683,17 +691,17 @@ trait RegistrarApi
 
         $data = array_map(function ($item) {
             $split = explode(',', $item);
-            if(count($split) === 6){
-                $split[1] = trim($split[1],'"') . ", " . trim($split[2],'"');
+            if (count($split) === 6) {
+                $split[1] = trim($split[1], '"') . ", " . trim($split[2], '"');
                 $split[2] = $split[3];
                 $split[3] = $split[4];
                 $split[4] = $split[5];
-            }elseif (count($split) > 6){
-                $split[1] = trim($split[1],'"') . ", " . trim($split[2],'"'). ", " . trim($split[3],'"');
+            } elseif (count($split) > 6) {
+                $split[1] = trim($split[1], '"') . ", " . trim($split[2], '"') . ", " . trim($split[3], '"');
                 $split[2] = $split[4];
                 $split[3] = $split[5];
                 $split[4] = $split[6];
-            }elseif (count($split) > 7){
+            } elseif (count($split) > 7) {
 //                dd($split);
                 /*If this pops out, it means there is suject with >=4 commas*/
                 return response()->json([
@@ -701,7 +709,7 @@ trait RegistrarApi
                 ]);
             }
 
-            $lab = $split[3] !== "" ? ' ('.$split[3].')' : '';
+            $lab = $split[3] !== "" ? ' (' . $split[3] . ')' : '';
             return [
                 'code' => $split[0],
                 'title' => $split[1],
@@ -736,10 +744,10 @@ trait RegistrarApi
 
     public function deleteSubject(Subject $subject)
     {
-        if($subject->subject_teachers->count() > 0){
+        if ($subject->subject_teachers->count() > 0) {
             return response()->json([
                 'message' => 'Subject has an existing relation from teachers.',
-            ],400);
+            ], 400);
         }
 
         $subject->delete();
@@ -757,7 +765,7 @@ trait RegistrarApi
             'last_name' => 'required|string',
             'birthdate' => 'required|date',
             'course_id' => 'required|numeric|exists:courses,id',
-            'username' => 'required|unique:users,username,'.$user->id,
+            'username' => 'required|unique:users,username,' . $user->id,
         ]);
         $user->update($validated);
         $user->student->update($validated);

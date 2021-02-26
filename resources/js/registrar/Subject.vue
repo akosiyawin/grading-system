@@ -684,8 +684,19 @@ export default {
       const file = document.getElementById("csvFileUpload").files.item(0);
       const text = await file.text();
       const data = text.split("\n");
-      data.pop();
+      data.shift() //Removes the first column
+      console.log(data,data[data.length-1],data[data.length-2])
+      if(data[data.length-1] === "" && data[data.length-2].toLowerCase().includes('(end)')){
+        data.pop()
+        data.pop()
+      }else if((data[data.length-1] === "" &&
+               !data[data.length-2].toLowerCase().includes('(end)')) ||
+                data[data.length-1].toLowerCase().includes('(end)')){
+        data.pop()
+      }
+
       api.bulkSubjects({data}).then((r) => {
+        this.fetchSubjects()
         this.setDialog({state: true, message: r.data.message});
       });
     },

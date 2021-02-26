@@ -463,7 +463,6 @@ export default {
       const text = await file.text();
       const data = text.split('\n')
       data.shift() //Removes the first column [name,course,etc...]
-      data.pop()
       api.bulkStudents({data})
       .then(r=>{
         this.fetchStudents()
