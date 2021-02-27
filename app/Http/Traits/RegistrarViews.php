@@ -21,6 +21,9 @@ trait RegistrarViews
     public function index()
     {
         $semester = Semester::where('status', 1)->first();
+        if(!$semester){
+            return redirect()->route('registrar.yearSemesterView');
+        }
         $students = User::where('role_id', Base::STUDENT_ROLE_ID)->count();
         $teachers = User::where('role_id', Base::TEACHER_ROLE_ID)->count();
         $registrars = User::where('role_id', Base::REGISTRAR_ROLE_ID)->count();

@@ -148,9 +148,16 @@ trait RegistrarApi
 
     public function yearIndex()
     {
+        $semester = Semester::where('status',1)->first();
+        if($semester){
+            $active = "Active School Year: {$semester->schoolyear->year} ({$semester->title})";
+        }else{
+            $active = "NO SEMESTER APPLIED";
+        }
         return response()->json([
             'message' => 'School Year GET successful',
-            'data' => SchoolYearResource::collection(SchoolYear::all())
+            'data' => SchoolYearResource::collection(SchoolYear::all()),
+            'active' => $active
         ]);
     }
 

@@ -3,9 +3,9 @@
     <blockquote class="bg-transparent">
       <h1 class="display-4 text-dark">{{title}}</h1>
     </blockquote>
-    <p class="lead">{{subtitle}}</p>
+    <p class="lead" v-html="subtitle"></p>
     <hr class="my-4">
-    <p>{{note}}</p>
+    <p v-html="note"></p>
     <p class="lead" v-if="dashboardBtn">
       <v-btn
           rounded
@@ -30,9 +30,6 @@ export default {
       default: true,
       type: Boolean
     }
-  },
-  mounted(){
-    console.log(this.dashboardBtn)
   }
 }
 </script>

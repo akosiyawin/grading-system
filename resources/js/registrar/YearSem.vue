@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-12">
         <h2 class="display-4" style="font-size: 2rem">
-          Active School Year: <b>2019-2020 ( Semester I )</b>
+          {{active}}
         </h2>
       </div>
     </div>
@@ -67,6 +67,7 @@ export default {
     form: new Form({
       year: "",
     }),
+    active: null
   }),
   methods: {
     ...mapActions(["setSchoolYears","setDialog","pushSchoolYear"]),
@@ -88,6 +89,7 @@ export default {
     loadYear() {
       api.yearIndex().then((r) => {
         this.setSchoolYears(r.data.data);
+        this.active = r.data.active
       });
     },
   }, 

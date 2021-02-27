@@ -5,23 +5,10 @@
 @endpush
 
 @section('content')
-    <div class="jumbotron">
-        <blockquote class="bg-transparent">
-            <h1 class="display-4 text-dark">SYSTEM SETUP</h1>
-        </blockquote>
-        <p class="lead">This page is responsible for managing the basic setup of your system.</p>
-        <hr class="my-4">
-        <p><b>*Note:</b> This should be the first page you need to configure.</p>
-        <p class="lead">
-            <v-btn
-                    rounded
-                    class="bg-primary"
-                    dark
-            >
-                Go to Dashboard
-            </v-btn>
-        </p>
-    </div>
+    <jumbotron  title="SYSTEM SETUP"
+                subtitle="This page is responsible for managing the basic setup of your system."
+                note="<b>*Note:</b> This should be the first page you need to configure."
+    ></jumbotron>
 
     <!--Row-->
     <registrar-courses></registrar-courses>
@@ -29,5 +16,4 @@
     <registrar-department></registrar-department>
 
     <dialog-message />
-
 @endsection

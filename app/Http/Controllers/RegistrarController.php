@@ -22,7 +22,12 @@ class RegistrarController extends Controller
     public function __construct()
     {
         $semester = Semester::where('status',1)->first();
-        $yearTitle = "School Year of {$semester->schoolYear->year} - {$semester->title}";
+        if ($semester) {
+            $yearTitle = "School Year of {$semester->schoolYear->year} - {$semester->title}";
+        }else{
+            $yearTitle = null;
+        }
+
         \View::share('yearTitle',$yearTitle);
         $this->middleware(['auth','registrar','status']);
     }
