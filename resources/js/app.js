@@ -19,6 +19,9 @@ Vue.component('student-announcement', require('./students/Announcement').default
 Vue.component('student-grade', require('./students/MyGrade').default);
 Vue.component('print-grade', require('./students/PrintGrade').default);
 
+
+Vue.component('assistance', require('./Assistance').default);
+
 //Registrar
 Vue.component('registrar-courses', require('./registrar/CourseSetup').default);
 Vue.component('registrar-department', require('./registrar/DepartmentSetup').default);

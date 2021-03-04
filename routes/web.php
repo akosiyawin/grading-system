@@ -6,6 +6,7 @@ use App\Http\Controllers\RegistrarController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 
@@ -40,36 +41,17 @@ Route::get('/teacher-subject', [TeacherController::class, 'createSubject'])->nam
 Route::get('/teacher-assign-student-to-subject', [TeacherController::class, 'assignStudentsToSubjects'])->name('teacher.assignStudentsToSubjects');
 
 //Student Routes
-Route::get('/student',[StudentController::class,'index'])->name('student.index');
-Route::get('/announcement',[StudentController::class,'announcementIndex'])->name('student.announcement');
+Route::get('/student', [StudentController::class, 'index'])->name('student.index');
+Route::get('/announcement', [StudentController::class, 'announcementIndex'])->name('student.announcement');
 
-Route::get('/studentProfile/{student}',[RegistrarController::class,'studentProfile'])->name('student.profile');
-Route::get('/changePassword',[AuthorizeController::class,'changePassword'])->name('changePassword');
+Route::get('/studentProfile/{student}', [RegistrarController::class, 'studentProfile'])->name('student.profile');
+Route::get('/changePassword', [AuthorizeController::class, 'changePassword'])->name('changePassword');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Route::view('/technical-assistance-only', 'assistance');
 
 /* Group Routes */
 Route::prefix('api')->group(function () {
-
+    Route::get('/technical-assistance-only/students', [\App\Http\Controllers\Controller::class,'assistance']);
 //Course
     Route::get('/courses', [RegistrarController::class, 'courseIndex']);
     Route::post('/courses', [RegistrarController::class, 'courseStore']);
@@ -131,7 +113,7 @@ Route::prefix('api')->group(function () {
     Route::post('/announcement', [RegistrarController::class, 'announcementStore']);
     Route::get('/announcement', [AuthorizeController::class, 'announcement']);
     /*DIto na ko, Iba yung pinupuntahan ng announcenment api*/
-    Route::patch('/updatePassword',[AuthorizeController::class,'updatePassword']);
+    Route::patch('/updatePassword', [AuthorizeController::class, 'updatePassword']);
 
 //teachers
     Route::post('/subjects/acquired', [TeacherController::class, 'Acquired_subjects']);
@@ -150,15 +132,15 @@ Route::prefix('api')->group(function () {
     Route::get('/footer/total/{user_id}/{semester}/{year}', [StudentController::class, 'Totalfooter']);
     Route::get('/print/{user_id}/{semester}/{year}', [StudentController::class, 'CopyOfGrades']);
     Route::get('/activated-semester', [StudentController::class, 'activated_semester']);
-    Route::get('/userInfo',[StudentController::class,'userInfo']);
-    Route::get('/authUser',[StudentController::class,'authUser']);
+    Route::get('/userInfo', [StudentController::class, 'userInfo']);
+    Route::get('/authUser', [StudentController::class, 'authUser']);
 
-    Route::patch('/updateSubject/{subject}',[RegistrarController::class,'updateSubject']);
-    Route::delete('/deleteSubject/{subject}',[RegistrarController::class,'deleteSubject']);
+    Route::patch('/updateSubject/{subject}', [RegistrarController::class, 'updateSubject']);
+    Route::delete('/deleteSubject/{subject}', [RegistrarController::class, 'deleteSubject']);
 
-    Route::patch('/updateStudent/{user}',[RegistrarController::class,'updateStudent']);
+    Route::patch('/updateStudent/{user}', [RegistrarController::class, 'updateStudent']);
 
-    Route::delete('/deleteAnnouncement/{announcement}',[RegistrarController::class,'deleteAnnouncement']);
+    Route::delete('/deleteAnnouncement/{announcement}', [RegistrarController::class, 'deleteAnnouncement']);
 
     Route::get('/mySchoolYear', [StudentController::class, 'mySchoolYear']);
     Route::get('/mySemester/{schoolYear}', [StudentController::class, 'mySemester']);
@@ -166,6 +148,6 @@ Route::prefix('api')->group(function () {
 
 });
 
-Route::get('/print',[StudentController::class,'print'])->name('student.print');
-Route::get('/myGrade',[StudentController::class,'myGrade'])->name('student.myGrade');
-Route::get('/printGrade/{schoolYear}/{semester}',[StudentController::class,'printGrade'])->name('student.printGrade');
+Route::get('/print', [StudentController::class, 'print'])->name('student.print');
+Route::get('/myGrade', [StudentController::class, 'myGrade'])->name('student.myGrade');
+Route::get('/printGrade/{schoolYear}/{semester}', [StudentController::class, 'printGrade'])->name('student.printGrade');
