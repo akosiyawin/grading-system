@@ -264,7 +264,7 @@ class StudentController extends Controller
         }
     }
 
-    public function git stGrades(request $request, $user_id = "", $semester = "", $year = "")
+    public function Grades(request $request, $user_id = "", $semester = "", $year = "")
     {
         $grades = DB::table('students')
             ->join('student_subjects', 'students.id', '=', 'student_subjects.student_id')
