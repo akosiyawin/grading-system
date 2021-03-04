@@ -229,12 +229,13 @@ export default {
           let $tr = $('.data');
           let html = "";
           $(r).each(function (r, v) {
-            // console.log(v);
+            let instructor = v.first_name.substring(0,1) + ".";
+            console.log(instructor);
             html += '<tr>'
             html += '<td>' + v.code + '</td>'
             html += '<td>' + v.title + '</td>'
             html += '<td>' + v.units + '</td>'
-            html += '<td>' + v.last_name + " " + v.first_name + " " + v.middle_name + '</td>'
+            html += '<td>' + instructor + " " + v.last_name +'</td>'
             if (v.grade >= 98) {
               html += '<td>1.0</td>'
               html += '<td>Passed</td>'

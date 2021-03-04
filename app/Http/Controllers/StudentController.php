@@ -135,7 +135,7 @@ class StudentController extends Controller
                 'subjects.title',
                 'subjects.units',
                 'student_subjects.status',
-                DB::raw('CONCAT(users.last_name,", ",users.first_name," ",IFNULL(users.middle_name, "")) as teacher')
+                DB::raw('CONCAT(LEFT(users.first_name,1),". ",users.last_name) as teacher')
             ])
             ->get();
     }
