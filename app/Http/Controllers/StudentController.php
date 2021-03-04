@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\DB;
 class StudentController extends Controller
 {
 
-    public function __construct()
-    {
-        $this->middleware(['auth', 'student', 'status']);
-    }
+//    public function __construct()
+//    {
+//        $this->middleware(['auth', 'student', 'status']);
+//    }
 
     public function printGrade(SchoolYear $schoolYear, Semester $semester)
     {
