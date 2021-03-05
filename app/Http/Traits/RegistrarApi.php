@@ -190,6 +190,7 @@ trait RegistrarApi
                 'departments.title as department',
                 'departments.id as department_id'
             ])
+            ->orderBy('subjects.title')
             ->groupBy('subjects.id')
             ->get();
         return response()->json([
@@ -357,9 +358,8 @@ trait RegistrarApi
         $request->validate([
             'rowsPerPage' => 'required'
         ]);
-
         $query = Student::join('users', 'students.user_id', 'users.id')
-            ->join('courses', 'students.course_id', 'courses.id');
+            ->join('courses', 'students.course_id', 'courses.id')->orderBy('users.last_name');
 //        $query->join('student_teachers','students.id','student_teachers.student_id');
 //        $query->join('semesters','student_teachers.semester_id','semesters.id');
 //        $query->where('semesters.status',1);
@@ -374,6 +374,7 @@ trait RegistrarApi
             'students.birthdate',
             'students.course_id'
         ]);
+
         if ($request->get('search')) {
             $query->where('first_name', 'like', "%{$request->search}%");
             $query->orWhere('middle_name', 'like', "%{$request->search}%");
@@ -386,7 +387,6 @@ trait RegistrarApi
         } else {
             $students = StudentResource::collection($query->paginate($request->rowsPerPage));
         }
-
         return response()->json([
             'message' => 'Students GET Successful',
             'data' => $students
@@ -574,16 +574,17 @@ trait RegistrarApi
             // ->where('teacher_id',$validated['teacher'])
 //            ->where('subject_teachers.subject_id',$subject->id)
 //            ->where('subject_teachers.id',$subjectTeacher->id)
+            ->orderBy('users.last_name')
             ->select([
                 'students.id',
                 'users.id as user_id',
                 'student_subjects.grade',
                 'student_subjects.status'
             ]);
+
 //            ->where('teacher_id', $validated['teacher'])
 //            ->where('semesters.status', 1)
 //            ->where('subject_teachers.id', $subjectTeacher->id);
-
         $columns = [
             'username',
             'first_name',

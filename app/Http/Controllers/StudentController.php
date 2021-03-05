@@ -49,11 +49,18 @@ class StudentController extends Controller
                 $recordLength--;
             }
         }
+        $user = auth()->user();
+        $info = json_encode([
+            'name' => $user->fullName,
+            'student_number' => $user->username,
+            'course' => $user->student->course->title,
+            'birthdate' => date('F d, Y', strtotime($user->student->birthdate))
+        ]);
         if($recordLength){
             $data = $grades;
             $totalUnits = $lecTotal . ($labTotal ? " ({$labTotal})" : '');
             $totalGrade =  $hasIncomplete ? "INC" :  number_format($totalGrade / $recordLength, 2);
-            return view('student.printGrade',compact('data','totalUnits','totalGrade'));
+            return view('student.printGrade',compact('data','totalUnits','totalGrade','info'));
         }
 
         abort(404);
@@ -128,7 +135,7 @@ class StudentController extends Controller
                 'subjects.title',
                 'subjects.units',
                 'student_subjects.status',
-                DB::raw('CONCAT(users.last_name,", ",users.first_name," ",IFNULL(users.middle_name, "")) as teacher')
+                DB::raw('CONCAT(LEFT(users.first_name,1),". ",users.last_name) as teacher')
             ])
             ->get();
     }

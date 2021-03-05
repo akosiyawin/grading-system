@@ -1,23 +1,12 @@
 @extends('layouts.app')
 
 @push('styles')
-    <style>
-        body{
-            background-image: url('https://epcst.files.wordpress.com/2012/08/eastwoods-3.jpg');
-            background-position: top;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-
-    </style>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
 @endpush
 
 @section('content')
-   <Login />
+    <login></login>
 @endsection
-
-@push('scripts')
-    <script>
-        // alert(1)
-    </script>
-@endpush

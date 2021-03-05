@@ -72,6 +72,7 @@
           <v-card-title id="courses"></v-card-title>
           <v-card-subtitle>Course</v-card-subtitle>
 
+
           <!--            <v-card-title>First Year</v-card-title>-->
           <!--            <v-card-subtitle>Year Level</v-card-subtitle>-->
 
@@ -95,12 +96,12 @@
               </v-dialog>
             </v-col>
           </v-card-actions>
-        </v-card>
 
+        </v-card>
       </div>
       <div class="col-lg-8">
         <blockquote class="quote-dark p-0">
-          <v-card-title class="title_information"></v-card-title>
+          <v-card-title class="title_information">Records of your Grades</v-card-title>
           <v-card-subtitle><b>*Note:</b> If this is not you, message us at the Eastwoods
             <a href="https://www.facebook.com/eastwoodstech">Technical Assistance Page </a>
           </v-card-subtitle>
@@ -208,7 +209,7 @@ export default {
 
         //
         //
-        $('.title_information').html('Final Grade For' + " " + r.data.school_year + " " +semesterTitle);
+        // $('.title_information').html('Final Grade For' + " " + r.data.school_year + " " +semesterTitle);
       });
     },
     viewGrade() {
@@ -230,7 +231,6 @@ export default {
           let html = "";
           $(r).each(function (r, v) {
             let instructor = v.first_name.substring(0,1) + ".";
-            console.log(instructor);
             html += '<tr>'
             html += '<td>' + v.code + '</td>'
             html += '<td>' + v.title + '</td>'
@@ -274,7 +274,6 @@ export default {
               html += '<td>Failed</td>'
             }
             html += '</tr>'
-            console.log(v.grade);
           });
           $('.data').html(html);
           $tr.html(html);

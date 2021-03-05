@@ -37,13 +37,12 @@
             <div class="bg-gray-light" id="marginize" style="border-left: 16px solid #28a745">
               <h4 class="text-center pt-3 display-4" style="font-size: 1.3rem">School Year 2020, First Semester</h4>
               <ul class="px-3 pb-4 pt-2 m-0">
-                <li><span class="list-title">Name:</span> Darwin Marcelo</li>
-                <li><span class="list-title">Student No.:</span> 18-0048</li>
-                <li><span class="list-title">Course:</span> BSCS</li>
-                <li><span class="list-title">Birthdate:</span> April 15, 2000</li>
+                <li><span class="list-title">Name: </span>{{user.name}}</li>
+                <li><span class="list-title">Student No.: </span> {{user.student_number}}</li>
+                <li><span class="list-title">Course: </span> {{user.course}}</li>
+                <li><span class="list-title">Birthdate: </span> {{user.birthdate}}</li>
               </ul>
             </div>
-
             <div class="mt-4">
               <v-simple-table class="m-5">
                 <template v-slot:default>
@@ -105,9 +104,6 @@ export default {
   data: () => ({
     logo : image
   }),
-  props: ['data','grade','units'],
-  mounted() {
-
-  }
+  props: ['data','grade','units','user'],
 }
 </script>
