@@ -92,7 +92,6 @@
                     Print
                   </v-btn>
                 </template>
-
               </v-dialog>
             </v-col>
           </v-card-actions>
@@ -175,7 +174,8 @@ export default {
     await this.getStudentInfoNow()
     await this.getActiveSemester()
     $('#print').click(function (){
-      window.open("/print");
+      // window.open("/print");
+      $('#print').attr("'/printGrade/'+selectedSchoolYear.id+'/'+selectedSemester.id");
     });
   },
   methods: {
