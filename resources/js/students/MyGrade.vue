@@ -43,7 +43,7 @@
                 dark
                 icon="mdi-school"
             >
-              Your Grades Are Still In Process
+              Your Grades Are Still On Process
             </v-alert>
           </div>
         </div>
