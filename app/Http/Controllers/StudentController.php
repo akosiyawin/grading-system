@@ -294,7 +294,9 @@ class StudentController extends Controller
                 'student_subjects.grade',
                 'student_subjects.status',
                 'semesters.title as semesterTitle',
-                'school_years.year'
+                'school_years.year',
+                'school_years.id as year_id',
+                'semesters.id as semester_id'
             )
             ->where('school_years.year', '=', $year)
             ->where('semesters.id', '=', $semester)
@@ -611,7 +613,8 @@ class StudentController extends Controller
                 $grades,
                 'units' => $units,
                 'average' => $average,
-                'semester_year' => $semester_year
+                'semester_year' => $semester_year,
+//                'schoolyear_id' =>
             ], 200);
 //            return response($grades,200);
         } else {

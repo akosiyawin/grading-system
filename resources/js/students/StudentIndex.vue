@@ -176,7 +176,10 @@ export default {
     await this.getActiveSemester()
     $('#print').click(function (){
       // window.open("/print");
-      $('#print').attr("'/printGrade/'+selectedSchoolYear.id+'/'+selectedSemester.id");
+      //   $('#print').attr('href','/printGrade/1/1');
+      let schoolYearID = localStorage.getItem('year');
+      let semesterID = localStorage.getItem('semester_id');
+      window.open('/printGrade/'+schoolYearID+"/"+semesterID);
     });
   },
   methods: {
@@ -205,21 +208,16 @@ export default {
         else if(r.data.activated_semester[0].id == 3){
           semesterTitle = '3rd Semester'
         }
-        // console.log(semesterTitle);
-
-        //
-        //
-        // $('.title_information').html('Final Grade For' + " " + r.data.school_year + " " +semesterTitle);
       });
     },
     viewGrade() {
       this.grade()
       let user_id = this.id;
       let semester_id = this.select_semester;
-      let year = this.year;
+
       localStorage.setItem("user_id", user_id);
       localStorage.setItem("semester_id", semester_id);
-      localStorage.setItem("year", year);
+      // console.log()
     },
     grade() {
       $.ajax({
@@ -230,6 +228,8 @@ export default {
           let $tr = $('.data');
           let html = "";
           $(r).each(function (r, v) {
+            // console.log(v);
+            localStorage.setItem("year", v.year_id);
             let instructor = v.first_name.substring(0,1) + ".";
             html += '<tr>'
             html += '<td>' + v.code + '</td>'
