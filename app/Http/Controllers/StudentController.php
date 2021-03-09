@@ -392,23 +392,23 @@ class StudentController extends Controller
                 $average = $value;
             }
 
-            if ($average >= 98) {
+            if ($average >= 97.5) {
                 $average = "1.0";
-            } elseif ($average >= 95) {
+            } elseif ($average >= 94.5) {
                 $average = "1.25";
-            } elseif ($average >= 92) {
+            } elseif ($average >= 91.5) {
                 $average = "1.50";
-            } elseif ($average >= 89) {
+            } elseif ($average >= 87.5) {
                 $average = "1.75";
-            } elseif ($average >= 86) {
+            } elseif ($average >= 84.5) {
                 $average = "2.0";
-            } elseif ($average >= 83) {
+            } elseif ($average >= 81.5) {
                 $average = "2.25";
-            } elseif ($average >= 80) {
+            } elseif ($average >= 78.5) {
                 $average = "2.50";
-            } elseif ($average >= 77) {
+            } elseif ($average >= 75.5) {
                 $average = "2.75";
-            } elseif ($average >= 75) {
+            } elseif ($average >= 74.5) {
                 $average = "3.0";
             } else {
                 $average = "5.0";
@@ -583,27 +583,28 @@ class StudentController extends Controller
                 $average = $value;
             }
 
-            if ($average >= 98) {
+            if ($average >= 97.5) {
                 $average = "1.0";
-            } elseif ($average >= 95) {
+            } elseif ($average >= 94.5) {
                 $average = "1.25";
-            } elseif ($average >= 92) {
+            } elseif ($average >= 91.5) {
                 $average = "1.50";
-            } elseif ($average >= 89) {
+            } elseif ($average >= 87.5) {
                 $average = "1.75";
-            } elseif ($average >= 86) {
+            } elseif ($average >= 84.5) {
                 $average = "2.0";
-            } elseif ($average >= 83) {
+            } elseif ($average >= 81.5) {
                 $average = "2.25";
-            } elseif ($average >= 80) {
+            } elseif ($average >= 78.5) {
                 $average = "2.50";
-            } elseif ($average >= 77) {
+            } elseif ($average >= 75.5) {
                 $average = "2.75";
-            } elseif ($average >= 75) {
+            } elseif ($average >= 74.5) {
                 $average = "3.0";
             } else {
                 $average = "5.0";
             }
+
 
 
             return response([

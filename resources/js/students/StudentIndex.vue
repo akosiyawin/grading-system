@@ -228,7 +228,7 @@ export default {
           let $tr = $('.data');
           let html = "";
           $(r).each(function (r, v) {
-            // console.log(v);
+            // console.log(v.grade);
             localStorage.setItem("year", v.year_id);
             let instructor = v.first_name.substring(0,1) + ".";
             html += '<tr>'
@@ -236,31 +236,31 @@ export default {
             html += '<td>' + v.title + '</td>'
             html += '<td>' + v.units + '</td>'
             html += '<td>' + instructor + " " + v.last_name +'</td>'
-            if (v.grade >= 98) {
+            if (v.grade >= 97.5) {
               html += '<td>1.0</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 95) {
+            } else if (v.grade >= 94.5) {
               html += '<td>1.25</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 92) {
+            } else if (v.grade >= 91.5) {
               html += '<td>1.50</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 89) {
+            } else if (v.grade >= 87.5) {
               html += '<td>1.75</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 86) {
+            } else if (v.grade >= 84.5) {
               html += '<td>2.0</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 83) {
+            } else if (v.grade >= 81.5) {
               html += '<td>2.25</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 80) {
+            } else if (v.grade >= 78.5) {
               html += '<td>2.50</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 77) {
+            } else if (v.grade >= 75.5) {
               html += '<td>2.75</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 75) {
+            } else if (v.grade >= 74.5) {
               html += '<td>3.0</td>'
               html += '<td>Passed</td>'
             } else if (v.grade == 4) {
