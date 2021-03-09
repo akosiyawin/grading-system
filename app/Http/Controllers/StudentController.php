@@ -187,23 +187,23 @@ class StudentController extends Controller
     private function gradeDecider($initial_grade)
     {
         $grade = intval($initial_grade);
-        if ($grade >= 98) {
+        if ($grade >= 97.5) {
             return "1.00";
-        } else if ($grade >= 95) {
+        } else if ($grade >= 94.5) {
             return "1.25";
-        } else if ($grade >= 92) {
+        } else if ($grade >= 91.5) {
             return "1.50";
-        } else if ($grade >= 89) {
+        } else if ($grade >= 87.5) {
             return "1.75";
-        } else if ($grade >= 86) {
+        } else if ($grade >= 84.5) {
             return "2.00";
-        } else if ($grade >= 83) {
+        } else if ($grade >= 81.5) {
             return "2.25";
-        } else if ($grade >= 80) {
+        } else if ($grade >= 78.5) {
             return "2.50";
-        } else if ($grade >= 77) {
+        } else if ($grade >= 75.5) {
             return "2.75";
-        } else if ($grade >= 75) {
+        } else if ($grade >= 74.5) {
             return "3.00";
         } else if ($grade === 0) {
             return "INC";
