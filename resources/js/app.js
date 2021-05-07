@@ -36,6 +36,8 @@ Vue.component('jumbotron', require('./base/Jumbotron').default);
 Vue.component('teacher-subject', require('./teacher/Subject').default);
 Vue.component('teacher-student', require('./teacher/Student').default);
 
+// Vue.config.devtools = false
+
 const app = new Vue({
     el: '#app',
     vuetify,

@@ -228,7 +228,7 @@ export default {
           let $tr = $('.data');
           let html = "";
           $(r).each(function (r, v) {
-            // console.log(v.grade);
+            // console.log(grade);
             localStorage.setItem("year", v.year_id);
             let instructor = v.first_name.substring(0,1) + ".";
             html += '<tr>'
@@ -236,37 +236,38 @@ export default {
             html += '<td>' + v.title + '</td>'
             html += '<td>' + v.units + '</td>'
             html += '<td>' + instructor + " " + v.last_name +'</td>'
-            if (v.grade >= 97.5) {
+            const grade = parseFloat(v.grade);
+            if (grade >= 97.5) {
               html += '<td>1.0</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 94.5) {
+            } else if (grade >= 94.5) {
               html += '<td>1.25</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 91.5) {
+            } else if (grade >= 91.5) {
               html += '<td>1.50</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 87.5) {
+            } else if (grade >= 87.5) {
               html += '<td>1.75</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 84.5) {
+            } else if (grade >= 84.5) {
               html += '<td>2.0</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 81.5) {
+            } else if (grade >= 81.5) {
               html += '<td>2.25</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 78.5) {
+            } else if (grade >= 78.5) {
               html += '<td>2.50</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 75.5) {
+            } else if (grade >= 75.5) {
               html += '<td>2.75</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade >= 74.5) {
+            } else if (grade >= 74.5) {
               html += '<td>3.0</td>'
               html += '<td>Passed</td>'
-            } else if (v.grade == 4) {
+            } else if (grade == 4) {
               html += '<td class="text-danger">DRP</td>'
               html += '<td>Dropped</td>'
-            } else if (v.grade == 0) {
+            } else if (grade == 0) {
               html += '<td class="text-danger">INC</td>'
               html += '<td>Incomplete</td>'
             } else {

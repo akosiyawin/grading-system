@@ -240,7 +240,8 @@
 
     <v-dialog
         v-model="studentViewDialog"
-        max-width="780px"
+        max-width="860px"
+        width="100%"
     >
       <v-card>
         <v-card-title class="headline">
@@ -280,12 +281,31 @@
                         Student Number
                       </th>
                       <th class="text-left">
-                        Grade
+                        <v-tooltip bottom>
+                          <template v-slot:activator="{ on, attrs }">
+                            <span
+                                v-bind="attrs"
+                                v-on="on"
+                            >Final Grade</span>
+                          </template>
+                          <span>Grade must not be empty, Default value is 0</span>
+                        </v-tooltip>
+                      </th>
+                      <th class="text-left">
+                        <v-tooltip bottom>
+                          <template v-slot:activator="{ on, attrs }">
+                            <span
+                                v-bind="attrs"
+                                v-on="on"
+                            >Completion</span>
+                          </template>
+                          <span>Set value to empty, to cancel resubmission of grades.</span>
+                        </v-tooltip>
                       </th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="(student,i) in studentsViewData">
+                    <tr v-for="(student,i) in studentsViewData" :key="i">
                       <td>{{ rowsPerPage !== 99 ? (i + 1 + (rowsPerPage * page - 1)) - rowsPerPage + 1 : i + 1 }}</td>
                       <td><b>{{ student.name }} </b>
                         <span v-if="parseInt(student.grade) == 4" class="text-danger">(DRP)</span>
@@ -295,13 +315,29 @@
                       <td>{{ student.student_number }}</td>
                       <td>
                         <div class="d-flex p-1">
-                          <input v-model="student.grade" :disabled="student.grade_status == 1" class="form-control" max="101"
+                          <input v-model="student.grade"
+                                 :disabled="student.grade_status == 1"
+                                 class="form-control" max="101"
+                                 placeholder="Grade"
                                  min="0" type="number">
-                          <v-btn :disabled="student.grade_status == 1" class="bg-danger ml-1"
+                          <v-btn class="bg-danger ml-1"
+                                 v-if="student.grade_status != 1"
                                  @click="student.grade = 4">
-                            DROPPED
+                            DRP
                           </v-btn>
                         </div>
+                      </td>
+                      <td :class="{'p-1 d-flex' : student.grade_status == 1}">
+                        <input class="form-control" max="101"
+                               v-if="student.grade_status == 1"
+                               placeholder="Resubmit"
+                               v-model="student.resubmission"
+                               min="0" type="number">
+                        <v-btn class="bg-danger ml-1"
+                               v-if="student.grade_status == 1"
+                               @click="student.resubmission = 4">
+                          DRP
+                        </v-btn>
                       </td>
                     </tr>
                     </tbody>
@@ -320,8 +356,25 @@
                     style="max-width: 70px"
                 ></v-select>
                 <div v-if="rowsPerPage !== 99">
-                  <v-btn class="mr-2" small @click="handlePage(-1)">Prev</v-btn>
-                  <v-btn :disabled="studentsViewData.length === 0" small @click="handlePage(1)">Next</v-btn>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                          v-bind="attrs"
+                          v-on="on"
+                          class="mr-2" small @click="handlePage(-1)">Prev</v-btn>
+
+                    </template>
+                    <span>Click <b>Confirm</b> to save changes.</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                          v-bind="attrs"
+                          v-on="on"
+                          :disabled="studentsViewData.length === 0" small @click="handlePage(1)">Next</v-btn>
+                    </template>
+                    <span>Click <b>Confirm</b> to save changes.</span>
+                  </v-tooltip>
                 </div>
               </div>
             </v-col>
@@ -389,7 +442,6 @@ export default {
     selectAll: false,
     selectedSubject: {subject_id: null},
     rowsPerPages: [
-      {text: 5, value: 5},
       {text: 10, value: 10},
       {text: 15, value: 15},
       {text: 'All', value: 99},
@@ -402,7 +454,7 @@ export default {
     enterGrade: {state: false, grade: null, approval_status: false},
     selectedStudent: null,
     restrictedStudents: [],
-    encodeGrading: {state: false, records: []}
+    encodeGrading: {state: false, records: []},
   }),
   computed: {
     subjects() {
@@ -428,15 +480,6 @@ export default {
             .then(() => this.selectAll = false)
       } else {
         this.fetchViewStudents()
-      }
-    },
-    search() {
-      if (this.search === "") {
-        if (!this.studentViewDialog) {
-          this.fetchStudents()
-        } else {
-          this.fetchViewStudents()
-        }
       }
     },
     rowsPerPage() {
@@ -466,9 +509,11 @@ export default {
       this.encodeGrading.state = true
     },
     handleEncodeGradeConfirm() {
+      //todo Get the resubmit data from studentsViewData
       const subject_id = this.selectedSubject.subject_id
       const gradesOfStudents = this.studentsViewData.map(e => ({grade: e.grade, student_id: e.student_id}))
-      api.updateGrades({students: gradesOfStudents, subject_id}).then(r => {
+      const resubmissions = this.studentsViewData.map(e => ({resubmission: e.resubmission, student_id: e.student_id}))
+      api.updateGrades({students: gradesOfStudents, subject_id,resubmissions}).then(r => {
         this.snackbar.text = r.data.message
         this.snackbar.state = true
         // this.handleEncodeGradeCancel()
@@ -577,9 +622,7 @@ export default {
         rowsPerPage: this.rowsPerPage,
         page: this.page,
         search: this.search
-      }).then(r => {
-        this.studentsViewData = r.data.data
-      })
+      }).then(r => this.studentsViewData = r.data.data)
     },
     handleViewStudents(subject) {
       this.search = null

@@ -19,7 +19,7 @@ class PageHandlerController extends Controller
             return redirect()->route('teacher.index');
         }
         if($userRole == Base::STUDENT_ROLE_ID){
-            return redirect()->route('student.myGrade');
+            return redirect()->route('student.announcement');
         }
 
 //        abort(404);

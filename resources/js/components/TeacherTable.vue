@@ -279,8 +279,9 @@
                       </li>
                       <li
                           class="list-group-item hovered"
-                          @click="handleSubjectClick(subject.subject_id)"
+                          @click="handleSubjectClick(subject)"
                           v-for="subject in subjectLists"
+                          :class="{'bg-success' : activeSubject === subject.subject_id}"
                       >
                         {{ subject.title }}<br/><b>{{ subject.code }}</b>
                       </li>
@@ -303,6 +304,22 @@
                               icon
                               color="blue lighten-2"
                               @click="checkPrelim"
+                          >
+                            <v-icon small class="text-success"
+                            >mdi-check
+                            </v-icon
+                            >
+                          </v-btn>
+                        </th>
+                        <th>Completion
+
+                          <v-btn
+                              class="ml-1"
+                              x-small
+                              text
+                              icon
+                              color="blue lighten-2"
+                              @click="approveAllResubmission"
                           >
                             <v-icon small class="text-success"
                             >mdi-check
@@ -354,6 +371,22 @@
                           </v-btn
                           >
                         </td>
+                        <td>
+                          <span v-if="parseInt(student.resubmission) == 0" class="text-danger">(INC)</span>
+                          <span v-else-if="parseInt(student.resubmission) == 4" class="text-danger">(DRP)</span>
+                          <span v-else>{{
+                              student.resubmission
+                            }}</span>
+                          <br/>
+                          <v-btn
+                              x-small
+                              class="bg-success"
+                              v-if="student.resubmission != null"
+                              @click="approveResubmission(student)"
+                          >Approve
+                          </v-btn
+                          >
+                        </td>
                       </tr>
                       </tbody>
                     </template>
@@ -392,6 +425,8 @@
           <v-btn color="primary" text @click="handleCloseViewGrade">
             Close
           </v-btn>
+          <v-spacer></v-spacer>
+          <span class="text-primary font-weight-bold muted">{{activeSubjectTitle}}</span>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -429,7 +464,6 @@ export default {
       dialog: false,
       selectedTeacher: null,
       rowsPerPages: [
-        {title: 5, value: 5},
         {title: 10, value: 10},
         {title: 15, value: 15},
         {title: "all", value: 99},
@@ -457,6 +491,7 @@ export default {
       activeSubject: null,
       snackbar: {state: false, text: null},
       activeTeacher: null,
+      activeSubjectTitle: ''
     };
   },
   computed: {
@@ -567,12 +602,19 @@ export default {
             student_id,
             teacher: this.activeTeacher,
           })
-          .then((r) => {
+          .then(() => {
             this.fetchSubjectStudentsGrade();
           });
     },
-    handleSubjectClick(id) {
-      this.activeSubject = id;
+    approveResubmission(student){
+      api.approveResubmission(this.activeSubject,student.resubmission_id,{
+        student_id : student.student_id,
+        grade: student.resubmission
+      }).then(() => this.fetchSubjectStudentsGrade())
+    },
+    handleSubjectClick(subject) {
+      this.activeSubject = subject.subject_id;
+      this.activeSubjectTitle = subject.title
       this.pageGrade = 1;
       this.searchGrade = null;
       this.fetchSubjectStudentsGrade();
@@ -591,6 +633,7 @@ export default {
     },
     handleCloseViewGrade() {
       this.viewGradeDialog = false;
+      this.activeSubjectTitle = ''
       this.subjectLists = [];
       this.studentsGradeLists = [];
       this.activeSubject = null;
@@ -614,6 +657,18 @@ export default {
             this.snackbar.state = true;
           });
     },
+    approveAllResubmission(){
+      const resubmissions = this.studentsGradeLists
+          .filter((e) => e.resubmission != null)
+          .map((e) => ({student_id: e.student_id, resubmission_id: e.resubmission_id, resubmission : e.resubmission}))
+      api.approveAllResubmission(this.activeSubject, {
+        resubmissions
+      }).then((r) => {
+        this.fetchSubjectStudentsGrade();
+        this.snackbar.text = r.data.message;
+        this.snackbar.state = true;
+      })
+    }
   },
   mounted() {
     this.fetchTeachers();

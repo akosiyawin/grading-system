@@ -21,7 +21,8 @@ class StudentOfMySubjectResource extends JsonResource
             'name' => $this->name,
             'status' => $this->status,
             'grade' => $this->grade,
-            'grade_status' => $this->grade_status
+            'grade_status' => $this->grade_status,
+            'resubmission' => $this->resubmission,
         ];
     }
 }

@@ -20,6 +20,8 @@ class StudentGradeResource extends JsonResource
             'name' => $this->user->fullName,
             'student_number' => $this->user->username,
             'status' => $this->status,
+            'resubmission' => $this->resubmission,
+            'resubmission_id' => $this->resubmission_id
         ];
     }
 }

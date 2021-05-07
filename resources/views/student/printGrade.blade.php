@@ -59,7 +59,7 @@
             <v-icon>mdi-arrow-left-bold</v-icon>
         </v-btn>
     </v-fab-transition>
-    <print-grade :data="{{$data}}" :user="{{$info}}" :grade="{{$totalGrade}}" :units="{{$totalUnits}}"></print-grade>
+    <print-grade :data="{{$data}}" :user="{{$info}}" :grade="{{$totalGrade}}" units="{{$totalUnits}}"></print-grade>
 @endsection
 
 @push('scripts')

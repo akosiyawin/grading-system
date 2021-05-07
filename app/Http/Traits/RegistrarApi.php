@@ -18,6 +18,7 @@ use App\Http\Resources\TitleOnlyResource;
 use App\Models\Announcement;
 use App\Models\Course;
 use App\Models\Department;
+use App\Models\Resubmission;
 use App\Models\SchoolYear;
 use App\Models\Semester;
 use App\Models\Student;
@@ -476,16 +477,6 @@ trait RegistrarApi
 
     public function approveGrade(Request $request, $subject)
     {
-        // dd($subject);
-        /*
-         * select student_subjects.id as student_subject_id, student_subjects.student_id,
-         * student_subjects.grade, student_subjects.semester_id,
-            subject_teachers.teacher_id, semesters.status as sem_status
-        from student_subjects
-        inner join subject_teachers on student_subjects.subject_teacher_id = subject_teachers.id
-        inner join semesters on student_subjects.semester_id = semesters.id
-        WHERE semesters.status = 1 and subject_teachers.teacher_id = 3 and student_subjects.id = 274
-         * */
         $validated = $request->validate([
             'student_id' => 'required|numeric|exists:students,id',
             'teacher' => 'required|numeric|exists:teachers,id'
@@ -500,6 +491,25 @@ trait RegistrarApi
             ->update(['student_subjects.status' => DB::raw('!student_subjects.status')]);
         return response()->json([
             'message' => 'Subject status has been updated successfully!'
+        ]);
+    }
+
+    public function approveResubmission(Request $request, $subject, Resubmission $resubmission)
+    {
+        $validated = $request->validate([
+            'grade' => 'required|numeric',
+            'student_id' => 'required|numeric|exists:students,id',
+        ]);
+        StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
+            ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
+            ->where('semesters.status', 1)
+            ->where('subject_teachers.id', $subject)
+            ->where('student_subjects.student_id', $validated['student_id'])
+            ->update(['student_subjects.grade' => $validated['grade']]);
+        $resubmission->delete();
+
+        return response()->json([
+            'message' => 'Resubmission has been applied!'
         ]);
     }
 
@@ -519,6 +529,30 @@ trait RegistrarApi
 
         return response()->json([
             'message' => 'Students Grade has been approved successfully!'
+        ]);
+    }
+
+    public function approveAllResubmission(Request $request, $subject)
+    {
+        $validated = $request->validate([
+            'resubmissions' => 'required|array',
+            'resubmissions.student_id.*' => 'numeric|exists:students,id',
+            'resubmissions.resubmission_id.*' => 'numeric|exists:resubmissions,id',
+        ]);
+
+        foreach ($validated['resubmissions'] as $resubmission){
+            StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
+                ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
+                ->where('semesters.status', 1)
+                ->where('subject_teachers.id', $subject)
+                ->where('student_subjects.student_id', $resubmission['student_id'])
+                ->update(['student_subjects.grade' => $resubmission['resubmission']]);
+
+            Resubmission::find($resubmission['resubmission_id'])->delete();
+        }
+
+        return response()->json([
+            'message' => 'Resubmissions has been applied!'
         ]);
     }
 
@@ -548,43 +582,23 @@ trait RegistrarApi
             'page' => 'required|numeric',
             'teacher' => 'required|numeric|exists:teachers,id'
         ]);
-        /*         $subjectTeacher = SubjectTeacher::join('semesters','subject_teachers.semester_id','semesters.id')
-                    ->where('subject_teachers.id',$subject)
-                    ->where('semesters.status',1)
-                    // ->where('teacher_id',$validated['teacher'])
-        //            ->where('subject_id',$subject->id)
-                    ->select(['subject_teachers.id'])
-                    ->first(); */
-
-        /*
-         * SELECT student_subjects.id, student_subjects.student_id,
-        subject_teachers.semester_id as subject_teacher_semester,
-         subject_teachers.teacher_id, subject_teachers.subject_id,
-        semesters.title, semesters.status
-        FROM student_subjects inner join subject_teachers on student_subjects.subject_teacher_id = subject_teachers.id
-        inner join semesters on student_subjects.semester_id = semesters.id
-        WHERE teacher_id = 3 and semesters.status = 1*/
-
         $students = Student::join('student_subjects', 'students.id', 'student_subjects.student_id')
             ->join('users', 'students.user_id', 'users.id')
             ->join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
             ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
+            ->leftJoin('resubmissions','student_subjects.id','resubmissions.student_subject_id')
             ->where('subject_teachers.id', $subject)
             ->where('semesters.status', 1)
-            // ->where('teacher_id',$validated['teacher'])
-//            ->where('subject_teachers.subject_id',$subject->id)
-//            ->where('subject_teachers.id',$subjectTeacher->id)
             ->orderBy('users.last_name')
             ->select([
                 'students.id',
                 'users.id as user_id',
                 'student_subjects.grade',
-                'student_subjects.status'
+                'student_subjects.status',
+                'resubmissions.grade as resubmission',
+                'resubmissions.id as resubmission_id'
             ]);
 
-//            ->where('teacher_id', $validated['teacher'])
-//            ->where('semesters.status', 1)
-//            ->where('subject_teachers.id', $subjectTeacher->id);
         $columns = [
             'username',
             'first_name',

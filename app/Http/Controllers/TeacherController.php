@@ -9,6 +9,7 @@ use App\Http\Resources\StudentOfMySubjectResource;
 use App\Http\Resources\StudentWithoutSubjectResource;
 use App\Http\Resources\SubjectTeacher;
 use App\Models\Department;
+use App\Models\Resubmission;
 use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentSubject;
@@ -329,6 +330,7 @@ class TeacherController extends Controller
         $studentSubjects->join('students', 'student_subjects.student_id', 'students.id');
         $studentSubjects->join('users', 'students.user_id', 'users.id');
         $studentSubjects->join('courses', 'students.course_id', 'courses.id');
+        $studentSubjects->leftJoin('resubmissions', 'student_subjects.id', 'resubmissions.student_subject_id');
         $studentSubjects->select([
             'users.id as user_id',
             'students.id as student_id',
@@ -337,6 +339,7 @@ class TeacherController extends Controller
             'student_subjects.grade',
             'student_subjects.status as grade_status',
             'users.status',
+            'resubmissions.grade as resubmission',
             DB::raw('CONCAT(users.last_name,", ",users.first_name," ",IFNULL(users.middle_name, "")) as name')
         ]);
 
@@ -424,20 +427,15 @@ class TeacherController extends Controller
             'students.*' => 'array|required',
             'students.*.grade' => 'numeric|min:'.Base::MIN_STUDENT_GRADE."|max:".Base::MAX_STUDENT_GRADE,
             'students.*.student_id' => 'numeric|exists:students,id',
-            'subject_id' => "required|numeric|exists:subject_teachers,id"
+            'subject_id' => "required|numeric|exists:subject_teachers,id",
+            'resubmissions.*.resubmission' => 'nullable|numeric|min:'.Base::MIN_STUDENT_GRADE."|max:".Base::MAX_STUDENT_GRADE,
+            'resubmissions.*.student_id' => 'numeric|exists:students,id',
         ]);
 
         foreach ($validated['students'] as $student){
-            $isApproved = StudentSubject::where('student_id',$student['student_id'])
-                ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
-                ->join('subjects', 'subject_teachers.subject_id', 'subjects.id')
-                ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
-                ->where('semesters.status',1)
-                ->where('student_subjects.status',1)
-                ->where('subject_teachers.id', $validated['subject_id'])
-                ->exists();
+            $isApproved = $this->isGradeApproved($student,$validated);
             if (!$isApproved) :
-                /*Note* If ever student will have two subject, fix this.*/
+                /*Note* If ever student will have two subject, fix this. (Fixed Already?)*/
                 StudentSubject::join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
                     ->join('subjects', 'subject_teachers.subject_id', 'subjects.id')
                     ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
@@ -451,9 +449,45 @@ class TeacherController extends Controller
             endif;
         }
 
+        foreach ($validated['resubmissions'] as $resubmission){
+            $isApproved = $this->isGradeApproved($resubmission,$validated);
+
+            if($isApproved)
+                $exist = Resubmission::where('student_subject_id',$isApproved->student_subject_id)->exists();
+            else
+                $exist = false;
+
+            if( $isApproved &&
+                !is_null($resubmission['resubmission']) &&
+                !$exist ){
+                Resubmission::create([
+                    'student_subject_id' => $isApproved->student_subject_id,
+                    'grade' => $resubmission['resubmission']
+                ]);
+            }elseif ($exist && is_null($resubmission['resubmission'])){
+                Resubmission::where(['student_subject_id' => $isApproved->student_subject_id])->delete();
+            }elseif ($exist && !is_null($resubmission['resubmission'])){
+                Resubmission::where(['student_subject_id' => $isApproved->student_subject_id])
+                    ->update(['grade' => $resubmission['resubmission']]);
+            }
+        }
+
         return response()->json([
-            'message' => "Students and Subjects Grade UPDATE successfully!",
+            'message' => "Grades has been submitted for approval.",
         ]);
+    }
+
+    private function isGradeApproved($student,$validated)
+    {
+        return StudentSubject::where('student_id',$student['student_id'])
+            ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
+            ->join('subjects', 'subject_teachers.subject_id', 'subjects.id')
+            ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
+            ->select('student_subjects.id as student_subject_id') //for optimize, select one column only
+            ->where('semesters.status',1)
+            ->where('student_subjects.status',1)
+            ->where('subject_teachers.id', $validated['subject_id'])
+            ->first();
     }
 
 

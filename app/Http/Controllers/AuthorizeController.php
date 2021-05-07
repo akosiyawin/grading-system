@@ -18,7 +18,7 @@ class AuthorizeController extends Controller
 
     public function __construct()
     {
-        $this->middleware(['auth','status']);
+        $this->middleware(['auth', 'status']);
     }
 
     public function rolesIndex()
@@ -45,22 +45,25 @@ class AuthorizeController extends Controller
         ]);
     }
 
-    public function announcement(){
+    public function announcement(Request $request)
+    {
+        $data = AnnouncementResource::collection(Announcement::orderBy("id", "desc")->paginate($request->get('rowsPerPage')));
         return response()->json([
             'message' => "Announcement get successfully!",
-            'data' =>AnnouncementResource::collection(Announcement::limit(Base::ANNOUNCEMENT_LIMIT)->get()->sortByDesc('created_at'))
+            'data' => $data
         ]);
     }
 
     public function changePassword()
     {
-        if(auth()->user()->role_id == Base::STUDENT_ROLE_ID){
+        if (auth()->user()->role_id == Base::STUDENT_ROLE_ID) {
             abort(404);
         }
         return view('changePassword');
     }
 
-    public function updatePassword(Request $request){
+    public function updatePassword(Request $request)
+    {
         $validated = $request->validate([
             'password' => ['required', 'string', 'min:3', 'confirmed'],
         ]);
@@ -70,6 +73,4 @@ class AuthorizeController extends Controller
             'message' => "Password has been changed successfully!"
         ]);
     }
-
-
 }

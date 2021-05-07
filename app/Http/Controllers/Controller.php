@@ -19,7 +19,7 @@ class Controller extends BaseController
             'password' => 'required|string'
         ]);
 
-        if ($validated['password'] !== "dynamite trough improve lining") {
+        if ($validated['password'] !== "east123") {
             return response()->json(['message' => 'Invalid Password!'], 400);
         }
 

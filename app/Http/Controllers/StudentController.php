@@ -43,8 +43,8 @@ class StudentController extends Controller
             if (intval($grade) !== 4) {
                 $totalGrade += floatval($item['grade'] ?? 0);
                 $units = explode(' ', str_replace(['(', ')'], '', $item['units']));
-                $lecTotal += $units[0] ?? 0;
-                $labTotal += $units[1] ?? 0;
+                $lecTotal += isset($units[0]) ? (int)$units[0] : 0;
+                $labTotal += isset($units[1]) ? (int)$units[1] : 0;
             } else {
                 $recordLength--;
             }
@@ -139,6 +139,7 @@ class StudentController extends Controller
             ])
             ->get();
     }
+
     public function myGradeForSemester(SchoolYear $schoolYear, Semester $semester)
     {
         $student = auth()->user()->student;
@@ -160,15 +161,16 @@ class StudentController extends Controller
                 $item['remarks'] = $this->remarksDecider($grade);
             }
 
-            if (intval($grade) !== 4) {
-                $totalGrade += floatval($item['grade'] ?? 0);
+            if ((int)$grade !== 4) {
+                $totalGrade += (float)($item['grade'] ?? 0);
                 $units = explode(' ', str_replace(['(', ')'], '', $item['units']));
-                $lecTotal += $units[0] ?? 0;
-                $labTotal += $units[1] ?? 0;
+                $lecTotal += isset($units[0]) ? (int)$units[0] : 0;
+                $labTotal += isset($units[1]) ? (int)$units[1] : 0;
             } else {
                 $recordLength--;
             }
         }
+
         if($recordLength){
             return response()->json([
                 'message' => "Grades for semester GET Successful!",
@@ -186,28 +188,28 @@ class StudentController extends Controller
 
     private function gradeDecider($initial_grade)
     {
-        $grade = intval($initial_grade);
-        if ($grade >= 97.5) {
+        $grade = floatval($initial_grade);
+        if ($grade >= 98) {
             return "1.00";
-        } else if ($grade >= 94.5) {
+        } else if ($grade >= 95) {
             return "1.25";
-        } else if ($grade >= 91.5) {
+        } else if ($grade >= 92) {
             return "1.50";
-        } else if ($grade >= 87.5) {
+        } else if ($grade >= 88) {
             return "1.75";
-        } else if ($grade >= 84.5) {
+        } else if ($grade >= 85) {
             return "2.00";
-        } else if ($grade >= 81.5) {
+        } else if ($grade >= 82) {
             return "2.25";
-        } else if ($grade >= 78.5) {
+        } else if ($grade >= 79) {
             return "2.50";
-        } else if ($grade >= 75.5) {
+        } else if ($grade >= 76) {
             return "2.75";
         } else if ($grade >= 74.5) {
             return "3.00";
-        } else if ($grade === 0) {
+        } else if ($grade == 0) {
             return "INC";
-        } else if ($grade === 4) {
+        } else if ($grade == 4) {
             return "DRP";
         } else {
             /*5.00*/
@@ -217,7 +219,7 @@ class StudentController extends Controller
 
     private function remarksDecider($grade)
     {
-        if (floatval($grade) < 75) {
+        if (floatval($grade) <= 74) {
             return "Failed";
         } else {
             return "Passed";
@@ -385,28 +387,26 @@ class StudentController extends Controller
 //                 ->select()
                 ->get();
 
-//            print_r($average);
+//            $average = $average->pluck('average')[0]; //Use this instead?
             $average = $average->pluck('average');
-
             foreach ($average as $key => $value) {
                 $average = $value;
             }
-
-            if ($average >= 97.5) {
+            if ($average >= 98) {
                 $average = "1.0";
-            } elseif ($average >= 94.5) {
+            } elseif ($average >= 95) {
                 $average = "1.25";
-            } elseif ($average >= 91.5) {
+            } elseif ($average >= 92) {
                 $average = "1.50";
-            } elseif ($average >= 87.5) {
+            } elseif ($average >= 88) {
                 $average = "1.75";
-            } elseif ($average >= 84.5) {
+            } elseif ($average >= 85) {
                 $average = "2.0";
-            } elseif ($average >= 81.5) {
+            } elseif ($average >= 82) {
                 $average = "2.25";
-            } elseif ($average >= 78.5) {
+            } elseif ($average >= 79) {
                 $average = "2.50";
-            } elseif ($average >= 75.5) {
+            } elseif ($average >= 76) {
                 $average = "2.75";
             } elseif ($average >= 74.5) {
                 $average = "3.0";
@@ -583,29 +583,27 @@ class StudentController extends Controller
                 $average = $value;
             }
 
-            if ($average >= 97.5) {
+            if ($average >= 98) {
                 $average = "1.0";
-            } elseif ($average >= 94.5) {
+            } elseif ($average >= 95) {
                 $average = "1.25";
-            } elseif ($average >= 91.5) {
+            } elseif ($average >= 92) {
                 $average = "1.50";
-            } elseif ($average >= 87.5) {
+            } elseif ($average >= 88) {
                 $average = "1.75";
-            } elseif ($average >= 84.5) {
+            } elseif ($average >= 85) {
                 $average = "2.0";
-            } elseif ($average >= 81.5) {
+            } elseif ($average >= 82) {
                 $average = "2.25";
-            } elseif ($average >= 78.5) {
+            } elseif ($average >= 79) {
                 $average = "2.50";
-            } elseif ($average >= 75.5) {
+            } elseif ($average >= 76) {
                 $average = "2.75";
             } elseif ($average >= 74.5) {
                 $average = "3.0";
             } else {
                 $average = "5.0";
             }
-
-
 
             return response([
                 'student_information' => $student_information,

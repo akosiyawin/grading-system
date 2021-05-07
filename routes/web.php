@@ -79,6 +79,8 @@ Route::prefix('api')->group(function () {
     Route::get('/studentGrade/{student}/{subject}', [TeacherController::class, 'studentGrade']);
     Route::patch('/updateGrade/{student}/{subject}', [TeacherController::class, 'updateGrade']);
     Route::patch('/updateGrades', [TeacherController::class, 'updateGrades']);
+    Route::patch('/resubmission/{subject}/{resubmission}',[RegistrarController::class,'approveResubmission']);
+    Route::put('/resubmission/{subject}',[RegistrarController::class,'approveAllResubmission']);
 
     Route::get('/fetchSemesterForYear/{schoolYear}/{student}', [RegistrarController::class, 'fetchSemesterForYear']);
     Route::get('/fetchGradeForSemester/{schoolYear}/{semester}/{student}', [RegistrarController::class, 'fetchGradeForSemester']);
