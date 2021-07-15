@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Base;
@@ -25,7 +26,7 @@ class TeacherController extends Controller
 
     public function __construct()
     {
-        $this->middleware(['auth','teacher','status']);
+        $this->middleware(['auth', 'teacher', 'status']);
     }
 
     public function dashboard()
@@ -36,20 +37,20 @@ class TeacherController extends Controller
     public function createSubject()
     {
         $display = $this->displayYear();
-        return view('teacher.subjects',compact('display'));
+        return view('teacher.subjects', compact('display'));
     }
 
     public function assignStudentsToSubjects()
     {
         $display = $this->displayYear();
-        return view('teacher.students',compact('display'));
+        return view('teacher.students', compact('display'));
     }
 
     private function displayYear()
     {
-        $year =  Semester::join('school_years','semesters.school_year_id','school_years.id')
-            ->select(['semesters.title','school_years.year'])
-            ->where('semesters.status',1)
+        $year =  Semester::join('school_years', 'semesters.school_year_id', 'school_years.id')
+            ->select(['semesters.title', 'school_years.year'])
+            ->where('semesters.status', 1)
             ->first();
         $display = "School Year {$year->year} - {$year->title}";
         return $display;
@@ -58,7 +59,7 @@ class TeacherController extends Controller
     public function index()
     {
         $display = $this->displayYear();
-        return view('teacher.index',compact('display'));
+        return view('teacher.index', compact('display'));
     }
 
     public function Acquired_subjects()
@@ -97,29 +98,31 @@ class TeacherController extends Controller
 
     public function departmentSubjectIndex()
     {
-        $semID = Semester::where('semesters.status',1)->first()->id;
+        $semID = Semester::where('semesters.status', 1)->first()->id;
 
-        $mySubjects = ModelsSubjectTeacher::join('subjects','subject_teachers.subject_id','subjects.id')
-        ->join('departments','subjects.department_id','departments.id')
-        ->select([
-            'subject_teachers.id as subject_id', //subject_id on view
-            DB::raw('CONCAT(subjects.title," - ", subject_teachers.remarks) as title'),
-            'subjects.code',
-            'subjects.units',
-            'departments.title as department_title',
-        ])
-        ->where('subject_teachers.teacher_id',auth()->user()->teacher->id)
-        ->where('subject_teachers.semester_id',$semID)
-        ->get();
+        $mySubjects = ModelsSubjectTeacher::join('subjects', 'subject_teachers.subject_id', 'subjects.id')
+            ->join('departments', 'subjects.department_id', 'departments.id')
+            ->select([
+                'subject_teachers.id as subject_id', //subject_id on view
+                // DB::raw('CONCAT(subjects.title," - ", subject_teachers.remarks) as title'),
+                'subjects.code',
+                'subjects.title',
+                'subjects.units',
+                'subject_teachers.remarks',
+                'departments.title as department_title',
+            ])
+            ->where('subject_teachers.teacher_id', auth()->user()->teacher->id)
+            ->where('subject_teachers.semester_id', $semID)
+            ->get();
 
-        $lists = Subject::join('departments','subjects.department_id','departments.id')
-        ->select([
-            'subjects.id as subject_id',
-            'subjects.code',
-            'subjects.title',
-            'subjects.units',
-            'departments.title as department_title',
-        ])->get();
+        $lists = Subject::join('departments', 'subjects.department_id', 'departments.id')
+            ->select([
+                'subjects.id as subject_id',
+                'subjects.code',
+                'subjects.title',
+                'subjects.units',
+                'departments.title as department_title',
+            ])->get();
 
         return response()->json([
             'message' => "Department - Subjects GET Successful",
@@ -139,28 +142,31 @@ class TeacherController extends Controller
         /*Add subject*/
         if ($request->status) {
             // if (!$user->where('subject_teachers.subject_id', $subject->id)->exists()) {
-                ModelsSubjectTeacher::create(['subject_id' =>$subject,
+            ModelsSubjectTeacher::create([
+                'subject_id' => $subject,
                 'teacher_id' => auth()->user()->teacher->id,
-                'semester_id' => Semester::where('status',1)->first()->id,
+                'semester_id' => Semester::where('status', 1)->first()->id,
                 'remarks' => $request->get('remarks')
-                ]);
+            ]);
             // }
             return response()->json([
                 'message' => "Subject Assigned Successfully",
             ]);
         } else { /*Remove Subject*/
             $subject = ModelsSubjectTeacher::find($subject);
-            
-            if (StudentSubject::join('semesters','student_subjects.semester_id','semesters.id')
-                ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
-                ->where('subject_teachers.id',$subject->id)
-                ->where('semesters.status',1)
-                ->count() > 0) {
+
+            if (
+                StudentSubject::join('semesters', 'student_subjects.semester_id', 'semesters.id')
+                ->join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
+                ->where('subject_teachers.id', $subject->id)
+                ->where('semesters.status', 1)
+                ->count() > 0
+            ) {
                 return response()->json([
                     'message' => "Subject has an existing students.",
                 ], 400);
             }
-            
+
             $subject->delete();
             return response()->json([
                 'message' => "Subject Removed Successfully",
@@ -189,25 +195,28 @@ class TeacherController extends Controller
     //     ]);
     // }
 
-    public function mySubjects(){
+    public function mySubjects()
+    {
         $teacherID = auth()->user()->teacher->id;
-        $semID = Semester::where('semesters.status',1)->first()->id;
+        $semID = Semester::where('semesters.status', 1)->first()->id;
 
-        $subjects = ModelsSubjectTeacher::join('subjects','subject_teachers.subject_id','subjects.id')
-        ->join('departments','subjects.department_id','departments.id')
-        ->select([
-            'subject_teachers.id as subject_id', //subject_id on view
-            DB::raw('CONCAT(subjects.title," - ", subject_teachers.remarks) as title'),
-            'subjects.code',
-            'subjects.units',
-        ])
-        ->where('subject_teachers.teacher_id',$teacherID)
-        ->where('subject_teachers.semester_id',$semID)
-        ->get();
-            return response()->json([
-                'message' => "Subjects GET Successfully",
-                'data' => SubjectTeacher::collection($subjects)
-            ]);
+        $subjects = ModelsSubjectTeacher::join('subjects', 'subject_teachers.subject_id', 'subjects.id')
+            ->join('departments', 'subjects.department_id', 'departments.id')
+            ->select([
+                'subject_teachers.id as subject_id', //subject_id on view
+                // DB::raw('CONCAT(subjects.title," - ", subject_teachers.remarks) as title'),
+                'subjects.code',
+                'subjects.title',
+                'subject_teachers.remarks',
+                'subjects.units',
+            ])
+            ->where('subject_teachers.teacher_id', $teacherID)
+            ->where('subject_teachers.semester_id', $semID)
+            ->get();
+        return response()->json([
+            'message' => "Subjects GET Successfully",
+            'data' => SubjectTeacher::collection($subjects)
+        ]);
     }
 
 
@@ -242,7 +251,7 @@ class TeacherController extends Controller
             'users.id as user_id',
             'courses.title as course'
         ])
-        ->groupBy('users.id');
+            ->groupBy('users.id');
 
         if ($request->get('rowsPerPage') == 99) {
             $data = $students->get();
@@ -258,7 +267,7 @@ class TeacherController extends Controller
         $studentSubjects->where('subject_teachers.teacher_id', auth()->user()->teacher->id);
         $studentSubjects->groupBy('student_id', 'subject_id');
         $studentSubjects = $studentSubjects->pluck('student_id');
-        
+
         return response()->json([
             'message' => "Subjects GET Successfully",
             'data' => StudentWithoutSubjectResource::collection($data),
@@ -273,16 +282,16 @@ class TeacherController extends Controller
             'students.*' => 'numeric|exists:students,id',
             'subject_id' => 'required|numeric|exists:subject_teachers,id'
         ]);
-        $semesterID = Semester::where('status',1)->first()->id;
+        $semesterID = Semester::where('status', 1)->first()->id;
         $subjectTeacherID = $request->subject_id;
         /*join('semesters','student_subjects.semester_id','semesters.id')
             ->where('student_id', $student)->where('semesters.status',1)*/
         foreach ($validated['students'] as $student) {
             /*Only insert student once per subject, just in case someone bypassed the security*/
-            if (!StudentSubject::join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
+            if (!StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
                 ->join('semesters', 'subject_teachers.semester_id', 'semesters.id')
                 ->where('student_id', $student)
-                ->where('semesters.status',1)
+                ->where('semesters.status', 1)
                 ->where('subject_teacher_id', $subjectTeacherID)->exists()) {
                 StudentSubject::create([
                     'student_id' => $student,
@@ -382,7 +391,7 @@ class TeacherController extends Controller
             ->join('subjects', 'subject_teachers.subject_id', 'subjects.id')
             ->where('subjects.id', $subject->id)
             ->where('subject_teachers.id', auth()->user()->teacher->id)
-            ->where('semesters.status',1)
+            ->where('semesters.status', 1)
             ->select([
                 'student_subjects.grade',
                 'student_subjects.status as approval_status'
@@ -394,79 +403,81 @@ class TeacherController extends Controller
         ]);
     }
 
-//    public function updateGrade(Request $request, Student $student, Subject $subject)
-//    {
-//        $validated = $request->validate([
-//            'grade' => 'nullable|numeric|min:' . Base::MIN_STUDENT_GRADE . "|max:" . Base::MAX_STUDENT_GRADE,
-//        ]);
-//        $subjectTeacherID = \App\Models\SubjectTeacher::where('subject_id',$subject->id)
-//            ->where('teacher_id',auth()->user()->teacher->id)->first()->id;
-//
-//        $subjectID = $subject->id;
-//        $grade = $student->subjects()
-//            ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
-//            ->where('subject_teachers.id', $subjectTeacherID)
-//            ->where('subject_teachers.subject_id', $subjectID)->first();
-//        /*update only the subject that are not approved*/
-//        if (!$grade->status) {
-//            $student->subjects()
-//                ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
-//                ->where('subject_teachers.id', $subjectTeacherID)
-//                ->where('subject_teachers.subject_id', $subjectID)
-//                ->update(['grade' => $validated['grade']]);
-//        }
-//        return response()->json([
-//            'message' => "Student Subject Grade UPDATE successfully!",
-//        ]);
-//    }
+    //    public function updateGrade(Request $request, Student $student, Subject $subject)
+    //    {
+    //        $validated = $request->validate([
+    //            'grade' => 'nullable|numeric|min:' . Base::MIN_STUDENT_GRADE . "|max:" . Base::MAX_STUDENT_GRADE,
+    //        ]);
+    //        $subjectTeacherID = \App\Models\SubjectTeacher::where('subject_id',$subject->id)
+    //            ->where('teacher_id',auth()->user()->teacher->id)->first()->id;
+    //
+    //        $subjectID = $subject->id;
+    //        $grade = $student->subjects()
+    //            ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
+    //            ->where('subject_teachers.id', $subjectTeacherID)
+    //            ->where('subject_teachers.subject_id', $subjectID)->first();
+    //        /*update only the subject that are not approved*/
+    //        if (!$grade->status) {
+    //            $student->subjects()
+    //                ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
+    //                ->where('subject_teachers.id', $subjectTeacherID)
+    //                ->where('subject_teachers.subject_id', $subjectID)
+    //                ->update(['grade' => $validated['grade']]);
+    //        }
+    //        return response()->json([
+    //            'message' => "Student Subject Grade UPDATE successfully!",
+    //        ]);
+    //    }
 
     public function updateGrades(Request $request)
     {
         $validated = $request->validate([
             'students' => 'array|required',
             'students.*' => 'array|required',
-            'students.*.grade' => 'numeric|min:'.Base::MIN_STUDENT_GRADE."|max:".Base::MAX_STUDENT_GRADE,
+            'students.*.grade' => 'numeric|min:' . Base::MIN_STUDENT_GRADE . "|max:" . Base::MAX_STUDENT_GRADE,
             'students.*.student_id' => 'numeric|exists:students,id',
             'subject_id' => "required|numeric|exists:subject_teachers,id",
-            'resubmissions.*.resubmission' => 'nullable|numeric|min:'.Base::MIN_STUDENT_GRADE."|max:".Base::MAX_STUDENT_GRADE,
+            'resubmissions.*.resubmission' => 'nullable|numeric|min:' . Base::MIN_STUDENT_GRADE . "|max:" . Base::MAX_STUDENT_GRADE,
             'resubmissions.*.student_id' => 'numeric|exists:students,id',
         ]);
 
-        foreach ($validated['students'] as $student){
-            $isApproved = $this->isGradeApproved($student,$validated);
+        foreach ($validated['students'] as $student) {
+            $isApproved = $this->isGradeApproved($student, $validated);
             if (!$isApproved) :
                 /*Note* If ever student will have two subject, fix this. (Fixed Already?)*/
-                StudentSubject::join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
+                StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
                     ->join('subjects', 'subject_teachers.subject_id', 'subjects.id')
                     ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
-                    ->where('semesters.status',1)
-                    ->where('student_subjects.status',0)
+                    ->where('semesters.status', 1)
+                    ->where('student_subjects.status', 0)
                     ->where('subject_teachers.id', $validated['subject_id'])
-                    ->where('student_id',$student['student_id'])
+                    ->where('student_id', $student['student_id'])
                     ->update([
                         'grade' => $student['grade']
                     ]);
             endif;
         }
 
-        foreach ($validated['resubmissions'] as $resubmission){
-            $isApproved = $this->isGradeApproved($resubmission,$validated);
+        foreach ($validated['resubmissions'] as $resubmission) {
+            $isApproved = $this->isGradeApproved($resubmission, $validated);
 
-            if($isApproved)
-                $exist = Resubmission::where('student_subject_id',$isApproved->student_subject_id)->exists();
+            if ($isApproved)
+                $exist = Resubmission::where('student_subject_id', $isApproved->student_subject_id)->exists();
             else
                 $exist = false;
 
-            if( $isApproved &&
+            if (
+                $isApproved &&
                 !is_null($resubmission['resubmission']) &&
-                !$exist ){
+                !$exist
+            ) {
                 Resubmission::create([
                     'student_subject_id' => $isApproved->student_subject_id,
                     'grade' => $resubmission['resubmission']
                 ]);
-            }elseif ($exist && is_null($resubmission['resubmission'])){
+            } elseif ($exist && is_null($resubmission['resubmission'])) {
                 Resubmission::where(['student_subject_id' => $isApproved->student_subject_id])->delete();
-            }elseif ($exist && !is_null($resubmission['resubmission'])){
+            } elseif ($exist && !is_null($resubmission['resubmission'])) {
                 Resubmission::where(['student_subject_id' => $isApproved->student_subject_id])
                     ->update(['grade' => $resubmission['resubmission']]);
             }
@@ -477,18 +488,16 @@ class TeacherController extends Controller
         ]);
     }
 
-    private function isGradeApproved($student,$validated)
+    private function isGradeApproved($student, $validated)
     {
-        return StudentSubject::where('student_id',$student['student_id'])
-            ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
+        return StudentSubject::where('student_id', $student['student_id'])
+            ->join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
             ->join('subjects', 'subject_teachers.subject_id', 'subjects.id')
             ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
             ->select('student_subjects.id as student_subject_id') //for optimize, select one column only
-            ->where('semesters.status',1)
-            ->where('student_subjects.status',1)
+            ->where('semesters.status', 1)
+            ->where('student_subjects.status', 1)
             ->where('subject_teachers.id', $validated['subject_id'])
             ->first();
     }
-
-
 }

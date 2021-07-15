@@ -63,7 +63,7 @@ export default {
   name: "StudentBase",
   data: () => ({
     items: [
-      {title: 'Periodic Search', icon: 'mdi-magnify', href: '/student'},
+      // {title: 'Periodic Search', icon: 'mdi-magnify', href: '/student'},
       {title: 'My Grades', icon: 'mdi-star', href: '/myGrade'},
       {title: 'Announcement', icon: 'mdi-comment', href: '/announcement'},
     ],

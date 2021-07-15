@@ -7,7 +7,6 @@ use App\Models\SchoolYear;
 use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentSubject;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -21,8 +20,9 @@ class StudentController extends Controller
 
     public function printGrade(SchoolYear $schoolYear, Semester $semester)
     {
+        $isV1Api = $this->isV1Api($semester);
         $student = auth()->user()->student;
-        $grades = $this->getgrades($schoolYear,$semester,$student);
+        $grades = $this->getgrades($schoolYear, $semester, $student);
         $totalGrade = 0;
         $lecTotal = 0;
         $labTotal = 0;
@@ -30,14 +30,14 @@ class StudentController extends Controller
         $hasIncomplete = false;
         foreach ($grades as &$item) {
             $grade = $item['grade'];
-            $item['grade'] = $this->gradeDecider($item['grade']);
+            $item['grade'] = $isV1Api ? $this->gradeDeciderV1($item['grade']) : $this->gradeDecider($item['grade']);
             if ($item['grade'] === 'INC') {
                 $item['remarks'] = 'INCOMPLETE';
                 $hasIncomplete = true;
             } else if ($item['grade'] === 'DRP') {
                 $item['remarks'] = 'DROPPED';
             } else {
-                $item['remarks'] = $this->remarksDecider($grade);
+                $item['remarks'] = $isV1Api ? $this->remarksDeciderV1($grade) : $this->remarksDecider($grade);
             }
 
             if (intval($grade) !== 4) {
@@ -56,15 +56,15 @@ class StudentController extends Controller
             'course' => $user->student->course->title,
             'birthdate' => date('F d, Y', strtotime($user->student->birthdate))
         ]);
-        if($recordLength){
+        if ($recordLength) {
             $data = $grades;
             $totalUnits = $lecTotal . ($labTotal ? " ({$labTotal})" : '');
-            $totalGrade =  $hasIncomplete ? "INC" :  number_format($totalGrade / $recordLength, 2);
-            return view('student.printGrade',compact('data','totalUnits','totalGrade','info'));
+            $totalGrade = $hasIncomplete ? "INC" : number_format($totalGrade / $recordLength, 2);
+            return view('student.printGrade', compact('data', 'totalUnits', 'totalGrade', 'info'));
         }
 
         abort(404);
-        return  null;
+        return null;
     }
 
     public function print()
@@ -140,10 +140,16 @@ class StudentController extends Controller
             ->get();
     }
 
+    private function isV1Api($semester)
+    {
+        return (int)$semester->schoolYear->year === 2020 &&   $semester->title === "First Semester";
+    }
+
     public function myGradeForSemester(SchoolYear $schoolYear, Semester $semester)
     {
+        $isV1Api = $this->isV1Api($semester);
         $student = auth()->user()->student;
-        $grades = $this->getgrades($schoolYear,$semester,$student);
+        $grades = $this->getgrades($schoolYear, $semester, $student);
         $totalGrade = 0;
         $lecTotal = 0;
         $labTotal = 0;
@@ -151,14 +157,15 @@ class StudentController extends Controller
         $hasIncomplete = false;
         foreach ($grades as &$item) {
             $grade = $item['grade'];
-            $item['grade'] = $this->gradeDecider($item['grade']);
+            //Sysgrade converter
+            $item['grade'] = $isV1Api ? $this->gradeDeciderV1($item['grade']) : $this->gradeDecider($item['grade']);
             if ($item['grade'] === 'INC') {
                 $item['remarks'] = 'INCOMPLETE';
                 $hasIncomplete = true;
             } else if ($item['grade'] === 'DRP') {
                 $item['remarks'] = 'DROPPED';
             } else {
-                $item['remarks'] = $this->remarksDecider($grade);
+                $item['remarks'] = $isV1Api ? $this->remarksDeciderV1($grade) : $this->remarksDecider($grade);
             }
 
             if ((int)$grade !== 4) {
@@ -171,22 +178,61 @@ class StudentController extends Controller
             }
         }
 
-        if($recordLength){
+        if ($recordLength) {
             return response()->json([
                 'message' => "Grades for semester GET Successful!",
                 'data' => $grades,
                 'totalUnits' => $lecTotal . ($labTotal ? " ({$labTotal})" : ''),
-                'totalGrade' => $hasIncomplete ? "INC" :  number_format($totalGrade / $recordLength, 2)
+                'totalGrade' => $hasIncomplete ? "INC" : number_format($totalGrade / $recordLength, 2)
             ]);
         }
 
         return response()->json([
-            'message' => "Your grades is on process for School Year ".$schoolYear->year." - ".$semester->title,
+            'message' => "Your grades are on process for School Year " . $schoolYear->year . " - " . $semester->title,
             'data' => [],
         ]);
     }
 
     private function gradeDecider($initial_grade)
+    {
+        $grade = (float)$initial_grade;
+        if ($grade == 4) {
+            return "DRP";
+        } else if ($grade == 0) {
+            return "INC";
+        } else if ($grade === 5) {
+            return "5.00";
+        } else {
+            return $grade;
+        }
+    }
+
+
+    private function remarksDecider($grade)
+    {
+        $grade = (float)$grade;
+
+        if ($grade === 4) {
+            return "DRP";
+        } else if ($grade === 0) {
+            return "INC";
+        } else if ($grade === 5) {
+            return "Failed";
+        } else {
+            return "Passed";
+        }
+    }
+
+    private function remarksDeciderV1($grade)
+    {
+        if (floatval($grade) <= 74) {
+            return "Failed";
+        } else {
+            return "Passed";
+        }
+    }
+
+    private function gradeDeciderV1($initial_grade)
     {
         $grade = floatval($initial_grade);
         if ($grade >= 98) {
@@ -217,14 +263,6 @@ class StudentController extends Controller
         }
     }
 
-    private function remarksDecider($grade)
-    {
-        if (floatval($grade) <= 74) {
-            return "Failed";
-        } else {
-            return "Passed";
-        }
-    }
 
     public function announcementIndex()
     {
@@ -244,12 +282,12 @@ class StudentController extends Controller
                 'users.last_name',
                 'courses.title',
             )
-//            ->where('users.role_id', '=', Base::STUDENT_ROLE_ID)
+            //            ->where('users.role_id', '=', Base::STUDENT_ROLE_ID)
             ->where('users.id', $user_id)
-//            ->select()
+            //            ->select()
             ->get();
 
-//        dd($student_information);
+        //        dd($student_information);
 
         $first_name = $student_information->pluck('first_name');
         $first_name = str_replace('["', "", "$first_name");
@@ -264,7 +302,8 @@ class StudentController extends Controller
         $student_name = $last_name . ", " . $first_name . " " . $middle_name;
 
         if (count($student_information)) {
-            return response(['student_id' => $student_information->pluck('username'),
+            return response([
+                'student_id' => $student_information->pluck('username'),
                 'student_name' => $student_name,
                 'course' => $student_information->pluck('title'),
             ], 200);
@@ -302,7 +341,7 @@ class StudentController extends Controller
             )
             ->where('school_years.year', '=', $year)
             ->where('semesters.id', '=', $semester)
-//            ->select()
+            //            ->select()
             ->where('students.user_id', '=', $user_id)
             ->where('student_subjects.status', '=', 1)
             ->get();
@@ -313,7 +352,6 @@ class StudentController extends Controller
         } else {
             return response(['Message' => 'No records found'], 404);
         }
-
     }
 
 
@@ -347,7 +385,6 @@ class StudentController extends Controller
         } else {
             return reponse(['Message' => 'invalid request'], 200);
         }
-
     }
 
     public function Totalfooter(request $request, $user_id = "", $semester = "", $year = "")
@@ -365,7 +402,7 @@ class StudentController extends Controller
             )
             ->where('users.id', '=', $user_id)
             ->where('users.role_id', '=', Base::STUDENT_ROLE_ID)
-//            ->select()
+            //            ->select()
             ->get();
 
         if (count($student_information)) {
@@ -384,10 +421,10 @@ class StudentController extends Controller
                 ->where('students.user_id', '=', $user_id)
                 ->where('student_subjects.grade', '<>', '4')
                 ->where('student_subjects.grade', '<>', '0')
-//                 ->select()
+                //                 ->select()
                 ->get();
 
-//            $average = $average->pluck('average')[0]; //Use this instead?
+            //            $average = $average->pluck('average')[0]; //Use this instead?
             $average = $average->pluck('average');
             foreach ($average as $key => $value) {
                 $average = $value;
@@ -427,7 +464,7 @@ class StudentController extends Controller
                 ->where('semesters.id', '=', $semester)
                 ->where('students.user_id', '=', $user_id)
                 ->where('student_subjects.status', '=', 1)
-//                ->select()
+                //                ->select()
                 ->get();
 
             $units = $units->pluck('units');
@@ -444,19 +481,16 @@ class StudentController extends Controller
 
                 $lab_units = $units[1] ?? 0;
                 $total_lab += $lab_units;
-
             }
-//
+            //
             $units = $total_lecture . "(" . $total_lab . ")";
-//            print_r($units);
+            //            print_r($units);
 
 
             return response(['Average' => $average, 'units' => $units], 200);
         } else {
             return response(['Message' => 'No records found'], 404);
         }
-
-
     }
 
     public function CopyOfGrades(request $request, $user_id = "", $semester_id = "", $year = "")
@@ -482,7 +516,7 @@ class StudentController extends Controller
                 ->pluck('id');
 
             $semester = DB::table('semesters')
-//                ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
+                //                ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
                 ->select()
                 ->Where('status', '=', 1)
                 ->get();
@@ -514,13 +548,13 @@ class StudentController extends Controller
                     'subjects.title',
                     'student_subjects.grade',
                     'subjects.units',
-//                    'semesters.id',
+                    //                    'semesters.id',
                 )
                 ->where('school_years.year', '=', $year)
                 ->where('students.user_id', '=', $user_id)
                 ->where('semesters.id', '=', $semester_id)
                 ->where('student_subjects.status', '=', 1)
-//            ->select()
+                //            ->select()
                 ->get();
 
             $units = DB::table('student_subjects')
@@ -529,11 +563,11 @@ class StudentController extends Controller
                 ->join('subject_teachers', 'student_subjects.subject_teacher_id', '=', 'subject_teachers.id')
                 ->join('subjects', 'subject_teachers.subject_id', '=', 'subjects.id')
                 ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
-//                ->select(
-//                    'units'
-//                )
-//                ->where('student_subjects.semester_id', '=', )
-//                ->where('students.user_id', '=', $user_id)
+                //                ->select(
+                //                    'units'
+                //                )
+                //                ->where('student_subjects.semester_id', '=', )
+                //                ->where('students.user_id', '=', $user_id)
                 ->where('school_years.year', '=', $year)
                 ->where('students.user_id', '=', $user_id)
                 ->where('semesters.id', '=', $semester_id)
@@ -555,7 +589,6 @@ class StudentController extends Controller
 
                 $lab_units = $units[1] ?? 0;
                 $total_lab += $lab_units;
-
             }
 
             $units = $total_lecture . "(" . $total_lab . ")";
@@ -574,7 +607,7 @@ class StudentController extends Controller
                 ->where('students.user_id', '=', $user_id)
                 ->where('semesters.id', '=', $semester_id)
                 ->where('student_subjects.status', '=', 1)
-//                 ->select()
+                //                 ->select()
                 ->get();
 
             $average = $average->pluck('average');
@@ -608,14 +641,14 @@ class StudentController extends Controller
             return response([
                 'student_information' => $student_information,
                 'activated_semester' =>
-                    $semester,
+                $semester,
                 $grades,
                 'units' => $units,
                 'average' => $average,
                 'semester_year' => $semester_year,
-//                'schoolyear_id' =>
+                //                'schoolyear_id' =>
             ], 200);
-//            return response($grades,200);
+            //            return response($grades,200);
         } else {
             return response(['Message' => 'No records found'], 404);
         }
@@ -638,5 +671,4 @@ class StudentController extends Controller
         ];
         return response(['Message' => 'Authenticated User GET Successfully', 'data' => $profile], 200);
     }
-
 }

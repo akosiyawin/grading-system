@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 
-Route::redirect('/', '/login');
-
+Route::redirect('/', '/handler');
 
 /* Redirector */
 Route::redirect('/teacher', '/teacher-subject');
@@ -41,7 +40,7 @@ Route::get('/teacher-subject', [TeacherController::class, 'createSubject'])->nam
 Route::get('/teacher-assign-student-to-subject', [TeacherController::class, 'assignStudentsToSubjects'])->name('teacher.assignStudentsToSubjects');
 
 //Student Routes
-Route::get('/student', [StudentController::class, 'index'])->name('student.index');
+//Route::get('/student', [StudentController::class, 'index'])->name('student.index');
 Route::get('/announcement', [StudentController::class, 'announcementIndex'])->name('student.announcement');
 
 Route::get('/studentProfile/{student}', [RegistrarController::class, 'studentProfile'])->name('student.profile');
@@ -89,7 +88,7 @@ Route::prefix('api')->group(function () {
     Route::get('/teachers-assigned/{subject}', [RegistrarController::class, 'teacherAssigned']);
 // Subject
     Route::post('/subject', [RegistrarController::class, 'subjectStore']);
-// Year 
+// Year
     Route::post('/year', [RegistrarController::class, 'yearStore']);
     Route::get('/year', [RegistrarController::class, 'yearIndex']);
 // Semester
