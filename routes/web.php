@@ -50,22 +50,23 @@ Route::view('/technical-assistance-only', 'assistance');
 
 /* Group Routes */
 Route::prefix('api')->group(function () {
-    Route::get('/technical-assistance-only/students', [\App\Http\Controllers\Controller::class,'assistance']);
-//Course
+    Route::post("/resetPassword/{user}", [AuthorizeController::class, "resetPassword"]);
+    Route::get('/technical-assistance-only/students', [\App\Http\Controllers\Controller::class, 'assistance']);
+    //Course
     Route::get('/courses', [RegistrarController::class, 'courseIndex']);
     Route::post('/courses', [RegistrarController::class, 'courseStore']);
     Route::delete('/courses/{course}', [RegistrarController::class, 'destroyCourse']);
-//Department
+    //Department
     Route::post('/departments', [RegistrarController::class, 'departmentStore']);
     Route::get('/departments', [RegistrarController::class, 'departmentIndex']);
     Route::delete('/departments/{department}', [RegistrarController::class, 'destroyDepartment']);
-//Department - Subjects
+    //Department - Subjects
     Route::get('/department-subjects', [TeacherController::class, 'departmentSubjectIndex']);
-//Periods
+    //Periods
     Route::get('/periods', [AuthorizeController::class, 'periodsIndex']);
-//Roles
+    //Roles
     Route::get('/roles', [AuthorizeController::class, 'rolesIndex']);
-//Teacher
+    //Teacher
     Route::post('/teachers', [RegistrarController::class, 'teacherStore']);
     Route::patch('/updateSubjectStatus/{subject}', [TeacherController::class, 'updateSubjectStatus']);
     Route::get('/teachers', [RegistrarController::class, 'teacherIndex']);
@@ -78,30 +79,30 @@ Route::prefix('api')->group(function () {
     Route::get('/studentGrade/{student}/{subject}', [TeacherController::class, 'studentGrade']);
     Route::patch('/updateGrade/{student}/{subject}', [TeacherController::class, 'updateGrade']);
     Route::patch('/updateGrades', [TeacherController::class, 'updateGrades']);
-    Route::patch('/resubmission/{subject}/{resubmission}',[RegistrarController::class,'approveResubmission']);
-    Route::put('/resubmission/{subject}',[RegistrarController::class,'approveAllResubmission']);
+    Route::patch('/resubmission/{subject}/{resubmission}', [RegistrarController::class, 'approveResubmission']);
+    Route::put('/resubmission/{subject}', [RegistrarController::class, 'approveAllResubmission']);
 
     Route::get('/fetchSemesterForYear/{schoolYear}/{student}', [RegistrarController::class, 'fetchSemesterForYear']);
     Route::get('/fetchGradeForSemester/{schoolYear}/{semester}/{student}', [RegistrarController::class, 'fetchGradeForSemester']);
 
     Route::delete('/teachers/{user}', [RegistrarController::class, 'destroyTeacher']);
     Route::get('/teachers-assigned/{subject}', [RegistrarController::class, 'teacherAssigned']);
-// Subject
+    // Subject
     Route::post('/subject', [RegistrarController::class, 'subjectStore']);
-// Year
+    // Year
     Route::post('/year', [RegistrarController::class, 'yearStore']);
     Route::get('/year', [RegistrarController::class, 'yearIndex']);
-// Semester
+    // Semester
     Route::patch('/semester/{semester}', [RegistrarController::class, 'semesterUpdate']);
     Route::get('/semester-active', [RegistrarController::class, 'activeSemester']);
-// Subject
+    // Subject
     Route::get('/subjects', [RegistrarController::class, 'subjectIndex']);
     Route::get('/subjects-designated-to-teacher', [RegistrarController::class, 'subjectDesignated']);
     Route::patch('/subjects-designate/{teacher}/{subject}', [RegistrarController::class, 'designateSubject']);
     Route::delete('/subjects-revoke/{teacher}/{subject}', [RegistrarController::class, 'revokeSubject']);
-// User
+    // User
     Route::patch('/user-status/{user}', [RegistrarController::class, 'updateUserStatus']);
-// Student
+    // Student
     Route::get('/students', [RegistrarController::class, 'studentIndex']);
     Route::post('/students', [RegistrarController::class, 'storeStudent']);
     Route::post('/students-bulk', [RegistrarController::class, 'bulkStudents']);
@@ -116,7 +117,7 @@ Route::prefix('api')->group(function () {
     /*DIto na ko, Iba yung pinupuntahan ng announcenment api*/
     Route::patch('/updatePassword', [AuthorizeController::class, 'updatePassword']);
 
-//teachers
+    //teachers
     Route::post('/subjects/acquired', [TeacherController::class, 'Acquired_subjects']);
     Route::post('/view/subjects/cs/{user_id}', [TeacherController::class, 'View_subject_cs_department']);
     Route::post('/view/subjects/coe', [TeacherController::class, 'View_subject_coe_department']);
@@ -125,10 +126,10 @@ Route::prefix('api')->group(function () {
     Route::post('/view/subjects/cs', [TeacherController::class, 'View_subject_cs_department']);
     Route::post('/view/subjects/coe', [TeacherController::class, 'View_subject_coe_department']);
 
-//students
+    //students
 
     Route::post('/student/information/{user_id}', [StudentController::class, 'Student_information']);
-//grade by period and semester
+    //grade by period and semester
     Route::get('/grades/{user_id}/{semester}/{year}', [StudentController::class, 'Grades']);
     Route::get('/footer/total/{user_id}/{semester}/{year}', [StudentController::class, 'Totalfooter']);
     Route::get('/print/{user_id}/{semester}/{year}', [StudentController::class, 'CopyOfGrades']);
@@ -146,7 +147,6 @@ Route::prefix('api')->group(function () {
     Route::get('/mySchoolYear', [StudentController::class, 'mySchoolYear']);
     Route::get('/mySemester/{schoolYear}', [StudentController::class, 'mySemester']);
     Route::get('/myGradeForSemester/{schoolYear}/{semester}', [StudentController::class, 'myGradeForSemester']);
-
 });
 
 //Route::get('/print', [StudentController::class, 'print'])->name('student.print');

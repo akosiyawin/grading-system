@@ -73,4 +73,13 @@ class AuthorizeController extends Controller
             'message' => "Password has been changed successfully!"
         ]);
     }
+
+    public function resetPassword(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'password' => ['required', 'string'],
+        ]);
+        $user->update(['password' => Hash::make($validated['password'])]);
+        return response()->json(["Success"]);
+    }
 }

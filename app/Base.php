@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App;
 
 
@@ -23,7 +22,7 @@ class Base
     const MIN_STUDENT_GRADE = 0;
     const MAX_STUDENT_GRADE = 101;
 
-//    courses titles
+    //    courses titles
     const ACT = 'ACT';
     const BS_COE = 'BSCOE';
     const BS_HRM = 'BS HRM';
@@ -32,15 +31,15 @@ class Base
     const BS_IT = 'BSIT';
     const HRS = 'HRS';
     const HRT = 'HRT';
-//    const GEN_ED = 'General Education';
+    //    const GEN_ED = 'General Education';
 
-//    department titles
+    //    department titles
     const CS_DEPT = 'CS Department';
     const ENG_DEPT = 'Eng Department';
     const HRM_DEPT = 'HRM Department';
     const GEN_ED_DEPT = 'General Education';
 
-//    course_data
+    //    course_data
     const ACT_INPUT = 'ACT';
     const BS_COE_INPUT = 'BS COE';
     const BS_HRM_INPUT = 'BS HRM';
@@ -64,7 +63,7 @@ class Base
 
     const SCHOOL_YEAR_MAX = 2099;
 
-//    grading
+    //    grading
     const GRADE_98_100 = '1.0';
     const GRADE_95_97 = '1.25';
     const GRADE_92_94 = '1.50';

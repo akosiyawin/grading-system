@@ -25,12 +25,13 @@ class SubjectTeacher extends JsonResource
         return [
             'subject_id' => $this->subject_id,
             'title' => $this->title,
+            'remarks' => $this->remarks,
             'code' => $this->code,
-            'students' =>  StudentSubject::join('semesters','student_subjects.semester_id','semesters.id')
-                ->join('subject_teachers','student_subjects.subject_teacher_id','subject_teachers.id')
-                ->where('semesters.status',1)
-                ->where('subject_teachers.id',$this->subject_id)
-                ->where('subject_teachers.teacher_id',auth()->user()->teacher->id)
+            'students' =>  StudentSubject::join('semesters', 'student_subjects.semester_id', 'semesters.id')
+                ->join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
+                ->where('semesters.status', 1)
+                ->where('subject_teachers.id', $this->subject_id)
+                ->where('subject_teachers.teacher_id', auth()->user()->teacher->id)
                 ->count()
         ];
     }

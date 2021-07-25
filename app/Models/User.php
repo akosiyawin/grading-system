@@ -45,21 +45,23 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function student(){
+    public function student()
+    {
         return $this->hasOne(Student::class);
     }
 
-    public function teacher(){
+    public function teacher()
+    {
         return $this->hasOne(Teacher::class);
     }
 
-    public function getNameAttribute(){
-        return $this->first_name. " ". $this->last_name;
+    public function getNameAttribute()
+    {
+        return $this->first_name . " " . $this->last_name;
     }
 
     public function getFullNameAttribute()
     {
-        return $this->last_name. ", ". $this->first_name. " ". $this->middle_name;
+        return $this->last_name . ", " . $this->first_name . " " . $this->middle_name;
     }
-
 }
