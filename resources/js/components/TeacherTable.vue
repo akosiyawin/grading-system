@@ -6,77 +6,94 @@
           Teachers Information
           <v-spacer></v-spacer>
           <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              label="Search"
-              single-line
-              hide-details
-              @keyup.enter="fetchTeachers"
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+            @keyup.enter="fetchTeachers"
           ></v-text-field>
         </v-card-title>
         <v-simple-table id="teachersTableRegistrar" fixed-header height="400px">
           <template v-slot:default>
             <thead>
-            <tr>
-              <th class="text-left">#</th>
-              <th class="text-left">Username</th>
-              <th class="text-left">Name</th>
-              <th class="text-left">Subjects</th>
-              <th class="text-left">Students</th>
-              <th class="text-left">Status</th>
-              <th class="text-left"></th>
-            </tr>
+              <tr>
+                <th class="text-left">#</th>
+                <th class="text-left">Username</th>
+                <th class="text-left">Name</th>
+                <th class="text-left">Subjects</th>
+                <th class="text-left">Students</th>
+                <th class="text-left">Status</th>
+                <th class="text-left"></th>
+              </tr>
             </thead>
             <tbody>
-            <tr v-for="item in getTeachers" :key="item.id">
-              <td>{{ item.id }}</td>
-              <td>{{ item.username }}</td>
-              <td>{{ item.name }}</td>
-              <td>{{ item.subject }}</td>
-              <td>{{ item.student }}</td>
-              <td>
-                <v-chip small class="bg-success" v-if="item.status == 1">
-                  Active
-                </v-chip>
-                <v-chip small class="bg-danger" v-else> Suspended</v-chip>
-              </td>
-              <td>
-                <v-btn
+              <tr v-for="item in getTeachers" :key="item.id">
+                <td>{{ item.id }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.subject }}</td>
+                <td>{{ item.student }}</td>
+                <td>
+                  <v-chip small class="bg-success" v-if="item.status == 1">
+                    Active
+                  </v-chip>
+                  <v-chip small class="bg-danger" v-else> Suspended</v-chip>
+                </td>
+                <td>
+                  <v-badge
+                    v-if="item.approval_count != 0"
+                    class="badge_notify"
+                    overlap
+                    :content="item.approval_count"
+                  >
+                    <v-btn
+                      small
+                      :disabled="item.subject === 0"
+                      class="bg-success"
+                      @click="handleViewGrade(item)"
+                    >
+                      <i class="fas fa-folder mr-1"> </i>
+                      Grades
+                    </v-btn>
+                  </v-badge>
+                  <v-btn
+                    v-else
+                    small
                     :disabled="item.subject === 0"
-                    x-small
                     class="bg-success"
                     @click="handleViewGrade(item)"
-                >
-                  <i class="fas fa-folder mr-1"> </i>
-                  Grades
-                </v-btn>
-                <v-btn x-small @click="rowClick(item)">
-                  <i class="fas fa-eye mr-1"> </i>
-                </v-btn>
-              </td>
-            </tr>
+                  >
+                    <i class="fas fa-folder mr-1"> </i>
+                    Grades
+                  </v-btn>
+                  <v-btn class="ml-2" x-small @click="rowClick(item)">
+                    <i class="fas fa-eye mr-1"> </i>
+                  </v-btn>
+                </td>
+              </tr>
             </tbody>
           </template>
         </v-simple-table>
         <v-footer>
           <div class="d-flex justify-content-center align-items-center">
             <v-select
-                @change="fetchTeachers"
-                v-model="rowsPerPage"
-                :items="rowsPerPages"
-                item-value="value"
-                item-text="title"
-                style="max-width: 40px; max-width: 55px"
+              @change="fetchTeachers"
+              v-model="rowsPerPage"
+              :items="rowsPerPages"
+              item-value="value"
+              item-text="title"
+              style="max-width: 40px; max-width: 55px"
             ></v-select>
             <div v-if="rowsPerPage !== 99">
               <v-btn small class="ml-2" @click="handlePage(-1)">
                 <v-icon> mdi-chevron-left</v-icon>
               </v-btn>
               <v-btn
-                  class="ml-2"
-                  small
-                  @click="handlePage(1)"
-                  :disabled="getTeachers.length === 0"
+                class="ml-2"
+                small
+                @click="handlePage(1)"
+                :disabled="getTeachers.length === 0"
               >
                 <v-icon> mdi-chevron-right</v-icon>
               </v-btn>
@@ -88,14 +105,14 @@
     <div class="col-4" v-if="teacherInfos.user_id">
       <v-card class="mx-auto" max-width="500" id="teacherAboutCard">
         <v-img
-            class="white--text"
-            height="200px"
-            src="https://epcst.files.wordpress.com/2012/08/eastwoods-3.jpg"
+          class="white--text"
+          height="200px"
+          src="https://epcst.files.wordpress.com/2012/08/eastwoods-3.jpg"
         >
           <v-card-title class="d-flex align-items-end h-100"
-          ><span class="bg-success px-3 py-2 text-white"
-          >More Description</span
-          >
+            ><span class="bg-success px-3 py-2 text-white"
+              >More Description</span
+            >
           </v-card-title>
         </v-img>
         <v-card-title> Teacher Name</v-card-title>
@@ -115,13 +132,13 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                  color="primary"
-                  text
-                  class="text-danger"
-                  type="submit"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="dialog = true"
+                color="primary"
+                text
+                class="text-danger"
+                type="submit"
+                v-bind="attrs"
+                v-on="on"
+                @click="dialog = true"
               >
                 Delete
               </v-btn>
@@ -132,12 +149,12 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                  text
-                  class="ml-2 text-warning"
-                  type="submit"
-                  v-bind="attrs"
-                  v-on="on"
-                  @click="updateStatus"
+                text
+                class="ml-2 text-warning"
+                type="submit"
+                v-bind="attrs"
+                v-on="on"
+                @click="updateStatus"
               >
                 {{ teacherInfos.status == "Active" ? "Suspend" : "Unsuspend" }}
               </v-btn>
@@ -145,6 +162,21 @@
             <span>Suspend this user from accessing the system</span>
           </v-tooltip>
 
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                text
+                class="text-primary"
+                type="submit"
+                v-bind="attrs"
+                v-on="on"
+                @click="resetDialog = true"
+              >
+                Reset
+              </v-btn>
+            </template>
+            <span>Reset password of user.</span>
+          </v-tooltip>
           <!--          <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
@@ -163,6 +195,29 @@
         </v-card-actions>
       </v-card>
     </div>
+
+    <!--    Reset Prompt -->
+    <v-dialog v-model="resetDialog" persistent max-width="400">
+      <v-card>
+        <v-card-title class="headline"> Reset Password </v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="resetPassTxt"
+            label="Enter password"
+            required
+          ></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="resetDialog = false">
+            Cancel
+          </v-btn>
+          <v-btn color="green darken-1" text @click="resetPassword">
+            Confirm
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!--    Delete Prompt -->
     <v-dialog v-model="dialog" persistent max-width="400">
@@ -190,9 +245,9 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-              color="green darken-1"
-              text
-              @click="dialogFailed.state = false"
+            color="green darken-1"
+            text
+            @click="dialogFailed.state = false"
           >
             Close
           </v-btn>
@@ -211,30 +266,30 @@
           <v-card>
             <v-card-title>
               <v-text-field
-                  v-model="students.search"
-                  append-icon="mdi-magnify"
-                  label="Search"
-                  single-line
-                  hide-details
-                  @keyup.enter="fetchStudents"
+                v-model="students.search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+                @keyup.enter="fetchStudents"
               ></v-text-field>
             </v-card-title>
             <div class="table-responsive" style="height: 400px">
               <v-simple-table>
                 <template v-slot:default>
                   <thead>
-                  <tr>
-                    <th class="text-left">#</th>
-                    <th class="text-left">Student No.</th>
-                    <th class="text-left">Name</th>
-                  </tr>
+                    <tr>
+                      <th class="text-left">#</th>
+                      <th class="text-left">Student No.</th>
+                      <th class="text-left">Name</th>
+                    </tr>
                   </thead>
                   <tbody>
-                  <tr v-for="(item, index) in students.data">
-                    <td>{{ index + 1 }}</td>
-                    <td>{{ item.student_number }}</td>
-                    <td>{{ item.name }}</td>
-                  </tr>
+                    <tr v-for="(item, index) in students.data">
+                      <td>{{ index + 1 }}</td>
+                      <td>{{ item.student_number }}</td>
+                      <td>{{ item.name }}</td>
+                    </tr>
                   </tbody>
                 </template>
               </v-simple-table>
@@ -260,13 +315,13 @@
           <v-card>
             <v-card-title>
               <v-text-field
-                  append-icon="mdi-magnify"
-                  label="Search"
-                  single-line
-                  hide-details
-                  @keyup.enter="fetchSubjectStudentsGrade"
-                  v-model="searchGrade"
-                  v-if="activeSubject"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+                @keyup.enter="fetchSubjectStudentsGrade"
+                v-model="searchGrade"
+                v-if="activeSubject"
               ></v-text-field>
             </v-card-title>
             <v-card-text>
@@ -278,12 +333,24 @@
                         <b>SUBJECT LISTS</b>
                       </li>
                       <li
-                          class="list-group-item hovered"
-                          @click="handleSubjectClick(subject)"
-                          v-for="subject in subjectLists"
-                          :class="{'bg-success' : activeSubject === subject.subject_id}"
+                        class="list-group-item hovered"
+                        @click="handleSubjectClick(subject)"
+                        v-for="subject in subjectLists"
+                        :class="{
+                          'bg-success': activeSubject === subject.subject_id,
+                        }"
                       >
-                        {{ subject.title }}<br/><b>{{ subject.code }}</b>
+                        <v-badge
+                          v-if="subject.approval_count != 0"
+                          left
+                          class="badge_notify"
+                          :content="subject.approval_count"
+                        >
+                          {{ subject.title }}<br /><b>{{ subject.code }}</b>
+                        </v-badge>
+                        <span v-else>
+                          {{ subject.title }}<br /><b>{{ subject.code }}</b>
+                        </span>
                       </li>
                     </ul>
                   </div>
@@ -292,102 +359,110 @@
                   <v-simple-table height="350px">
                     <template v-slot:default>
                       <thead>
-                      <tr>
-                        <th class="text-left">#</th>
-                        <th class="text-left">Student Info</th>
-                        <th class="text-left">
-                          Grade
-                          <v-btn
+                        <tr>
+                          <th class="text-left">#</th>
+                          <th class="text-left">Student Info</th>
+                          <th class="text-left">
+                            Grade
+                            <v-btn
                               class="ml-1"
                               x-small
                               text
                               icon
                               color="blue lighten-2"
                               @click="checkPrelim"
-                          >
-                            <v-icon small class="text-success"
-                            >mdi-check
-                            </v-icon
                             >
-                          </v-btn>
-                        </th>
-                        <th>Completion
+                              <v-icon small class="text-success"
+                                >mdi-check
+                              </v-icon>
+                            </v-btn>
+                          </th>
+                          <th>
+                            Completion
 
-                          <v-btn
+                            <v-btn
                               class="ml-1"
                               x-small
                               text
                               icon
                               color="blue lighten-2"
                               @click="approveAllResubmission"
-                          >
-                            <v-icon small class="text-success"
-                            >mdi-check
-                            </v-icon
                             >
-                          </v-btn>
-                        </th>
-                      </tr>
+                              <v-icon small class="text-success"
+                                >mdi-check
+                              </v-icon>
+                            </v-btn>
+                          </th>
+                        </tr>
                       </thead>
                       <tbody>
-                      <tr v-for="(student, i) in studentsGradeLists">
-                        <td>
-                          {{
-                            rowsPerPageGrade !== 99
+                        <tr v-for="(student, i) in studentsGradeLists">
+                          <td>
+                            {{
+                              rowsPerPageGrade !== 99
                                 ? i +
-                                1 +
-                                (rowsPerPageGrade * pageGrade - 1) -
-                                rowsPerPageGrade +
-                                1
+                                  1 +
+                                  (rowsPerPageGrade * pageGrade - 1) -
+                                  rowsPerPageGrade +
+                                  1
                                 : i + 1
-                          }}
-                        </td>
-                        <td>
-                          <b>{{ student.name }}</b
-                          ><br/>
-                          {{ student.student_number }}
-                        </td>
-                        <td>
-                          <span v-if="parseInt(student.grade) == 0" class="text-danger">(INC)</span>
-                          <span v-else-if="parseInt(student.grade) == 4" class="text-danger">(DRP)</span>
-                          <span v-else>{{
-                                student.grade
-                          }}</span>
-                          <br/>
-                          <v-btn
+                            }}
+                          </td>
+                          <td>
+                            <b>{{ student.name }}</b
+                            ><br />
+                            {{ student.student_number }}
+                          </td>
+                          <td>
+                            <span
+                              v-if="parseInt(student.grade) == 0"
+                              class="text-danger"
+                              >(INC)</span
+                            >
+                            <span
+                              v-else-if="parseInt(student.grade) == 4"
+                              class="text-danger"
+                              >(DRP)</span
+                            >
+                            <span v-else>{{ student.grade }}</span>
+                            <br />
+                            <v-btn
                               x-small
                               class="bg-danger"
                               v-if="student.status == 1"
                               @click="approveGrade(student.student_id)"
-                          >Cancel
-                          </v-btn
-                          >
-                          <v-btn
+                              >Cancel
+                            </v-btn>
+                            <v-btn
                               x-small
                               class="bg-success"
                               v-else
                               @click="approveGrade(student.student_id)"
-                          >Approve
-                          </v-btn
-                          >
-                        </td>
-                        <td>
-                          <span v-if="parseInt(student.resubmission) == 0" class="text-danger">(INC)</span>
-                          <span v-else-if="parseInt(student.resubmission) == 4" class="text-danger">(DRP)</span>
-                          <span v-else>{{
-                              student.resubmission
-                            }}</span>
-                          <br/>
-                          <v-btn
+                              >Approve
+                            </v-btn>
+                          </td>
+                          <td>
+                            <span
+                              v-if="parseInt(student.resubmission) == 0"
+                              class="text-danger"
+                              >(INC)</span
+                            >
+                            <span
+                              v-else-if="parseInt(student.resubmission) == 4"
+                              class="text-danger"
+                              >(DRP)</span
+                            >
+                            <span v-else>{{ student.resubmission }}</span>
+                            <br />
+                            <v-btn
                               x-small
                               class="bg-success"
                               v-if="student.resubmission != null"
                               @click="approveResubmission(student)"
-                          >Approve
-                          </v-btn
-                          >
-                        </td>
-                      </tr>
+                              >Approve
+                            </v-btn>
+                          </td>
+                        </tr>
                       </tbody>
                     </template>
                   </v-simple-table>
@@ -396,22 +471,22 @@
               <v-footer v-if="activeSubject">
                 <div class="d-flex justify-content-center align-items-center">
                   <v-select
-                      @change="fetchSubjectStudentsGrade"
-                      v-model="rowsPerPageGrade"
-                      :items="rowsPerPages"
-                      item-value="value"
-                      item-text="title"
-                      style="max-width: 55px"
+                    @change="fetchSubjectStudentsGrade"
+                    v-model="rowsPerPageGrade"
+                    :items="rowsPerPages"
+                    item-value="value"
+                    item-text="title"
+                    style="max-width: 55px"
                   ></v-select>
                   <div v-if="rowsPerPageGrade !== 99">
                     <v-btn small class="ml-2" @click="handlePageGrade(-1)">
                       <v-icon> mdi-chevron-left</v-icon>
                     </v-btn>
                     <v-btn
-                        class="ml-2"
-                        small
-                        @click="handlePageGrade(1)"
-                        :disabled="studentsGradeLists.length === 0"
+                      class="ml-2"
+                      small
+                      @click="handlePageGrade(1)"
+                      :disabled="studentsGradeLists.length === 0"
                     >
                       <v-icon> mdi-chevron-right</v-icon>
                     </v-btn>
@@ -426,7 +501,9 @@
             Close
           </v-btn>
           <v-spacer></v-spacer>
-          <span class="text-primary font-weight-bold muted">{{activeSubjectTitle}}</span>
+          <span class="text-primary font-weight-bold muted">{{
+            activeSubjectTitle
+          }}</span>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -441,46 +518,48 @@
       </template>
     </v-snackbar>
 
-    <loading/>
-
+    <loading />
   </div>
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import axios from "axios";
+import { mapActions, mapGetters } from "vuex";
 import api from "../tools/api";
 
 export default {
   name: "TeacherTable",
   data() {
     return {
+      resetPassTxt: "",
+      resetDialog: false,
       search: "",
-      dialogFailed: {state: false, message: null},
+      dialogFailed: { state: false, message: null },
       page: 1,
       rowsPerPage: 10,
-      students: {data: [], search: null},
+      students: { data: [], search: null },
       assignStudentDialog: false,
       teacherTotal: 0,
       dialog: false,
       selectedTeacher: null,
       rowsPerPages: [
-        {title: 10, value: 10},
-        {title: 15, value: 15},
-        {title: "all", value: 99},
+        { title: 10, value: 10 },
+        { title: 15, value: 15 },
+        { title: "all", value: 99 },
       ],
       headers: [
         {
           text: "#",
           value: "id",
         },
-        {text: "Username", value: "username"},
-        {text: "Name", value: "name"},
-        {text: "Subjects", value: "subject"},
-        {text: "Students", value: "student"},
-        {text: "Status", value: "status"},
-        {text: "", value: "action"},
+        { text: "Username", value: "username" },
+        { text: "Name", value: "name" },
+        { text: "Subjects", value: "subject" },
+        { text: "Students", value: "student" },
+        { text: "Status", value: "status" },
+        { text: "", value: "action" },
       ],
-      teacherInfos: {data: "", name: null, user_id: null},
+      teacherInfos: { data: "", name: null, user_id: null },
       /*View Grades*/
       viewGradeDialog: false,
       subjectLists: [],
@@ -489,9 +568,9 @@ export default {
       pageGrade: 1,
       searchGrade: null,
       activeSubject: null,
-      snackbar: {state: false, text: null},
+      snackbar: { state: false, text: null },
       activeTeacher: null,
-      activeSubjectTitle: ''
+      activeSubjectTitle: "",
     };
   },
   computed: {
@@ -517,17 +596,45 @@ export default {
   },
   methods: {
     ...mapActions(["setTeachers", "setDialog"]),
+    async resetPassword() {
+      if (!!!this.resetPassTxt) {
+        this.setDialog({
+          state: true,
+          message: "Please specify a password.",
+        });
+        return;
+      }
+      await axios
+        .post(`/api/resetPassword/${this.teacherInfos.user_id}`, {
+          password: this.resetPassTxt,
+        })
+        .then(() => {
+          this.resetDialog = false;
+          this.setDialog({
+            state: true,
+            message: "Password has been successfully reset!",
+          });
+        })
+        .catch((err) => {
+          console.error("Error resetting password", err);
+          this.setDialog({
+            state: true,
+            message: "Something went wrong",
+          });
+        });
+      this.resetPassTxt = "";
+    },
     fetchTeachers() {
       return api
-          .teacherIndex({
-            rowsPerPage: this.rowsPerPage,
-            page: this.page,
-            search: this.search,
-          })
-          .then((r) => {
-            this.setTeachers(r.data.data);
-            this.teacherTotal = r.data.total;
-          });
+        .teacherIndex({
+          rowsPerPage: this.rowsPerPage,
+          page: this.page,
+          search: this.search,
+        })
+        .then((r) => {
+          this.setTeachers(r.data.data);
+          this.teacherTotal = r.data.total;
+        });
     },
     handlePage(val) {
       this.page += val;
@@ -545,8 +652,8 @@ export default {
       api.teacherInfo(item.id).then((r) => {
         this.teacherInfos.data = r.data.data.map((e) => e.title).join(", ");
         this.teacherInfos.data = !this.teacherInfos.data
-            ? "None"
-            : this.teacherInfos.data;
+          ? "None"
+          : this.teacherInfos.data;
         this.teacherInfos.name = r.data.name;
         this.teacherInfos.user_id = r.data.user_id;
         this.teacherInfos.status = r.data.status == 1 ? "Active" : "Suspended";
@@ -559,31 +666,31 @@ export default {
     deleteTeacher() {
       this.dialog = false;
       api
-          .deleteTeacher(this.teacherInfos.user_id)
-          .then((r) => {
-            this.fetchTeachers().then(() => {
-              this.teacherInfos.user_id = null;
-              this.setDialog({state: true, message: r.data.message});
-            });
-          })
-          .catch((err) => {
-            this.dialogFailed.state = true;
-            this.dialogFailed.message = err.response.data.message;
+        .deleteTeacher(this.teacherInfos.user_id)
+        .then((r) => {
+          this.fetchTeachers().then(() => {
+            this.teacherInfos.user_id = null;
+            this.setDialog({ state: true, message: r.data.message });
           });
+        })
+        .catch((err) => {
+          this.dialogFailed.state = true;
+          this.dialogFailed.message = err.response.data.message;
+        });
     },
     updateStatus() {
       api
-          .updateUserStatus(this.teacherInfos.user_id)
-          .then((r) => {
-            this.getTeacherInfo({id: this.selectedTeacher});
-            this.fetchTeachers();
-          })
-          .catch((err) => {
-            this.setDialog({state: true, message: err.response.data.message});
-          });
+        .updateUserStatus(this.teacherInfos.user_id)
+        .then((r) => {
+          this.getTeacherInfo({ id: this.selectedTeacher });
+          this.fetchTeachers();
+        })
+        .catch((err) => {
+          this.setDialog({ state: true, message: err.response.data.message });
+        });
     },
     fetchStudents() {
-      api.students({search: this.students.search}).then((r) => {
+      api.students({ search: this.students.search }).then((r) => {
         this.students.data = r.data.data;
       });
     },
@@ -592,48 +699,51 @@ export default {
       this.activeTeacher = item.id;
       this.fetchTeacherSubjects(item.id).then((r) => {
         this.subjectLists = r.data.data;
-        document.body.classList.add('sidebar-collapse')
+        document.body.classList.add("sidebar-collapse");
         this.viewGradeDialog = true;
       });
     },
     approveGrade(student_id) {
       api
-          .approveGrade(this.activeSubject, {
-            student_id,
-            teacher: this.activeTeacher,
-          })
-          .then(() => {
-            this.fetchSubjectStudentsGrade();
-          });
+        .approveGrade(this.activeSubject, {
+          student_id,
+          teacher: this.activeTeacher,
+        })
+        .then(() => {
+          this.fetchSubjectStudentsGrade();
+        });
     },
-    approveResubmission(student){
-      api.approveResubmission(this.activeSubject,student.resubmission_id,{
-        student_id : student.student_id,
-        grade: student.resubmission
-      }).then(() => this.fetchSubjectStudentsGrade())
+    approveResubmission(student) {
+      api
+        .approveResubmission(this.activeSubject, student.resubmission_id, {
+          student_id: student.student_id,
+          grade: student.resubmission,
+        })
+        .then(() => this.fetchSubjectStudentsGrade());
     },
     handleSubjectClick(subject) {
       this.activeSubject = subject.subject_id;
-      this.activeSubjectTitle = subject.title
+      this.activeSubjectTitle = subject.title;
       this.pageGrade = 1;
       this.searchGrade = null;
       this.fetchSubjectStudentsGrade();
     },
     fetchSubjectStudentsGrade() {
       api
-          .subjectStudentsGrade(this.activeSubject, {
-            rowsPerPage: this.rowsPerPageGrade,
-            page: this.pageGrade,
-            search: this.searchGrade,
-            teacher: this.activeTeacher,
-          })
-          .then((r) => {
-            this.studentsGradeLists = r.data.data;
-          });
+        .subjectStudentsGrade(this.activeSubject, {
+          rowsPerPage: this.rowsPerPageGrade,
+          page: this.pageGrade,
+          search: this.searchGrade,
+          teacher: this.activeTeacher,
+        })
+        .then((r) => {
+          this.studentsGradeLists = r.data.data;
+        });
     },
-    handleCloseViewGrade() {
+    async handleCloseViewGrade() {
+      await this.fetchTeachers();
       this.viewGradeDialog = false;
-      this.activeSubjectTitle = ''
+      this.activeSubjectTitle = "";
       this.subjectLists = [];
       this.studentsGradeLists = [];
       this.activeSubject = null;
@@ -644,33 +754,39 @@ export default {
     },
     checkPrelim() {
       const forApproval = this.studentsGradeLists
-          .filter((e) => e.grade !== 0)
-          .map((e) => e.student_id);
+        .filter((e) => e.grade !== 0)
+        .map((e) => e.student_id);
       api
-          .approveAllGrade(this.activeSubject, {
-            students: forApproval,
-            teacher: this.activeTeacher,
-          })
-          .then((r) => {
-            this.fetchSubjectStudentsGrade();
-            this.snackbar.text = "Grade has been approved for all students!";
-            this.snackbar.state = true;
-          });
+        .approveAllGrade(this.activeSubject, {
+          students: forApproval,
+          teacher: this.activeTeacher,
+        })
+        .then((r) => {
+          this.fetchSubjectStudentsGrade();
+          this.snackbar.text = "Grade has been approved for all students!";
+          this.snackbar.state = true;
+        });
     },
-    approveAllResubmission(){
+    approveAllResubmission() {
       const resubmissions = this.studentsGradeLists
-          .filter((e) => e.resubmission != null)
-          .map((e) => ({student_id: e.student_id, resubmission_id: e.resubmission_id, resubmission : e.resubmission}))
-      api.approveAllResubmission(this.activeSubject, {
-        resubmissions
-      }).then((r) => {
-        this.fetchSubjectStudentsGrade();
-        this.snackbar.text = r.data.message;
-        this.snackbar.state = true;
-      })
-    }
+        .filter((e) => e.resubmission != null)
+        .map((e) => ({
+          student_id: e.student_id,
+          resubmission_id: e.resubmission_id,
+          resubmission: e.resubmission,
+        }));
+      api
+        .approveAllResubmission(this.activeSubject, {
+          resubmissions,
+        })
+        .then((r) => {
+          this.fetchSubjectStudentsGrade();
+          this.snackbar.text = r.data.message;
+          this.snackbar.state = true;
+        });
+    },
   },
-  mounted() {
+  created() {
     this.fetchTeachers();
   },
 };
@@ -692,6 +808,11 @@ export default {
 .hovered:hover {
   background: #fbfbfb;
   cursor: pointer;
+}
+
+.v-badge__badge {
+  color: #fff;
+  background-color: red;
 }
 </style>
 

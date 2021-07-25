@@ -1,4 +1,6 @@
-<?php /** @noinspection MissingReturnTypeInspection */
+<?php
+
+/** @noinspection MissingReturnTypeInspection */
 
 namespace App\Http\Traits;
 
@@ -12,6 +14,7 @@ use App\Http\Resources\SchoolYearResource;
 use App\Http\Resources\StudentGradeResource;
 use App\Http\Resources\StudentResource;
 use App\Http\Resources\SubjectResource;
+use App\Http\Resources\SubjectTeacherResource;
 use App\Http\Resources\TeacherAssignedResource;
 use App\Http\Resources\TeacherResource;
 use App\Http\Resources\TitleOnlyResource;
@@ -149,10 +152,10 @@ trait RegistrarApi
 
     public function yearIndex()
     {
-        $semester = Semester::where('status',1)->first();
-        if($semester){
+        $semester = Semester::where('status', 1)->first();
+        if ($semester) {
             $active = "Active School Year: {$semester->schoolyear->year} ({$semester->title})";
-        }else{
+        } else {
             $active = "NO SEMESTER APPLIED";
         }
         return response()->json([
@@ -361,9 +364,9 @@ trait RegistrarApi
         ]);
         $query = Student::join('users', 'students.user_id', 'users.id')
             ->join('courses', 'students.course_id', 'courses.id')->orderBy('users.last_name');
-//        $query->join('student_teachers','students.id','student_teachers.student_id');
-//        $query->join('semesters','student_teachers.semester_id','semesters.id');
-//        $query->where('semesters.status',1);
+        //        $query->join('student_teachers','students.id','student_teachers.student_id');
+        //        $query->join('semesters','student_teachers.semester_id','semesters.id');
+        //        $query->where('semesters.status',1);
         $query->select([
             'users.first_name',
             'users.middle_name',
@@ -437,7 +440,6 @@ trait RegistrarApi
         return response()->json([
             'message' => 'The student has been deleted successfully!',
         ]);
-
     }
 
     public function destroyCourse(Course $course)
@@ -540,7 +542,7 @@ trait RegistrarApi
             'resubmissions.resubmission_id.*' => 'numeric|exists:resubmissions,id',
         ]);
 
-        foreach ($validated['resubmissions'] as $resubmission){
+        foreach ($validated['resubmissions'] as $resubmission) {
             StudentSubject::join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
                 ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
                 ->where('semesters.status', 1)
@@ -558,16 +560,16 @@ trait RegistrarApi
 
     public function teacherSubjects(Teacher $teacher)
     {
-        $subjects = $teacher->subjects()->join('subjects', 'subject_teachers.subject_id', 'subjects.id')
+        $resource = $teacher->subjects()->join('subjects', 'subject_teachers.subject_id', 'subjects.id')
             ->join('semesters', 'subject_teachers.semester_id', 'semesters.id')
             ->where('semesters.status', 1)
             ->select([
                 'subjects.code',
                 DB::raw('CONCAT(subjects.title," - ",subject_teachers.remarks) as title'),
-                'subject_teachers.id as subject_id'
+                'subject_teachers.id as subject_id',
             ])
             ->get();
-
+        $subjects = SubjectTeacherResource::collection($resource);
         return response()->json([
             'message' => "Teacher Subject Lists GET successfully!",
             'data' => $subjects
@@ -586,7 +588,7 @@ trait RegistrarApi
             ->join('users', 'students.user_id', 'users.id')
             ->join('subject_teachers', 'student_subjects.subject_teacher_id', 'subject_teachers.id')
             ->join('semesters', 'student_subjects.semester_id', 'semesters.id')
-            ->leftJoin('resubmissions','student_subjects.id','resubmissions.student_subject_id')
+            ->leftJoin('resubmissions', 'student_subjects.id', 'resubmissions.student_subject_id')
             ->where('subject_teachers.id', $subject)
             ->where('semesters.status', 1)
             ->orderBy('users.last_name')
@@ -724,7 +726,7 @@ trait RegistrarApi
                 $split[3] = $split[5];
                 $split[4] = $split[6];
             } elseif (count($split) > 7) {
-//                dd($split);
+                //                dd($split);
                 /*If this pops out, it means there is suject with >=4 commas*/
                 return response()->json([
                     'message' => 'Please Contact the developer for this issue',
@@ -803,6 +805,4 @@ trait RegistrarApi
             'message' => 'Announcement has been deleted Successfully!',
         ]);
     }
-
-
 }
