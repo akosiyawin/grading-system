@@ -204,7 +204,7 @@ class StudentController extends Controller
         } else if ($grade === 5) {
             return "5.00";
         } else {
-            return $grade;
+            return sprintf("%0.1f", $grade);
         }
     }
 
@@ -237,30 +237,30 @@ class StudentController extends Controller
     {
         $grade = floatval($initial_grade);
         if ($grade >= 98) {
-            return "1.00";
+            return "1.0";
         } else if ($grade >= 95) {
             return "1.25";
         } else if ($grade >= 92) {
-            return "1.50";
+            return "1.5";
         } else if ($grade >= 88) {
             return "1.75";
         } else if ($grade >= 85) {
-            return "2.00";
+            return "2.0";
         } else if ($grade >= 82) {
             return "2.25";
         } else if ($grade >= 79) {
-            return "2.50";
+            return "2.5";
         } else if ($grade >= 76) {
             return "2.75";
         } else if ($grade >= 74.5) {
-            return "3.00";
+            return "3.0";
         } else if ($grade == 0) {
             return "INC";
         } else if ($grade == 4) {
             return "DRP";
         } else {
             /*5.00*/
-            return "5.00";
+            return "5.0";
         }
     }
 
