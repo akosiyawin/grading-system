@@ -60,7 +60,8 @@ class StudentController extends Controller
             $data = $grades;
             $totalUnits = $lecTotal . ($labTotal ? " ({$labTotal})" : '');
             $totalGrade = $hasIncomplete ? "INC" : number_format($totalGrade / $recordLength, 2);
-            return view('student.printGrade', compact('data', 'totalUnits', 'totalGrade', 'info'));
+            $yearTitle = "School Year " . $schoolYear->year . ", " . $semester->title;
+            return view('student.printGrade', compact('data', 'totalUnits', 'totalGrade', 'info', 'yearTitle'));
         }
 
         abort(404);
